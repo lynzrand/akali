@@ -1,0 +1,6 @@
+name: akali
+
+dependencies:
+  rpc: any
+  yaml: ^2.1.15
+  ulid: any
