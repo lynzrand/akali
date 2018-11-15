@@ -14,5 +14,9 @@ class Configuration {
   /// Create an empty configuration to assign properties afterwards.
   Configuration();
 
+  /// Whether Akali is running in Debug Mode
   bool debug = false;
+
+  /// The name of the picture collection
+  String pictureCollectionName = "pic";
 }
