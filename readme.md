@@ -5,10 +5,21 @@ Akali is an experimental _scalable and expandable_ pic site (booru) server writt
 ## Usage
 
 ```sh
-$ dart lib/main.dart
+$ dart lib/main.dart [options]
 ```
 
 Will introduce better run methods in the future.
+
+### Arguments
+
+| Abbr | Name            | Description              |
+|------|-----------------|--------------------------|
+| `-d` | `--debug`       | Run Akali in debug mode  |
+| `-p` | `--port <port>` | Run Akali on port `port` |
+| `-v` | `--version`     | Show version and exit    |
+| `-h` | `--help`        | Show help message        |
+
+## APIs
 
 ## FAQ
 

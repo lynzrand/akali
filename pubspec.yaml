@@ -1,4 +1,6 @@
 name: akali
+description: A booru server
+version: 0.0.1
 
 dependencies:
   rpc: any
