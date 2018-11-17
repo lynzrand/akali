@@ -7,6 +7,10 @@ import 'package:isolate/load_balancer.dart';
 import 'package:isolate/isolate_runner.dart';
 import 'package:isolate/ports.dart';
 
+import 'package:rpc/rpc.dart';
+
+import 'package:akali/api/api.dart';
+
 class AkaliLoadBalancer {
   HttpServer mainServer;
   int isolateCount;
@@ -23,41 +27,45 @@ class AkaliLoadBalancer {
   init() async {
     _runners = await Future.wait(Iterable.generate(isolateCount, (_) => IsolateRunner.spawn()));
     _loadBalancer = LoadBalancer(_runners);
-    _loadBalancer.runMultiple(
-      isolateCount,
-      createAkaliIsolate,
-      <String, dynamic>{},
-    );
 
-    // (await Isolate.spawn<Map<String, dynamic>>(createAkaliIsolate, {"sendPort": port.sendPort}));
-    // send = await port.first as SendPort;
+    _runners.forEach((i) => i.run<void, Map<String, dynamic>>(createAkaliIsolate, {}));
 
-    // mainServer.listen(_handle);
+    // _loadBalancer.runMultiple(
+    //   isolateCount,
+    //   createAkaliIsolate,
+    //   <String, dynamic>{},
+    // );
   }
-
-  // _handle(HttpRequest req) async {
-  //   print("Akali Load Balancer found request $req");
-  //   _loadBalancer.run<void, HttpRequest>(testRunIsolate, req);
-  // }
 }
 
-void createAkaliIsolate(dynamic data) async {
+Future<void> createAkaliIsolate(dynamic data) async {
   var isolate = new AkaliIsolate(data as Map<String, dynamic>);
+  await isolate.init();
+  print(".");
+  return;
 }
 
 class AkaliIsolate {
   HttpServer _server;
   int isolateName;
   StreamSubscription listening;
+  ApiServer _apiServer;
 
   AkaliIsolate(Map<String, dynamic> data) {
-    isolateName = data["isolateName"] ?? Random().nextInt(1024);
-    _init();
+    isolateName = data["isolateName"] ?? Random().nextInt(99);
   }
 
-  void _init() async {
-    _server = await HttpServer.bind(InternetAddress.anyIPv6, 8086, shared: true);
-    listening = _server.listen(_handleRequest);
+  void init() async {
+    _apiServer = ApiServer();
+    _apiServer.addApi(AkaliApi());
+
+    _server = await HttpServer.bind(InternetAddress.anyIPv4, 8086, shared: true);
+    listening = _server.listen(
+      _handleRequest,
+      onDone: _handleRequestDone,
+      onError: _handleRequestError,
+    );
+    print('#$isolateName listening at localhost:8086');
   }
 
   void close() {
@@ -65,13 +73,18 @@ class AkaliIsolate {
   }
 
   _handleRequest(HttpRequest req) {
-    print("Akali isolate $isolateName recieved request ${req.hashCode} for ${req.requestedUri}");
-    // TODO: put actrual BUSINESS LOGIC here!
-    req.response
-      ..write("HTTP 200 Okay\n")
-      ..write(
-          "This request is responded by Isolate $isolateName, and has a hashcode of ${req.hashCode}")
-      ..close();
-    print("Isolate $isolateName: ${req.hashCode} completed");
+    print("#$isolateName: #${req.hashCode} ${req.requestedUri}");
+    _apiServer.httpRequestHandler(req);
+    // req.response
+    //   ..write(".")
+    //   ..close();
+  }
+
+  void _handleRequestDone() {
+    print("#$isolateName: done");
+  }
+
+  void _handleRequestError(dynamic error, StackTrace stackTrace) {
+    print("#$isolateName: ERROR!\n$error\n$stackTrace");
   }
 }

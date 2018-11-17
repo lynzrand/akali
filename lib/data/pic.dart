@@ -1,4 +1,5 @@
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:rpc/rpc.dart';
 
 class Pic {
   /// Unique identifier of the picture.
@@ -6,7 +7,13 @@ class Pic {
   ///
   /// If you use other databases, you must manually add a timestamp property
   /// instead of using [timestamp].
+  @ApiProperty(ignore: true)
   ObjectId id;
+
+  @ApiProperty()
+  String get identifier {
+    return id.toHexString();
+  }
 
   /// title of the picture
   String title;
@@ -59,7 +66,7 @@ class Pic {
 
   Map<String, dynamic> toMap() {
     return {
-      "_id": id,
+      "_id": id?.toHexString(),
       "title": title,
       "desc": desc,
       "author": author,
@@ -76,7 +83,7 @@ class Pic {
   }
 
   Pic.fromMap(Map<String, dynamic> map) {
-    id = map['id'];
+    id = map['_id'] != null ? ObjectId.fromHexString(map['_id']) : ObjectId(clientMode: true);
     title = map['title'];
     desc = map['desc'];
     author = map['author'];
@@ -89,6 +96,8 @@ class Pic {
     previewHeight = map['previewHeight'];
     tags = map['tags'];
   }
+
+  Pic();
 }
 
 enum ImageRating { safe, questionable, explicit }
