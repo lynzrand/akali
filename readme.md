@@ -1,5 +1,12 @@
 # akali
 
+**AKALI IS TOTALLY UNUSABLE FOR NOW!**
+
+**IMPORTANT!** 
+Akali is currently under heavy development. 
+Things could break between commits, or the whole program may not be able to work at all. 
+Please use at your own risk.
+
 Akali is an experimental _scalable and expandable_ pic site (booru) server written in Dart.
 
 ## Usage
@@ -21,6 +28,8 @@ Will introduce better run methods in the future.
 
 ## APIs
 
+See [docs/api/readme.md]().
+
 ## FAQ
 
 ### Why use Dart? Shouldn't you use Go or something like that?
@@ -29,8 +38,11 @@ Because Dart is easy (and fluent!) to write while still having a relatively high
 
 ## License
 
-Akali is released under MIT license. Though, we recommend you to open-source your own fork of Akali for sharing.
+**Akali is released under MIT license**, which means you could use it for commercial projects. 
+Though, we recommend you to open-source your own fork of Akali for a better environment.
 
 ---
+
+2018 © Rynco Li / WFCRS.
 
 p.s. Akali is preferably pronounced `/'aka﹑lai/`, with the "i" pronouncing `/ai/` like that in the word "alkali" (which is also where this name came from).
