@@ -11,14 +11,29 @@ class AkaliDatabase {
   /// Connect to MongoDB at [uri].
   ///
   /// Remember to call [init] after creating a new [AkaliDatabase] instance.
-  AkaliDatabase(this.uri) {}
+  AkaliDatabase(this.uri) {
+    // A simple check for valid mongodb address and fixes if it's not
+    if (!uri.startsWith('mongodb://')) uri = 'mongodb://' + uri;
+    init();
+  }
 
   /// Initialize database connection.
   Future<void> init() async {
+    if (_initialized) return;
+    _initialized = true;
+    print('[AkaliDB] Connecting to $uri');
     db = new Db(uri);
-    await db.open();
-    picCollection = db.collection(config.pictureCollectionName);
+    try {
+      await db.open();
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+    print('[AkaliDB] Connected to $uri');
+    picCollection = db.collection('pic');
   }
+
+  bool _initialized = false;
 
   Db db;
   String uri;
@@ -27,9 +42,11 @@ class AkaliDatabase {
   DbCollection picCollection;
   DbCollection userCollection;
 
-  /// Post a new image to database
-  void postImage(Pic pic) async {
-    await picCollection.insert(pic.toMap());
+  /// Post a new image to database. Returns the written file.
+  Future<void> postImageData(Pic pic) async {
+    var map = await picCollection.insert(pic.toMap());
+    print(map);
+    return;
   }
 
   /// Search for image(s) meeting the criteria [crit].

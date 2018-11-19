@@ -52,9 +52,9 @@ class LogFile {
   log(dynamic object, [LogLevel level = LogLevel.info, String source]) {
     if (level.index < this.level.index) return;
     if (!useJson) {
-      if (includeTimeStamp) logFileSink.write("[${DateTime.now().toIso8601String()}] ");
-      if (includeSource) logFileSink.write("[$source] ");
-      logFileSink.write("[${level}] ");
+      if (includeTimeStamp) logFileSink.write("${DateTime.now().toIso8601String()} ");
+      if (includeSource) logFileSink.write("${source.padRight(10)} ");
+      logFileSink.write("${level.toString().padRight(6)} ");
       logFileSink.writeln(object);
     } else {
       Map<String, dynamic> stuff;

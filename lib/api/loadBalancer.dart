@@ -64,7 +64,7 @@ class AkaliLoadBalancer {
       (i) => i
           .run<void, AkaliIsolateArgs>(
             createIsolateFunction,
-            AkaliIsolateArgs(port: serverPort),
+            AkaliIsolateArgs(port: serverPort, databaseUri: databaseUri),
           )
           .catchError(
             (e) => _runnerCrashCallback(i, e),
@@ -83,10 +83,7 @@ class AkaliLoadBalancer {
     int index = _runners.indexWhere((runner) => runner == i);
     _crashCount[index]++;
     if (_crashCount[index] < maxCrashCount) {
-      i.run(
-        createIsolateFunction,
-        {"port": serverPort},
-      );
+      i.run(createIsolateFunction, AkaliIsolateArgs(port: serverPort, databaseUri: databaseUri));
     } else {
       print("Isolate #$i crashed too many times. Shutting down.");
     }
@@ -134,6 +131,7 @@ class AkaliIsolate {
 
   void init() async {
     _db = AkaliDatabase(databaseUri);
+    _db.init();
 
     _apiServer = ApiServer();
     _apiServer.addApi(AkaliApi(_db));
@@ -154,7 +152,7 @@ class AkaliIsolate {
 
   _handleRequest(HttpRequest req) {
     // TODO: put this to logger too
-    print("#$isolateName: #${req.hashCode} ${req.requestedUri}");
+    print("#$isolateName: ${req.connectionInfo.remoteAddress} ${req.method} ${req.requestedUri}");
     _apiServer.httpRequestHandler(req);
   }
 

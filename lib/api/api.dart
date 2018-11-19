@@ -18,7 +18,7 @@ class AkaliApi {
   AkaliApi(this.db);
 
   /// **NOT YET IMPLEMENTED.** GETs a picture by the criteria [crit].
-  @ApiMethod(method: 'GET', path: 'img/list')
+  @ApiMethod(name: 'Search image by query', method: 'GET', path: 'img')
   Future<List<Pic>> getPicByQuery({
     // Future<Map<String, String>> listPicByQuery({
     String tagsStr,
@@ -50,5 +50,11 @@ class AkaliApi {
         "_id": "badbeefbadc0ffeebad12345",
       })
     ];
+  }
+
+  @ApiMethod(name: 'Post image', method: 'POST', path: 'img')
+  Future<VoidMessage> postImageData(Pic pic) async {
+    await db.postImageData(pic);
+    return VoidMessage();
   }
 }

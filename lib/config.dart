@@ -20,5 +20,7 @@ class Configuration {
   bool debug = false;
 
   /// The name of the picture collection
-  String pictureCollectionName = "pic";
+  ///
+  /// TODO: change this.
+  static String pictureCollectionName = "pic";
 }
