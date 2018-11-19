@@ -38,12 +38,13 @@ We will introduce other run methods in the future, like using a configuration fi
 
 ### Arguments
 
-| Abbr | Name            | Description              |
-|------|-----------------|--------------------------|
-| `-d` | `--debug`       | Run Akali in debug mode  |
-| `-p` | `--port <port>` | Run Akali on port `port` |
-| `-v` | `--version`     | Show version and exit    |
-| `-h` | `--help`        | Show help message        |
+| Abbr | Name               | Default value     | Description                      |
+|------|--------------------|-------------------|----------------------------------|
+| `-d` | `--debug`          |                   | Run Akali in debug mode          |
+| `-D` | `--database=<uri>` | `127.0.0.1:27017` | Run Akali with database on <uri> |
+| `-p` | `--port=<port>`    | `8086`            | Run Akali on port `port`         |
+| `-v` | `--version`        |                   | Show version and exit            |
+| `-h` | `--help`           |                   | Show help message                |
 
 ## APIs
 

@@ -4,16 +4,18 @@ import 'dart:io';
 import 'package:akali/data/db.dart';
 import 'package:akali/data/pic.dart';
 
+/// Akali's default API.
 @ApiClass(
   name: 'api',
   version: 'v1',
 )
 class AkaliApi {
+  /// Database that this API connects on.
   AkaliDatabase db;
 
   AkaliApi(this.db);
 
-  /// GETs a picture by the criteria [crit]
+  /// **NOT YET IMPLEMENTED.** GETs a picture by the criteria [crit].
   @ApiMethod(method: 'GET', path: 'img/list')
   Future<List<Pic>> getPicByQuery({
     // Future<Map<String, String>> listPicByQuery({

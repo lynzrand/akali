@@ -12,26 +12,40 @@ import 'package:rpc/rpc.dart';
 import 'package:akali/api/api.dart';
 import 'package:akali/data/db.dart';
 
+/// Akali's default Isolate runner implementation.
 class AkaliLoadBalancer {
-  HttpServer mainServer;
+  // HttpServer mainServer;
+  /// Port to run HTTP server on
   int serverPort;
+
+  /// Number of isolates to run in parallel
   int isolateCount;
+
   ReceivePort port;
   SendPort send;
 
+  /// Database that this Akali instance is running on
   String databaseUri;
 
-  LoadBalancer _loadBalancer;
+  // LoadBalancer _loadBalancer;
+  /// All isolate runners used here
   List<IsolateRunner> _runners;
 
+  /// Maximum crashes allowed for a single instance
   int maxCrashCount;
   List<int> _crashCount;
 
+  /// A function which will be run when creating isolates
   Function createIsolateFunction;
 
+  /// Create a new Akali server with [isolateCount] isolates, running at
+  /// port [serverPort], uses database at [databaseUri], and creates isolates
+  /// using [createIsolateFunction].
+  ///
+  /// **Remember to run [init()] after creation!**
   AkaliLoadBalancer(
     this.isolateCount, {
-    this.mainServer,
+    // this.mainServer,
     this.serverPort = 8086,
     this.maxCrashCount = 10,
     this.createIsolateFunction = createAkaliIsolate,
@@ -41,9 +55,10 @@ class AkaliLoadBalancer {
     _crashCount = new List<int>.filled(isolateCount, 0);
   }
 
+  /// Initializes the Akali server.
   init() async {
     _runners = await Future.wait(Iterable.generate(isolateCount, (_) => IsolateRunner.spawn()));
-    _loadBalancer = LoadBalancer(_runners);
+    // _loadBalancer = LoadBalancer(_runners);
 
     _runners.forEach(
       (i) => i
@@ -63,6 +78,7 @@ class AkaliLoadBalancer {
     // );
   }
 
+  /// Callback function to be called when a runner crashed.
   _runnerCrashCallback(IsolateRunner i, Error e) {
     int index = _runners.indexWhere((runner) => runner == i);
     _crashCount[index]++;
@@ -90,13 +106,15 @@ class AkaliIsolateArgs {
   // TODO: add isolate port
 }
 
+/// Akali's defualt function to create an isolate.
 Future<void> createAkaliIsolate(AkaliIsolateArgs args) async {
   var isolate = new AkaliIsolate(args);
   await isolate.init();
-  print(".");
+  // print(".");
   return;
 }
 
+/// A HTTP server running in an isolate.
 class AkaliIsolate {
   HttpServer _server;
   int port;

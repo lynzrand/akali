@@ -46,11 +46,7 @@ Future main(List<String> args) async {
   var runConf = parser.parse(args);
 
   if (runConf['help']) {
-    print('''
-Akali v$_akaliVersion
-
-Usage:
-    ''');
+    print('Usage:');
     print(parser.usage);
     return;
   } else if (runConf['version']) {
@@ -61,6 +57,7 @@ Usage:
   var loadBalancer = AkaliLoadBalancer(
     1,
     serverPort: int.tryParse(runConf['port']),
+    databaseUri: runConf['database'].toString(),
   );
   await loadBalancer.init();
 }
