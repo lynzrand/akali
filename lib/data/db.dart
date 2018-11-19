@@ -25,7 +25,11 @@ class AkaliDatabase {
 
   /// Search for image(s) meeting the criteria [crit].
 
-  Future<List<Pic>> searchForImage(ImageSearchCriteria crit) async {}
+  Future<List<Pic>> searchForImage(ImageSearchCriteria crit) async {
+    return (await picCollection.find({"tags": crit.tags}).toList()).map(
+      (item) => Pic.fromMap(item),
+    );
+  }
 
   /// Find **the** picture with this [id].
   ///

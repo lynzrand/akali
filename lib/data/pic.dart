@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:rpc/rpc.dart';
 
@@ -80,6 +82,10 @@ class Pic {
       "previewHeight": previewHeight,
       "tags": tags,
     };
+  }
+
+  String toJson() {
+    return jsonEncode(this.toMap());
   }
 
   Pic.fromMap(Map<String, dynamic> map) {

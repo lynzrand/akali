@@ -4,9 +4,8 @@ import 'dart:cli';
 import 'package:rpc/rpc.dart';
 import 'package:args/args.dart';
 
-import 'package:akali/api/api.dart';
 import 'package:akali/config.dart';
-import 'package:akali/api/loadBalancer.dart';
+import 'package:akali/akali.dart';
 
 const String _akaliVersion = "0.0.1";
 

@@ -30,7 +30,9 @@ class AkaliLoadBalancer {
     _loadBalancer = LoadBalancer(_runners);
 
     _runners.forEach(
-      (i) => i.run<void, Map<String, dynamic>>(createAkaliIsolate, {"port": serverPort}),
+      (i) => i.run<void, Map<String, dynamic>>(createAkaliIsolate, {"port": serverPort}).catchError(
+            (e) => _runnerCrashCallback(i, e),
+          ),
     );
 
     // _loadBalancer.runMultiple(
@@ -39,6 +41,8 @@ class AkaliLoadBalancer {
     //   <String, dynamic>{},
     // );
   }
+
+  _runnerCrashCallback(IsolateRunner i, Error e) {}
 }
 
 Future<void> createAkaliIsolate(dynamic data) async {
