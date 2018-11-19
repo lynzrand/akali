@@ -56,7 +56,7 @@ class AkaliLoadBalancer {
   }
 
   /// Initializes the Akali server.
-  init() async {
+  Future<void> init() async {
     _runners = await Future.wait(Iterable.generate(isolateCount, (_) => IsolateRunner.spawn()));
     // _loadBalancer = LoadBalancer(_runners);
 
@@ -110,11 +110,12 @@ class AkaliIsolateArgs {
 Future<void> createAkaliIsolate(AkaliIsolateArgs args) async {
   var isolate = new AkaliIsolate(args);
   await isolate.init();
-  // print(".");
   return;
 }
 
 /// A HTTP server running in an isolate.
+///
+/// TODO: add HTTPS compatibility (though in most cases not needed)
 class AkaliIsolate {
   HttpServer _server;
   int port;
@@ -143,6 +144,7 @@ class AkaliIsolate {
       onDone: _handleRequestDone,
       onError: _handleRequestError,
     );
+    // TODO: put this to logger
     print('#$isolateName listening at localhost:$port');
   }
 
@@ -151,18 +153,18 @@ class AkaliIsolate {
   }
 
   _handleRequest(HttpRequest req) {
+    // TODO: put this to logger too
     print("#$isolateName: #${req.hashCode} ${req.requestedUri}");
     _apiServer.httpRequestHandler(req);
-    // req.response
-    //   ..write(".")
-    //   ..close();
   }
 
   void _handleRequestDone() {
+    // TODO: and this
     print("#$isolateName: done");
   }
 
   void _handleRequestError(dynamic error, StackTrace stackTrace) {
+    // TODO: and also this.
     print("#$isolateName: ERROR!\n$error\n$stackTrace");
   }
 }

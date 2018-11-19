@@ -54,6 +54,8 @@ Future main(List<String> args) async {
     return;
   }
 
+  // TODO: add configuration file reader
+
   var loadBalancer = AkaliLoadBalancer(
     1,
     serverPort: int.tryParse(runConf['port']),

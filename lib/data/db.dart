@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:mongo_dart/mongo_dart.dart';
 import 'pic.dart';
-import '../config.dart';
+import 'package:akali/config.dart';
 
 // TODO: Add abstract database class, so that one could add custom implementaion
 

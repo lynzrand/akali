@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:convert';
 
+// TODO: finish this!
+
 class Configuration {
   /// Reads config from a **JSON file** [config]
   static Future<Configuration> fromFile(File config) async {
