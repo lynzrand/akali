@@ -1,6 +1,6 @@
 # akali
 
-**AKALI IS TOTALLY UNUSABLE FOR NOW!**
+**AKALI IS NOT USABLE YET. KEY FEATURES NOT IMPLEMENTED.**
 
 **IMPORTANT!** 
 Akali is currently under heavy development. 
@@ -9,13 +9,34 @@ Please use at your own risk.
 
 Akali is an experimental _scalable and expandable_ pic site (booru) server written in Dart.
 
+## Development
+
+Developing Akali (and running as well) requires the following software 
+environment:
+
+- Dart VM: `^2.1.0`
+- MongoDB: `^3.6.0`
+
 ## Usage
 
-```sh
-$ dart lib/main.dart [options]
+_With no modification in code, 
+
+With your database running, run:
+
+```shell
+# For development, first clone this project, then:
+$ cd path/to/akali
+$ dart bin/main.dart [args]
+
+# You may want to use Dart's observatory:
+$ dart --observe=<port> bin/main.dart [args]
+
+# In production, simply use:
+$ pub global activate akali
+$ akali [args]
 ```
 
-Will introduce better run methods in the future.
+We will introduce other run methods in the future, like using a configuration file (like most programs do), only activating part of its functions (when running in a cluster of servers), or running in docker.
 
 ### Arguments
 
@@ -28,7 +49,7 @@ Will introduce better run methods in the future.
 
 ## APIs
 
-See [docs/api/readme.md]().
+See [./docs/api/readme.md]().
 
 ## FAQ
 
@@ -39,10 +60,10 @@ Because Dart is easy (and fluent!) to write while still having a relatively high
 ## License
 
 **Akali is released under MIT license**, which means you could use it for commercial projects. 
-Though, we recommend you to open-source your own fork of Akali for a better environment.
+Though, we recommend you to open-source your own fork of Akali for a better community environment.
 
 ---
 
 2018 © Rynco Li / WFCRS.
 
-p.s. Akali is preferably pronounced `/'aka﹑lai/`, with the "i" pronouncing `/ai/` like that in the word "alkali" (which is also where this name came from).
+p.s. The name of the project, Akali, came from "alkali". Therefore, it is preferably pronounced `/'aka﹑lai/`_(aka-lai)_, with the "i" pronouncing `/ai/` like that in "alkali".

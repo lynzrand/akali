@@ -10,6 +10,7 @@ import 'package:isolate/ports.dart';
 import 'package:rpc/rpc.dart';
 
 import 'package:akali/api/api.dart';
+import 'package:akali/data/db.dart';
 
 class AkaliLoadBalancer {
   HttpServer mainServer;
@@ -18,11 +19,26 @@ class AkaliLoadBalancer {
   ReceivePort port;
   SendPort send;
 
+  String databaseUri;
+
   LoadBalancer _loadBalancer;
   List<IsolateRunner> _runners;
 
-  AkaliLoadBalancer(this.isolateCount, {this.mainServer, this.serverPort}) {
+  int maxCrashCount;
+  List<int> _crashCount;
+
+  Function createIsolateFunction;
+
+  AkaliLoadBalancer(
+    this.isolateCount, {
+    this.mainServer,
+    this.serverPort = 8086,
+    this.maxCrashCount = 10,
+    this.createIsolateFunction = createAkaliIsolate,
+    this.databaseUri = "127.0.0.1:27017",
+  }) {
     port = ReceivePort();
+    _crashCount = new List<int>.filled(isolateCount, 0);
   }
 
   init() async {
@@ -30,7 +46,12 @@ class AkaliLoadBalancer {
     _loadBalancer = LoadBalancer(_runners);
 
     _runners.forEach(
-      (i) => i.run<void, Map<String, dynamic>>(createAkaliIsolate, {"port": serverPort}).catchError(
+      (i) => i
+          .run<void, AkaliIsolateArgs>(
+            createIsolateFunction,
+            AkaliIsolateArgs(port: serverPort),
+          )
+          .catchError(
             (e) => _runnerCrashCallback(i, e),
           ),
     );
@@ -42,11 +63,35 @@ class AkaliLoadBalancer {
     // );
   }
 
-  _runnerCrashCallback(IsolateRunner i, Error e) {}
+  _runnerCrashCallback(IsolateRunner i, Error e) {
+    int index = _runners.indexWhere((runner) => runner == i);
+    _crashCount[index]++;
+    if (_crashCount[index] < maxCrashCount) {
+      i.run(
+        createIsolateFunction,
+        {"port": serverPort},
+      );
+    } else {
+      print("Isolate #$i crashed too many times. Shutting down.");
+    }
+  }
 }
 
-Future<void> createAkaliIsolate(dynamic data) async {
-  var isolate = new AkaliIsolate(data as Map<String, dynamic>);
+class AkaliIsolateArgs {
+  AkaliIsolateArgs({
+    this.port,
+    this.isolateName,
+    this.databaseUri = '127.0.0.1:27017',
+  });
+  int port;
+  int isolateName;
+  String databaseUri;
+  // TODO: add Logger
+  // TODO: add isolate port
+}
+
+Future<void> createAkaliIsolate(AkaliIsolateArgs args) async {
+  var isolate = new AkaliIsolate(args);
   await isolate.init();
   print(".");
   return;
@@ -59,14 +104,20 @@ class AkaliIsolate {
   StreamSubscription listening;
   ApiServer _apiServer;
 
-  AkaliIsolate(Map<String, dynamic> data) {
-    isolateName = data["isolateName"] ?? Random().nextInt(99);
-    port = data['port'] ?? 8086;
+  String databaseUri;
+  AkaliDatabase _db;
+
+  AkaliIsolate(AkaliIsolateArgs args) {
+    isolateName = args.isolateName ?? Random().nextInt(99);
+    port = args.port;
+    databaseUri = args.databaseUri;
   }
 
   void init() async {
+    _db = AkaliDatabase(databaseUri);
+
     _apiServer = ApiServer();
-    _apiServer.addApi(AkaliApi());
+    _apiServer.addApi(AkaliApi(_db));
 
     _server = await HttpServer.bind(InternetAddress.anyIPv4, port, shared: true);
     listening = _server.listen(

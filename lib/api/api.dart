@@ -9,6 +9,10 @@ import 'package:akali/data/pic.dart';
   version: 'v1',
 )
 class AkaliApi {
+  AkaliDatabase db;
+
+  AkaliApi(this.db);
+
   /// GETs a picture by the criteria [crit]
   @ApiMethod(method: 'GET', path: 'img/list')
   Future<List<Pic>> getPicByQuery({

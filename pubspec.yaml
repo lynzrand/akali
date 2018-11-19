@@ -1,6 +1,11 @@
 name: akali
-description: A booru server
+description: An illustration site (booru) server
 version: 0.0.1
+
+authors:
+  - Rynco Li <lynzrand@outlook.com>
+  - Chaos Lun
+  - ztl
 
 dependencies:
   rpc: any
@@ -8,3 +13,6 @@ dependencies:
   ulid: any
   mongo_dart: ^0.3.3
   isolate: ^2.0.2
+
+executables:
+  akali: main
