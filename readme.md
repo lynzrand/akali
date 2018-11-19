@@ -19,8 +19,6 @@ environment:
 
 ## Usage
 
-_With no modification in code, 
-
 With your database running, run:
 
 ```shell
