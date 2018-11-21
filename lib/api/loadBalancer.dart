@@ -57,7 +57,8 @@ class AkaliLoadBalancer {
 
   /// Initializes the Akali server.
   Future<void> init() async {
-    _runners = await Future.wait(Iterable.generate(isolateCount, (_) => IsolateRunner.spawn()));
+    _runners = await Future.wait(
+        Iterable.generate(isolateCount, (_) => IsolateRunner.spawn()));
     // _loadBalancer = LoadBalancer(_runners);
 
     _runners.forEach(
@@ -83,7 +84,8 @@ class AkaliLoadBalancer {
     int index = _runners.indexWhere((runner) => runner == i);
     _crashCount[index]++;
     if (_crashCount[index] < maxCrashCount) {
-      i.run(createIsolateFunction, AkaliIsolateArgs(port: serverPort, databaseUri: databaseUri));
+      i.run(createIsolateFunction,
+          AkaliIsolateArgs(port: serverPort, databaseUri: databaseUri));
     } else {
       print("Isolate #$i crashed too many times. Shutting down.");
     }
@@ -136,7 +138,8 @@ class AkaliIsolate {
     _apiServer = ApiServer();
     _apiServer.addApi(AkaliApi(_db));
 
-    _server = await HttpServer.bind(InternetAddress.anyIPv4, port, shared: true);
+    _server =
+        await HttpServer.bind(InternetAddress.anyIPv4, port, shared: true);
     listening = _server.listen(
       _handleRequest,
       onDone: _handleRequestDone,
@@ -152,7 +155,8 @@ class AkaliIsolate {
 
   _handleRequest(HttpRequest req) {
     // TODO: put this to logger too
-    print("#$isolateName: ${req.connectionInfo.remoteAddress} ${req.method} ${req.requestedUri}");
+    print(
+        "#$isolateName: ${req.connectionInfo.remoteAddress} ${req.method} ${req.requestedUri}");
     _apiServer.httpRequestHandler(req);
   }
 

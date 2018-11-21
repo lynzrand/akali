@@ -17,12 +17,16 @@ class AkaliApi {
 
   AkaliApi(this.db);
 
-  /// **NOT YET IMPLEMENTED.** GETs a picture by the criteria [crit].
+  /// **NOT YET IMPLEMENTED.** GETs a picture by the following criteria:
+  ///
+  /// List separated with "+": [tags], [author]
+  ///
+  /// Integers: [minWidth], [maxWidth], [minHeight], [maxHeight]
   @ApiMethod(name: 'Search image by query', method: 'GET', path: 'img')
   Future<List<Pic>> getPicByQuery({
     // Future<Map<String, String>> listPicByQuery({
-    String tagsStr,
-    String authorStr,
+    String tags,
+    String author,
     int minWidth,
     int maxWidth,
     int minHeight,
@@ -30,26 +34,24 @@ class AkaliApi {
     String minAspectRatioStr,
     String maxAspectRatioStr,
   }) async {
-    List<String> tags;
-    List<String> author;
+    List<String> tagsList;
+    List<String> authorList;
     double minAspectRatio;
     double maxAspectRatio;
     try {
-      tags = tagsStr?.split("+");
-      author = authorStr?.split("+");
-      if (minAspectRatioStr != null) minAspectRatio = double.tryParse(minAspectRatioStr);
-      if (maxAspectRatioStr != null) maxAspectRatio = double.tryParse(maxAspectRatioStr);
+      // Please note that seen by the server, query "xxx+yyy" is the same as "xxx yyy".
+      tagsList = tags?.split(" ");
+      authorList = author?.split(" ");
+      if (minAspectRatioStr != null)
+        minAspectRatio = double.tryParse(minAspectRatioStr);
+      if (maxAspectRatioStr != null)
+        maxAspectRatio = double.tryParse(maxAspectRatioStr);
     } catch (e, stacktrace) {
       throw BadRequestError(e.toString() + "\n" + stacktrace.toString());
     }
-    // DEBUG: TEST RESPONSE!
-    // TODO: implement business logic
-    return <Pic>[
-      Pic.fromMap({
-        "author": "someAuthor",
-        "_id": "badbeefbadc0ffeebad12345",
-      })
-    ];
+    var searchResults =
+        await db.picCollection.find({"tags": tagsList}).toList();
+    return searchResults.map((i) => Pic.fromMap(i)).toList();
   }
 
   @ApiMethod(name: 'Post image', method: 'POST', path: 'img')
