@@ -49,9 +49,20 @@ class AkaliApi {
     } catch (e, stacktrace) {
       throw BadRequestError(e.toString() + "\n" + stacktrace.toString());
     }
-    var searchResults =
-        await db.picCollection.find({"tags": tagsList}).toList();
-    return searchResults.map((i) => Pic.fromMap(i)).toList();
+    Map<String, dynamic> searchQuery = {};
+
+    // Search for specific tags
+    if (tagsList?.isNotEmpty ?? false)
+      searchQuery["tags"] = {"\$all": tagsList};
+
+    try {
+      var searchResults = await db.picCollection.find(searchQuery).toList();
+      return searchResults.map((i) => Pic.fromMap(i)).toList();
+    } catch (e, stack) {
+      print(e);
+      print(stack);
+      throw e;
+    }
   }
 
   @ApiMethod(name: 'Post image', method: 'POST', path: 'img')

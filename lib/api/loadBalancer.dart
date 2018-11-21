@@ -133,7 +133,7 @@ class AkaliIsolate {
 
   void init() async {
     _db = AkaliDatabase(databaseUri);
-    _db.init();
+    await _db.init();
 
     _apiServer = ApiServer();
     _apiServer.addApi(AkaliApi(_db));

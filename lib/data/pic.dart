@@ -89,9 +89,12 @@ class Pic {
   }
 
   Pic.fromMap(Map<String, dynamic> map) {
-    id = map['_id'] != null
-        ? ObjectId.fromHexString(map['_id'])
-        : ObjectId(clientMode: true);
+    if (map['_id'] is ObjectId)
+      id = map['_id'];
+    else if (map['_id'] is String)
+      id = ObjectId.fromHexString(map['_id']);
+    else
+      id = ObjectId(clientMode: true);
     title = map['title'];
     desc = map['desc'];
     author = map['author'];
@@ -102,7 +105,7 @@ class Pic {
     previewLink = map['previewLink'];
     previewWidth = map['previewWidth'];
     previewHeight = map['previewHeight'];
-    tags = map['tags'] as List<String>;
+    tags = List<String>.from(map['tags']);
   }
 
   Pic();
