@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:rpc/rpc.dart';
 
@@ -17,14 +18,16 @@ class AkaliApi {
 
   AkaliApi(this.db);
 
-  /// **NOT YET IMPLEMENTED.** GETs a picture by the following criteria:
+  /// GETs a picture by the following criteria:
   ///
   /// List separated with "+": [tags], [author]
   ///
   /// Integers: [minWidth], [maxWidth], [minHeight], [maxHeight]
   @ApiMethod(name: 'Search image by query', method: 'GET', path: 'img')
-  Future<List<Pic>> getPicByQuery({
-    // Future<Map<String, String>> listPicByQuery({
+  // Future<List<Pic>> getPicByQuery({
+  // ## Current workaround: call custon toJson() and return a string, instead of
+  // returning the object and let rpc do the job.
+  Future<MediaMessage> listPicByQuery({
     String tags,
     String author,
     int minWidth,
@@ -56,8 +59,14 @@ class AkaliApi {
       searchQuery["tags"] = {"\$all": tagsList};
 
     try {
-      var searchResults = await db.picCollection.find(searchQuery).toList();
-      return searchResults.map((i) => Pic.fromMap(i)).toList();
+      var searchResults = await db.picCollection
+          .find(searchQuery)
+          // .map((i) => Pic.fromMap(i))
+          // .map((i) => jsonEncode(i))
+          .toList();
+      return MediaMessage()
+        ..bytes = jsonEncode(searchResults).codeUnits
+        ..contentEncoding = "utf16";
     } catch (e, stack) {
       print(e);
       print(stack);

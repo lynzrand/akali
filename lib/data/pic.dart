@@ -9,10 +9,10 @@ class Pic {
   ///
   /// If you use other databases, you must manually add a timestamp property
   /// instead of using [timestamp].
-  // @ApiProperty(ignore: true)
+  @ApiProperty(ignore: true)
   ObjectId _id;
 
-  @ApiProperty()
+  @ApiProperty(name: '_id')
   String get id {
     return _id.toHexString();
   }
@@ -97,6 +97,10 @@ class Pic {
 
   String toJson() {
     return jsonEncode(this.toMap());
+  }
+
+  String toString() {
+    return this.toJson();
   }
 
   Pic.fromMap(Map<String, dynamic> map) {
