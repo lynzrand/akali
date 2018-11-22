@@ -9,12 +9,23 @@ class Pic {
   ///
   /// If you use other databases, you must manually add a timestamp property
   /// instead of using [timestamp].
-  @ApiProperty(ignore: true)
-  ObjectId id;
+  // @ApiProperty(ignore: true)
+  ObjectId _id;
 
   @ApiProperty()
-  String get identifier {
-    return id.toHexString();
+  String get id {
+    return _id.toHexString();
+  }
+
+  set id(value) {
+    if (value == null)
+      _id = ObjectId(clientMode: true);
+    else if (value is ObjectId)
+      _id = value;
+    else if (value is String)
+      _id = ObjectId.fromHexString(value);
+    else
+      throw ArgumentError.value(value);
   }
 
   /// title of the picture
@@ -63,12 +74,12 @@ class Pic {
   List<String> tags;
 
   DateTime get timestamp {
-    return id.dateTime;
+    return _id.dateTime;
   }
 
   Map<String, dynamic> toMap() {
     return {
-      "_id": id?.toHexString(),
+      "_id": id,
       "title": title,
       "desc": desc,
       "author": author,
@@ -89,12 +100,7 @@ class Pic {
   }
 
   Pic.fromMap(Map<String, dynamic> map) {
-    if (map['_id'] is ObjectId)
-      id = map['_id'];
-    else if (map['_id'] is String)
-      id = ObjectId.fromHexString(map['_id']);
-    else
-      id = ObjectId(clientMode: true);
+    id = map['_id'];
     title = map['title'];
     desc = map['desc'];
     author = map['author'];
@@ -105,7 +111,7 @@ class Pic {
     previewLink = map['previewLink'];
     previewWidth = map['previewWidth'];
     previewHeight = map['previewHeight'];
-    tags = List<String>.from(map['tags']);
+    if (map['tags'] != null) tags = List<String>.from(map['tags']);
   }
 
   Pic();

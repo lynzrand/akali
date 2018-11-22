@@ -42,11 +42,10 @@ class AkaliDatabase {
   DbCollection picCollection;
   DbCollection userCollection;
 
-  /// Post a new image to database. Returns the written file.
+  /// Post a new image to database. Returns the written confirmation.
   Future<void> postImageData(Pic pic) async {
     var map = await picCollection.insert(pic.toMap());
-    print(map);
-    return;
+    return map;
   }
 
   /// Search for image(s) meeting the criteria [crit].
