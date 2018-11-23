@@ -27,6 +27,12 @@ class AkaliLoadBalancer {
   /// Database that this Akali instance is running on
   String databaseUri;
 
+  /// Whether to store images on local machine
+  bool useLocalFileStorage;
+
+  /// If [useLocalFileStorage] is `true`, store images here
+  String fileStoragePath;
+
   // LoadBalancer _loadBalancer;
   /// All isolate runners used here
   List<IsolateRunner> _runners;
@@ -50,6 +56,8 @@ class AkaliLoadBalancer {
     this.maxCrashCount = 10,
     this.createIsolateFunction = createAkaliIsolate,
     this.databaseUri = "127.0.0.1:27017",
+    this.useLocalFileStorage = true,
+    this.fileStoragePath = "/data/akali",
   }) {
     port = ReceivePort();
     _crashCount = new List<int>.filled(isolateCount, 0);
@@ -84,8 +92,14 @@ class AkaliLoadBalancer {
     int index = _runners.indexWhere((runner) => runner == i);
     _crashCount[index]++;
     if (_crashCount[index] < maxCrashCount) {
-      i.run(createIsolateFunction,
-          AkaliIsolateArgs(port: serverPort, databaseUri: databaseUri));
+      i.run(
+          createIsolateFunction,
+          AkaliIsolateArgs(
+            port: serverPort,
+            databaseUri: databaseUri,
+            useLocalFileStorage: useLocalFileStorage,
+            fileStoragePath: fileStoragePath,
+          ));
     } else {
       print("Isolate #$i crashed too many times. Shutting down.");
     }
@@ -97,10 +111,14 @@ class AkaliIsolateArgs {
     this.port,
     this.isolateName,
     this.databaseUri = '127.0.0.1:27017',
+    this.useLocalFileStorage,
+    this.fileStoragePath,
   });
   int port;
   int isolateName;
   String databaseUri;
+  bool useLocalFileStorage;
+  String fileStoragePath;
   // TODO: add Logger
   // TODO: add isolate port
 }
@@ -125,10 +143,15 @@ class AkaliIsolate {
   String databaseUri;
   AkaliDatabase _db;
 
+  bool useLocalFileStorage;
+  String fileStoragePath;
+
   AkaliIsolate(AkaliIsolateArgs args) {
     isolateName = args.isolateName ?? Random().nextInt(99);
     port = args.port;
     databaseUri = args.databaseUri;
+    useLocalFileStorage = args.useLocalFileStorage;
+    fileStoragePath = args.fileStoragePath;
   }
 
   void init() async {
@@ -136,7 +159,10 @@ class AkaliIsolate {
     await _db.init();
 
     _apiServer = ApiServer();
-    _apiServer.addApi(AkaliApi(_db));
+    _apiServer.addApi(AkaliApi(
+      db: _db,
+      fileStoragePath: fileStoragePath,
+    ));
 
     _server =
         await HttpServer.bind(InternetAddress.anyIPv4, port, shared: true);

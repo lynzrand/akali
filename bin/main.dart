@@ -25,6 +25,13 @@ Future main(List<String> args) async {
       valueHelp: "port",
       defaultsTo: "8086",
     )
+    ..addOption(
+      "storage path",
+      abbr: 'fs',
+      help: 'Akali will store files under this path',
+      valueHelp: 'path',
+      defaultsTo: '/data/akali',
+    )
     ..addFlag(
       "debug",
       abbr: "d",

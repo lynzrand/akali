@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:mongo_dart/mongo_dart.dart';
+import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:rpc/rpc.dart';
 
 class Pic {
@@ -10,7 +10,7 @@ class Pic {
   /// If you use other databases, you must manually add a timestamp property
   /// instead of using [timestamp].
   @ApiProperty(ignore: true)
-  ObjectId _id;
+  mongo.ObjectId _id;
 
   @ApiProperty(name: '_id')
   String get id {
@@ -19,11 +19,11 @@ class Pic {
 
   set id(value) {
     if (value == null)
-      _id = ObjectId(clientMode: true);
-    else if (value is ObjectId)
+      _id = mongo.ObjectId(clientMode: true);
+    else if (value is mongo.ObjectId)
       _id = value;
     else if (value is String)
-      _id = ObjectId.fromHexString(value);
+      _id = mongo.ObjectId.fromHexString(value);
     else
       throw ArgumentError.value(value);
   }

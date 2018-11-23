@@ -31,6 +31,8 @@ class AkaliDatabase {
     }
     print('[AkaliDB] Connected to $uri');
     picCollection = db.collection('pic');
+    pendingPicCollection = db.collection('pendingPic');
+    userCollection = db.collection('user');
   }
 
   bool _initialized = false;
@@ -40,6 +42,7 @@ class AkaliDatabase {
   Configuration config;
 
   DbCollection picCollection;
+  DbCollection pendingPicCollection;
   DbCollection userCollection;
 
   /// Post a new image to database. Returns the written confirmation.
@@ -61,9 +64,21 @@ class AkaliDatabase {
   Future<Pic> getImageById(ObjectId id) async {
     return Pic.fromMap(await picCollection.findOne(where.id(id)));
   }
+
+  /// Adds an image with link [blobLink] and no info related
+  /// to [pendingImageCollection]
+  Future<String> addPendingImage(String blobLink) async {
+    ObjectId id = ObjectId();
+    await pendingPicCollection.insert({
+      "_id": id,
+      "link": blobLink,
+    });
+    return id.toHexString();
+  }
+
+  Future addInfoToPendingImage(Pic info) {}
 }
 
 class ImageSearchCriteria {
   List<String> tags;
-  ImageRating rating;
 }

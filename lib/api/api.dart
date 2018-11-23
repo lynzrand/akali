@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 
@@ -16,7 +17,12 @@ class AkaliApi {
   /// Database that this API connects on.
   AkaliDatabase db;
 
-  AkaliApi(this.db);
+  String fileStoragePath;
+
+  AkaliApi({
+    this.db,
+    this.fileStoragePath,
+  });
 
   /// GETs a picture by the following criteria:
   ///
@@ -36,6 +42,7 @@ class AkaliApi {
     int maxHeight,
     String minAspectRatioStr,
     String maxAspectRatioStr,
+    bool pretty = false,
   }) async {
     List<String> tagsList;
     List<String> authorList;
@@ -65,8 +72,7 @@ class AkaliApi {
           // .map((i) => jsonEncode(i))
           .toList();
       return MediaMessage()
-        ..bytes = jsonEncode(searchResults).codeUnits
-        ..contentEncoding = "utf16";
+        ..bytes = JsonUtf8Encoder(pretty ? "  " : null).convert(searchResults);
     } catch (e, stack) {
       print(e);
       print(stack);
@@ -74,9 +80,35 @@ class AkaliApi {
     }
   }
 
-  @ApiMethod(name: 'Post image', method: 'POST', path: 'img')
-  Future<VoidMessage> postImageData(Pic pic) async {
+  @ApiMethod(name: 'Get image from file', method: 'GET', path: 'img/get/{id}')
+  Future<MediaMessage> getImageFile(String id) async {
+    // TODO: add file manager for remote file redirections if needed
+    var file = File('$fileStoragePath/img/$id.png');
+    if (!await file.exists()) {
+      throw BadRequestError('Image with id=$id does not exist!');
+    }
+    var msg = MediaMessage()..bytes = file.readAsBytesSync();
+    return msg;
+  }
+
+  @ApiMethod(name: 'Post image data', method: 'POST', path: 'img/data/{token}')
+  Future<VoidMessage> postImageData(String token, Pic pic) async {
     await db.postImageData(pic);
     return VoidMessage();
   }
+
+  @ApiMethod(name: 'Post image file', method: 'POST', path: 'img')
+  Future<ImagePostRequestResponse> postImageFile(List<int> blob) async {
+    String blobLink;
+    // TODO: put blob to some link
+    var token = await db.addPendingImage(blobLink);
+    return ImagePostRequestResponse()
+      ..token = token
+      ..imageLink = blobLink;
+  }
+}
+
+class ImagePostRequestResponse {
+  String token;
+  String imageLink;
 }
