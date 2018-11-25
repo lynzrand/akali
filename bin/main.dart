@@ -10,12 +10,15 @@ import 'package:akali/akali.dart';
 const String _akaliVersion = "0.0.1";
 
 Future main(List<String> args) async {
-  final parser = ArgParser(allowTrailingOptions: true)
+  final parser = ArgParser(
+    allowTrailingOptions: true,
+    usageLineLength: 80,
+  )
     ..addOption(
       "database",
       abbr: "D",
-      help: "Use <database_uri> as your database",
-      valueHelp: "database_uri",
+      help: "Use <uri> as your database",
+      valueHelp: "uri",
       defaultsTo: "127.0.0.1:27017",
     )
     ..addOption(
@@ -26,17 +29,18 @@ Future main(List<String> args) async {
       defaultsTo: "8086",
     )
     ..addOption(
-      "storage path",
-      abbr: 'fs',
+      "storage-path",
+      abbr: 'S',
       help: 'Akali will store files under this path',
       valueHelp: 'path',
       defaultsTo: '/data/akali',
     )
-    ..addFlag(
+    ..addOption(
       "debug",
       abbr: "d",
-      help: "Run Akali in debug mode (does not affect anything for now)",
-      negatable: false,
+      help:
+          "Run Akali in debug mode. Will enable hot reloading, and probably other features in the future. This option is only usable when running from a clone of the repository with '--observe=<port>' on.",
+      valueHelp: 'port',
     )
     ..addFlag(
       "version",
@@ -67,6 +71,8 @@ Future main(List<String> args) async {
     1,
     serverPort: int.tryParse(runConf['port']),
     databaseUri: runConf['database'].toString(),
+    fileStoragePath: runConf['storage-path'],
+    useLocalFileStorage: true,
   );
   await loadBalancer.init();
 }

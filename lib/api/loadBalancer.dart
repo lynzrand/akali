@@ -71,10 +71,14 @@ class AkaliLoadBalancer {
 
     _runners.forEach(
       (i) => i
-          .run<void, AkaliIsolateArgs>(
-            createIsolateFunction,
-            AkaliIsolateArgs(port: serverPort, databaseUri: databaseUri),
-          )
+          .run(
+              createIsolateFunction,
+              AkaliIsolateArgs(
+                port: serverPort,
+                databaseUri: databaseUri,
+                useLocalFileStorage: useLocalFileStorage,
+                fileStoragePath: fileStoragePath,
+              ))
           .catchError(
             (e) => _runnerCrashCallback(i, e),
           ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:mongo_dart/mongo_dart.dart';
 import 'pic.dart';
@@ -21,15 +22,30 @@ class AkaliDatabase {
   Future<void> init() async {
     if (_initialized) return;
     _initialized = true;
-    print('[AkaliDB] Connecting to $uri');
-    db = new Db(uri);
-    try {
-      await db.open();
-    } catch (e) {
-      print(e);
-      throw e;
+
+    int tryTimes = 0;
+    const maxTryTimes = 5;
+
+    while (tryTimes < maxTryTimes) {
+      print('[AkaliDB] Connecting to $uri');
+      db = new Db(uri);
+      try {
+        await db.open();
+        break;
+      } catch (e) {
+        print('[AkaliDB] Unable to connect database. Error: $e');
+        print('[AkaliDB] Retrying after 1 second.');
+        await Future.delayed(Duration(seconds: 1));
+        tryTimes++;
+      }
+    }
+    if (tryTimes >= maxTryTimes) {
+      print('[AkaliDB] Unable to connect database. Giving up...');
+      exit(25);
     }
     print('[AkaliDB] Connected to $uri');
+
+    // Initialize collections
     picCollection = db.collection('pic');
     pendingPicCollection = db.collection('pendingPic');
     userCollection = db.collection('user');
@@ -71,7 +87,7 @@ class AkaliDatabase {
     ObjectId id = ObjectId();
     await pendingPicCollection.insert({
       "_id": id,
-      "link": blobLink,
+      "link": blobLink + '/' + id.toHexString() + '.png',
     });
     return id.toHexString();
   }

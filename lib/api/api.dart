@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'dart:convert';
 
 import 'package:rpc/rpc.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 
 import 'package:akali/data/db.dart';
 import 'package:akali/data/pic.dart';
@@ -97,11 +98,15 @@ class AkaliApi {
     return VoidMessage();
   }
 
-  @ApiMethod(name: 'Post image file', method: 'POST', path: 'img')
+  @ApiMethod(name: 'Post image file', method: 'PUT', path: 'img')
   Future<ImagePostRequestResponse> postImageFile(List<int> blob) async {
-    String blobLink;
+    String blobLink = '$fileStoragePath/img';
     // TODO: put blob to some link
     var token = await db.addPendingImage(blobLink);
+    var file = File('$blobLink/$token.png');
+    await file.create();
+    await file.writeAsBytes(blob);
+    blobLink = file.path; // for DEBUG use.
     return ImagePostRequestResponse()
       ..token = token
       ..imageLink = blobLink;
