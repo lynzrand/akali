@@ -6,7 +6,7 @@ import 'dart:io';
 
 class AkaliHotReloader {
   _init() {
-    print('Akali is running in debug mode! Press "r" to hot reload.');
+    print('Akali is running in debug mode! Press ' r' to hot reload.');
   }
 
   _reload() {}

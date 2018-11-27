@@ -22,5 +22,5 @@ class Configuration {
   /// The name of the picture collection
   ///
   /// TODO: change this.
-  static String pictureCollectionName = "pic";
+  static String pictureCollectionName = 'pic';
 }

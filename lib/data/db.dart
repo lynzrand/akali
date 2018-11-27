@@ -69,7 +69,7 @@ class AkaliDatabase {
 
   /// Search for image(s) meeting the criteria [crit].
   Future<List<Pic>> searchForImage(ImageSearchCriteria crit) async {
-    return (await picCollection.find({"tags": crit.tags}).toList()).map(
+    return (await picCollection.find({'tags': crit.tags}).toList()).map(
       (item) => Pic.fromMap(item),
     );
   }
@@ -86,8 +86,8 @@ class AkaliDatabase {
   Future<String> addPendingImage(String blobLink) async {
     ObjectId id = ObjectId();
     await pendingPicCollection.insert({
-      "_id": id,
-      "link": blobLink + '/' + id.toHexString() + '.png',
+      '_id': id,
+      'link': blobLink + '/' + id.toHexString() + '.png',
     });
     return id.toHexString();
   }

@@ -79,19 +79,19 @@ class Pic {
 
   Map<String, dynamic> toMap() {
     return {
-      "_id": id,
-      "title": title,
-      "desc": desc,
-      "author": author,
-      "uploaderId": uploaderId,
-      "link": link,
-      "fileSize": fileSize,
-      "width": width,
-      "height": height,
-      "previewLink": previewLink,
-      "previewWidth": previewWidth,
-      "previewHeight": previewHeight,
-      "tags": tags,
+      '_id': id,
+      'title': title,
+      'desc': desc,
+      'author': author,
+      'uploaderId': uploaderId,
+      'link': link,
+      'fileSize': fileSize,
+      'width': width,
+      'height': height,
+      'previewLink': previewLink,
+      'previewWidth': previewWidth,
+      'previewHeight': previewHeight,
+      'tags': tags,
     };
   }
 

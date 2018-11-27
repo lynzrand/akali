@@ -55,9 +55,9 @@ class AkaliLoadBalancer {
     this.serverPort = 8086,
     this.maxCrashCount = 10,
     this.createIsolateFunction = createAkaliIsolate,
-    this.databaseUri = "127.0.0.1:27017",
+    this.databaseUri = '127.0.0.1:27017',
     this.useLocalFileStorage = true,
-    this.fileStoragePath = "/data/akali",
+    this.fileStoragePath = '/data/akali',
   }) {
     port = ReceivePort();
     _crashCount = new List<int>.filled(isolateCount, 0);
@@ -105,7 +105,7 @@ class AkaliLoadBalancer {
             fileStoragePath: fileStoragePath,
           ));
     } else {
-      print("Isolate #$i crashed too many times. Shutting down.");
+      print('Isolate #$i crashed too many times. Shutting down.');
     }
   }
 }
@@ -186,17 +186,17 @@ class AkaliIsolate {
   _handleRequest(HttpRequest req) {
     // TODO: put this to logger too
     print(
-        "#$isolateName: ${req.connectionInfo.remoteAddress} ${req.method} ${req.requestedUri}");
+        '#$isolateName: ${req.connectionInfo.remoteAddress} ${req.method} ${req.requestedUri}');
     _apiServer.httpRequestHandler(req);
   }
 
   void _handleRequestDone() {
     // TODO: and this
-    print("#$isolateName: done");
+    print('#$isolateName: done');
   }
 
   void _handleRequestError(dynamic error, StackTrace stackTrace) {
     // TODO: and also this.
-    print("#$isolateName: ERROR!\n$error\n$stackTrace");
+    print('#$isolateName: ERROR!\n$error\n$stackTrace');
   }
 }
