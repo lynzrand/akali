@@ -7,6 +7,8 @@ import 'package:args/args.dart';
 import 'package:akali/config.dart';
 import 'package:akali/akali.dart';
 
+import 'package:aqueduct/aqueduct.dart';
+
 const String _akaliVersion = "0.0.1";
 
 Future main(List<String> args) async {
@@ -34,6 +36,13 @@ Future main(List<String> args) async {
       help: 'Akali will store files under this path',
       valueHelp: 'path',
       defaultsTo: '/data/akali',
+    )
+    ..addOption(
+      "isolates",
+      abbr: 'i',
+      help: 'Run Akali with <number> isolates',
+      valueHelp: 'number',
+      defaultsTo: '1',
     )
     ..addOption(
       "debug",
@@ -67,12 +76,28 @@ Future main(List<String> args) async {
 
   // TODO: add configuration file reader
 
-  var loadBalancer = AkaliLoadBalancer(
-    1,
-    serverPort: int.tryParse(runConf['port']),
-    databaseUri: runConf['database'].toString(),
-    fileStoragePath: runConf['storage-path'],
-    useLocalFileStorage: true,
+  var app = Application<AkaliApi>();
+  app.options
+    ..context = {
+      "databaseUri": runConf['database'].toString(),
+      "fileStoragePath": runConf['storage-path'],
+      "useLocalFileStorage": true,
+    }
+    ..port = int.tryParse(runConf['port'])
+    ..address = InternetAddress.anyIPv6;
+
+  await app.start(
+    numberOfInstances: int.parse(runConf['isolates']),
   );
-  await loadBalancer.init();
+
+  // Deprecated code. Once switched to Aqueduct, they will be deleted.
+  // _____
+  // var loadBalancer = AkaliLoadBalancer(
+  //   1,
+  //   serverPort: int.tryParse(runConf['port']),
+  //   databaseUri: runConf['database'].toString(),
+  //   fileStoragePath: runConf['storage-path'],
+  //   useLocalFileStorage: true,
+  // );
+  // await loadBalancer.init();
 }

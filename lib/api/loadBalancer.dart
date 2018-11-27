@@ -163,10 +163,10 @@ class AkaliIsolate {
     await _db.init();
 
     _apiServer = ApiServer();
-    _apiServer.addApi(AkaliApi(
-      db: _db,
-      fileStoragePath: fileStoragePath,
-    ));
+    // _apiServer.addApi(AkaliApi(
+    //   db: _db,
+    //   fileStoragePath: fileStoragePath,
+    // ));
 
     _server =
         await HttpServer.bind(InternetAddress.anyIPv4, port, shared: true);

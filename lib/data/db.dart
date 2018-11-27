@@ -13,9 +13,9 @@ class AkaliDatabase {
   ///
   /// Remember to call [init] after creating a new [AkaliDatabase] instance.
   AkaliDatabase(this.uri) {
+    assert(this.uri != null);
     // A simple check for valid mongodb address and fixes if it's not
     if (!uri.startsWith('mongodb://')) uri = 'mongodb://' + uri;
-    init();
   }
 
   /// Initialize database connection.

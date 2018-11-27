@@ -17,6 +17,8 @@ environment:
 - Dart VM: `^2.1.0`
 - MongoDB: `^3.6.0`
 
+
+
 ## Usage
 
 With your database running, run:
@@ -56,7 +58,18 @@ See [./docs/api/readme.md]().
 
 Because Dart is easy (and fluent!) to write while still having a relatively high performance (compared to, maybe, PHP and older solutions?). We may consider rewriting this project or create another compatible project using Go, but Dart is enough for now.
 
-### 
+### And why Aqueduct?
+
+Because Aqueduct is one of the best HTTP server frameworks we could find in Dart which:
+
+- Has high performance;
+- Supports multithreading;
+- Is flexible enough to add custom features;
+- Is easy to write server logic with.
+
+### Will we be able to migrate from Danbooru to Akali?
+
+We are thinking of making it compatible with Danbooru databases in the future, but we are focusing on other aspects for now.
 
 ## License
 

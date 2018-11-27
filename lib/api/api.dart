@@ -9,54 +9,73 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'package:akali/data/db.dart';
 import 'package:akali/data/pic.dart';
 
-/// Akali's default API.
-@ApiClass(
-  name: 'api',
-  version: 'v1',
-)
-class AkaliApi {
-  /// Database that this API connects on.
-  AkaliDatabase db;
+import 'package:aqueduct/aqueduct.dart';
 
+/// Akali's default API.
+class AkaliApi extends ApplicationChannel {
+  ManagedContext context;
+
+  int port;
+  int isolateName;
+
+  String databaseUri;
+  AkaliDatabase _db;
+
+  bool useLocalFileStorage;
   String fileStoragePath;
 
-  AkaliApi({
-    this.db,
-    this.fileStoragePath,
-  });
+  AkaliApi();
+
+  @override
+  Future prepare() async {
+    databaseUri = options.context['databaseUri'];
+    _db = AkaliDatabase(databaseUri);
+    await _db.init();
+  }
+
+  @override
+  Controller get entryPoint {
+    final router = Router();
+
+    router..route('/api/v1/img/[:id]').link(() => ImgRequestHandler(_db));
+
+    return router;
+  }
+}
+
+class ImgRequestHandler extends ResourceController {
+  AkaliDatabase db;
+
+  ImgRequestHandler(this.db);
 
   /// GETs a picture by the following criteria:
   ///
   /// List separated with "+": [tags], [author]
   ///
   /// Integers: [minWidth], [maxWidth], [minHeight], [maxHeight]
-  @ApiMethod(name: 'Search image by query', method: 'GET', path: 'img')
+  // @ApiMethod(name: 'Search image by query', method: 'GET', path: 'img')
   // Future<List<Pic>> getPicByQuery({
   // ## Current workaround: call custon toJson() and return a string, instead of
   // returning the object and let rpc do the job.
-  Future<MediaMessage> listPicByQuery({
-    String tags,
-    String author,
-    int minWidth,
-    int maxWidth,
-    int minHeight,
-    int maxHeight,
-    String minAspectRatioStr,
-    String maxAspectRatioStr,
-    bool pretty = false,
+  @Operation.get()
+  Future<Response> listPicByQuery({
+    @Bind.query('tags') String tags,
+    @Bind.query('author') String author,
+    @Bind.query('size') String sizeCriteria,
+    @Bind.query('pretty') bool pretty = false,
   }) async {
     List<String> tagsList;
-    List<String> authorList;
-    double minAspectRatio;
-    double maxAspectRatio;
+    // List<String> authorList;
+    // double minAspectRatio;
+    // double maxAspectRatio;
     try {
       // Please note that seen by the server, query "xxx+yyy" is the same as "xxx yyy".
       tagsList = tags?.split(" ");
-      authorList = author?.split(" ");
-      if (minAspectRatioStr != null)
-        minAspectRatio = double.tryParse(minAspectRatioStr);
-      if (maxAspectRatioStr != null)
-        maxAspectRatio = double.tryParse(maxAspectRatioStr);
+      // authorList = author?.split(" ");
+      // if (minAspectRatioStr != null)
+      //   minAspectRatio = double.tryParse(minAspectRatioStr);
+      // if (maxAspectRatioStr != null)
+      //   maxAspectRatio = double.tryParse(maxAspectRatioStr);
     } catch (e, stacktrace) {
       throw BadRequestError(e.toString() + "\n" + stacktrace.toString());
     }
@@ -72,16 +91,14 @@ class AkaliApi {
           // .map((i) => Pic.fromMap(i))
           // .map((i) => jsonEncode(i))
           .toList();
-      return MediaMessage()
-        ..bytes = JsonUtf8Encoder(pretty ? "  " : null).convert(searchResults);
+      return Response.ok(searchResults)..contentType = ContentType.json;
     } catch (e, stack) {
       print(e);
       print(stack);
       throw e;
     }
   }
-
-  @ApiMethod(name: 'Get image from file', method: 'GET', path: 'img/get/{id}')
+/*
   Future<MediaMessage> getImageFile(String id) async {
     // TODO: add file manager for remote file redirections if needed
     var file = File('$fileStoragePath/img/$id.png');
@@ -92,13 +109,11 @@ class AkaliApi {
     return msg;
   }
 
-  @ApiMethod(name: 'Post image data', method: 'POST', path: 'img/data/{token}')
   Future<VoidMessage> postImageData(String token, Pic pic) async {
     await db.postImageData(pic);
     return VoidMessage();
   }
 
-  @ApiMethod(name: 'Post image file', method: 'PUT', path: 'img')
   Future<ImagePostRequestResponse> postImageFile(List<int> blob) async {
     String blobLink = '$fileStoragePath/img';
     // TODO: put blob to some link
@@ -111,6 +126,7 @@ class AkaliApi {
       ..token = token
       ..imageLink = blobLink;
   }
+  */
 }
 
 class ImagePostRequestResponse {
