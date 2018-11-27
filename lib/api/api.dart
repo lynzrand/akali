@@ -50,7 +50,7 @@ class ImgRequestHandler extends ResourceController {
 
   /// GETs a picture by the following criteria:
   ///
-  /// List separated with "+": [tags], [author]
+  /// List separated with '+': [tags], [author]
   ///
   /// Integers: [minWidth], [maxWidth], [minHeight], [maxHeight]
   // @ApiMethod(name: 'Search image by query', method: 'GET', path: 'img')
@@ -63,41 +63,62 @@ class ImgRequestHandler extends ResourceController {
     @Bind.query('author') String author,
     @Bind.query('size') String sizeCriteria,
     @Bind.query('pretty') bool pretty = false,
+    @Bind.query('limit') int limit = 20,
+    @Bind.query('skip') int skip = 0,
   }) async {
     List<String> tagsList;
-    // List<String> authorList;
+    List<String> authorList;
     // double minAspectRatio;
     // double maxAspectRatio;
     try {
-      // Please note that seen by the server, query "xxx+yyy" is the same as "xxx yyy".
-      tagsList = tags?.split(" ");
-      // authorList = author?.split(" ");
+      // Please note that seen by the server, query 'xxx+yyy' is the same as 'xxx yyy'.
+      tagsList = tags?.split(' ');
+      authorList = author?.split(' ');
+      // TODO: Add size search
       // if (minAspectRatioStr != null)
       //   minAspectRatio = double.tryParse(minAspectRatioStr);
       // if (maxAspectRatioStr != null)
       //   maxAspectRatio = double.tryParse(maxAspectRatioStr);
     } catch (e, stacktrace) {
-      throw BadRequestError(e.toString() + "\n" + stacktrace.toString());
+      throw BadRequestError(e.toString() + '\n' + stacktrace.toString());
     }
     Map<String, dynamic> searchQuery = {};
 
     // Search for specific tags
     if (tagsList?.isNotEmpty ?? false)
-      searchQuery["tags"] = {"\$all": tagsList};
+      searchQuery['tags'] = {'\$all': tagsList};
+
+    if (authorList?.isNotEmpty ?? false)
+      searchQuery['author'] = {'\$or': authorList};
 
     try {
       var searchResults = await db.picCollection
-          .find(searchQuery)
-          // .map((i) => Pic.fromMap(i))
-          // .map((i) => jsonEncode(i))
+          .find(where.raw(searchQuery).limit(limit).skip(skip))
           .toList();
       return Response.ok(searchResults)..contentType = ContentType.json;
     } catch (e, stack) {
       print(e);
       print(stack);
-      throw e;
+      return Response.serverError(body: {
+        'error': e,
+        'message': 'PLEASE REPORT THIS INCIDENT TO WEBSITE ADMIN!',
+        'stackTrace': stack,
+      });
     }
   }
+
+  @Operation.get('id')
+  Future<Response> getImage(@Bind.path('id') String id) async {
+    var _id;
+    try {
+      _id = ObjectId.fromHexString(id);
+    } catch (e) {
+      return Response.badRequest(body: {'error': 'Bad id number'});
+    }
+    var result = await db.picCollection.findOne(where.id(_id));
+    return Response.ok(result)..contentType = ContentType.json;
+  }
+
 /*
   Future<MediaMessage> getImageFile(String id) async {
     // TODO: add file manager for remote file redirections if needed
