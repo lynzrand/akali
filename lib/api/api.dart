@@ -3,13 +3,13 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 
-import 'package:rpc/rpc.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 import 'package:akali/data/db.dart';
 import 'package:akali/data/pic.dart';
 
 import 'package:aqueduct/aqueduct.dart';
+import 'package:aqueduct/managed_auth.dart';
 
 /// Akali's default API.
 class AkaliApi extends ApplicationChannel {
@@ -24,6 +24,8 @@ class AkaliApi extends ApplicationChannel {
   bool useLocalFileStorage;
   String fileStoragePath;
 
+  AuthServer authServer;
+
   AkaliApi();
 
   @override
@@ -32,19 +34,36 @@ class AkaliApi extends ApplicationChannel {
     _db = AkaliDatabase(databaseUri, logger);
     await _db.init();
 
+    final authDelegate = ManagedAuthDelegate(context);
+    authServer = AuthServer(authDelegate);
+
+    // logger.onRecord.listen(_handleLog);
+
     logger.info("Akali listening on ${options.address}:${options.port}");
+  }
+
+  void _handleLog(LogRecord rec) {
+    print(rec);
   }
 
   @override
   Controller get entryPoint {
-    final router = Router();
+    final router = Router(basePath: '/api/v1');
 
-    router
-      ..route('/api/v1/img/[:id]').link(() => ImgRequestHandler(_db, logger));
+    router.route('/img/[:id]').link(() => ImgRequestHandler(_db, logger));
+
+    router.route('/auth/token').link(() => AuthController(authServer));
 
     return router;
   }
+
+  Request handle(Request req) {
+    logger.fine(req);
+    return req;
+  }
 }
+
+class AkaliAuthDelegate<T> {}
 
 class ImgRequestHandler extends ResourceController {
   AkaliDatabase db;
@@ -84,7 +103,7 @@ class ImgRequestHandler extends ResourceController {
       // if (maxAspectRatioStr != null)
       //   maxAspectRatio = double.tryParse(maxAspectRatioStr);
     } catch (e, stacktrace) {
-      throw BadRequestError(e.toString() + '\n' + stacktrace.toString());
+      throw Response.badRequest(body: {'error': e, 'stacktrace': stacktrace});
     }
     Map<String, dynamic> searchQuery = {};
 
@@ -131,7 +150,6 @@ class ImgRequestHandler extends ResourceController {
   ]) async {
     // TODO: authorization
     var _id = ObjectId.fromHexString(id);
-    // var document = jsonDecode(newInfo);
     var result;
     try {
       result = await db.picCollection.update(where.id(_id), newInfo);

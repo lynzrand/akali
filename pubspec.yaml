@@ -8,7 +8,7 @@ authors:
   - ztl
 
 dependencies:
-  rpc: any
+  # rpc: any
   aqueduct: any
   yaml: ^2.1.15
   ulid: any

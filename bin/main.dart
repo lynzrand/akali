@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:cli';
-import 'package:rpc/rpc.dart';
+
 import 'package:args/args.dart';
 
 import 'package:akali/config.dart';
@@ -85,8 +85,6 @@ Future main(List<String> args) async {
     }
     ..port = int.tryParse(runConf['port'])
     ..address = InternetAddress.anyIPv6;
-
-  app.logger.level = Level.ALL;
 
   await app.start(
     numberOfInstances: int.parse(runConf['isolates']),
