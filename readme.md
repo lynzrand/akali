@@ -1,4 +1,4 @@
-# ![Akali](res/akali_logo_long.svg)
+# ![Akali](res/akali_logo_long.png)
 
 **AKALI IS NOT USABLE YET. KEY FEATURES NOT IMPLEMENTED.**
 
@@ -48,7 +48,7 @@ We will introduce other run methods in the future, like using a configuration fi
 
 ## APIs
 
-See [./docs/api/readme.md]().
+See [docs/api/readme.md]().
 
 ## FAQ
 
