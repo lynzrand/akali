@@ -6,6 +6,7 @@ import 'pic.dart';
 import 'package:akali/config.dart';
 
 // TODO: Add abstract database class, so that one could add custom implementaion
+abstract class _AkaliDatabase {}
 
 /// Akali's default database implementation, using MongoDB
 class AkaliDatabase {
@@ -63,14 +64,14 @@ class AkaliDatabase {
 
   /// Post a new image to database. Returns the written confirmation.
   Future<void> postImageData(Pic pic) async {
-    var map = await picCollection.insert(pic.toMap());
+    var map = await picCollection.insert(pic.asMap());
     return map;
   }
 
   /// Search for image(s) meeting the criteria [crit].
   Future<List<Pic>> searchForImage(ImageSearchCriteria crit) async {
     return (await picCollection.find({'tags': crit.tags}).toList()).map(
-      (item) => Pic.fromMap(item),
+      (item) => Pic.readFromMap(item),
     );
   }
 
@@ -78,7 +79,7 @@ class AkaliDatabase {
   ///
   /// Preferably used when viewing specific pictures.
   Future<Pic> getImageById(ObjectId id) async {
-    return Pic.fromMap(await picCollection.findOne(where.id(id)));
+    return Pic.readFromMap(await picCollection.findOne(where.id(id)));
   }
 
   /// Adds an image with link [blobLink] and no info related
@@ -93,8 +94,4 @@ class AkaliDatabase {
   }
 
   Future addInfoToPendingImage(Pic info) {}
-}
-
-class ImageSearchCriteria {
-  List<String> tags;
 }

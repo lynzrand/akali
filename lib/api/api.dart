@@ -119,6 +119,24 @@ class ImgRequestHandler extends ResourceController {
     return Response.ok(result)..contentType = ContentType.json;
   }
 
+  @Operation.put('id')
+  Future<Response> putImage(
+    @Bind.path('id') String id,
+    @Bind.body() Pic newInfo, [
+    @Bind.query('access_token') String token,
+  ]) async {
+    // TODO: authorization
+    var _id = ObjectId.fromHexString(id);
+    // var document = jsonDecode(newInfo);
+    var result;
+    try {
+      result = await db.picCollection.update(where.id(_id), newInfo);
+    } catch (e) {
+      return Response.badRequest(body: {'error': e, 'message': result});
+    }
+    return Response.ok(result);
+  }
+
 /*
   Future<MediaMessage> getImageFile(String id) async {
     // TODO: add file manager for remote file redirections if needed
