@@ -31,7 +31,7 @@ class AkaliApi extends ApplicationChannel {
   @override
   Future prepare() async {
     databaseUri = options.context['databaseUri'];
-    _db = AkaliDatabase(databaseUri, logger);
+    _db = AkaliMongoDatabase(databaseUri, logger);
     await _db.init();
 
     final authDelegate = ManagedAuthDelegate(context);
@@ -66,7 +66,7 @@ class AkaliApi extends ApplicationChannel {
 class AkaliAuthDelegate<T> {}
 
 class ImgRequestHandler extends ResourceController {
-  AkaliDatabase db;
+  AkaliMongoDatabase db;
   Logger logger;
 
   ImgRequestHandler(this.db, this.logger);
