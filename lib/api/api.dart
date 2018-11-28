@@ -29,15 +29,18 @@ class AkaliApi extends ApplicationChannel {
   @override
   Future prepare() async {
     databaseUri = options.context['databaseUri'];
-    _db = AkaliDatabase(databaseUri);
+    _db = AkaliDatabase(databaseUri, logger);
     await _db.init();
+
+    logger.info("Akali listening on ${options.address}:${options.port}");
   }
 
   @override
   Controller get entryPoint {
     final router = Router();
 
-    router..route('/api/v1/img/[:id]').link(() => ImgRequestHandler(_db));
+    router
+      ..route('/api/v1/img/[:id]').link(() => ImgRequestHandler(_db, logger));
 
     return router;
   }
@@ -45,8 +48,9 @@ class AkaliApi extends ApplicationChannel {
 
 class ImgRequestHandler extends ResourceController {
   AkaliDatabase db;
+  Logger logger;
 
-  ImgRequestHandler(this.db);
+  ImgRequestHandler(this.db, this.logger);
 
   /// GETs a picture by the following criteria:
   ///

@@ -86,6 +86,8 @@ Future main(List<String> args) async {
     ..port = int.tryParse(runConf['port'])
     ..address = InternetAddress.anyIPv6;
 
+  app.logger.level = Level.ALL;
+
   await app.start(
     numberOfInstances: int.parse(runConf['isolates']),
   );

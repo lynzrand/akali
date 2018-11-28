@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:mongo_dart/mongo_dart.dart';
-import 'pic.dart';
 import 'package:akali/config.dart';
+import 'package:aqueduct/aqueduct.dart';
+
+import 'pic.dart';
 
 // TODO: Add abstract database class, so that one could add custom implementaion
 abstract class _AkaliDatabase {}
@@ -13,7 +15,7 @@ class AkaliDatabase {
   /// Connect to MongoDB at [uri].
   ///
   /// Remember to call [init] after creating a new [AkaliDatabase] instance.
-  AkaliDatabase(this.uri) {
+  AkaliDatabase(this.uri, this.logger) {
     assert(this.uri != null);
     // A simple check for valid mongodb address and fixes if it's not
     if (!uri.startsWith('mongodb://')) uri = 'mongodb://' + uri;
@@ -28,23 +30,23 @@ class AkaliDatabase {
     const maxTryTimes = 5;
 
     while (tryTimes < maxTryTimes) {
-      print('[AkaliDB] Connecting to $uri');
+      logger.info("$akaliDbPrefix Connecting to $uri");
       db = new Db(uri);
       try {
         await db.open();
         break;
-      } catch (e) {
-        print('[AkaliDB] Unable to connect database. Error: $e');
-        print('[AkaliDB] Retrying after 1 second.');
+      } catch (e, stacktrace) {
+        logger.warning(
+            "$akaliDbPrefix Unable to connect with $uri", e, stacktrace);
         await Future.delayed(Duration(seconds: 1));
         tryTimes++;
       }
     }
     if (tryTimes >= maxTryTimes) {
-      print('[AkaliDB] Unable to connect database. Giving up...');
+      logger.severe("$akaliDbPrefix Unable to connect $uri. Giving up.");
       exit(25);
     }
-    print('[AkaliDB] Connected to $uri');
+    logger.info("$akaliDbPrefix Connected to $uri.");
 
     // Initialize collections
     picCollection = db.collection('pic');
@@ -54,13 +56,17 @@ class AkaliDatabase {
 
   bool _initialized = false;
 
+  Logger logger;
+
   Db db;
   String uri;
-  Configuration config;
+  // Configuration config;
 
   DbCollection picCollection;
   DbCollection pendingPicCollection;
   DbCollection userCollection;
+
+  static const String akaliDbPrefix = "[AkaliDB]";
 
   /// Post a new image to database. Returns the written confirmation.
   Future<void> postImageData(Pic pic) async {
