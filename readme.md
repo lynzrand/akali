@@ -1,4 +1,4 @@
-# akali
+# ![Akali](res/akali_logo_long.svg)
 
 **AKALI IS NOT USABLE YET. KEY FEATURES NOT IMPLEMENTED.**
 
@@ -16,8 +16,6 @@ environment:
 
 - Dart VM: `^2.1.0`
 - MongoDB: `^3.6.0`
-
-
 
 ## Usage
 
