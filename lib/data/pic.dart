@@ -173,7 +173,10 @@ class ImageSearchCriteria {
   }
 
   Map<String, dynamic> asMongoDBQuery() {
-    return {};
+    return {
+      'tags': {'\$all': tags},
+      'author': {'\$any': authors},
+    };
   }
 
   static const int breakpointSmallPic = 960;
