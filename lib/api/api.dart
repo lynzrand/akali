@@ -7,6 +7,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 import 'package:akali/data/db.dart';
 import 'package:akali/data/pic.dart';
+import 'package:akali/data/mongodb.dart';
 
 import 'package:aqueduct/aqueduct.dart';
 import 'package:aqueduct/managed_auth.dart';
