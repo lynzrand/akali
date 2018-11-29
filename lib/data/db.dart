@@ -95,7 +95,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
 
   /// Search for image(s) meeting the criteria [crit].
   Future<List<Pic>> queryImg(ImageSearchCriteria crit) async {
-    return (await picCollection.find({'tags': crit.tags}).toList()).map(
+    return (await picCollection.find(crit.asMongoDBQuery()).toList()).map(
       (item) => Pic.readFromMap(item),
     );
   }

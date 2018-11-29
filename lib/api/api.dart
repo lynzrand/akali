@@ -66,7 +66,7 @@ class AkaliApi extends ApplicationChannel {
 class AkaliAuthDelegate<T> {}
 
 class ImgRequestHandler extends ResourceController {
-  AkaliMongoDatabase db;
+  AkaliDatabase db;
   Logger logger;
 
   ImgRequestHandler(this.db, this.logger);
@@ -85,7 +85,6 @@ class ImgRequestHandler extends ResourceController {
     @Bind.query('tags') String tags,
     @Bind.query('author') String author,
     @Bind.query('size') String sizeCriteria,
-    @Bind.query('pretty') bool pretty = false,
     @Bind.query('limit') int limit = 20,
     @Bind.query('skip') int skip = 0,
   }) async {
@@ -105,19 +104,15 @@ class ImgRequestHandler extends ResourceController {
     } catch (e, stacktrace) {
       throw Response.badRequest(body: {'error': e, 'stacktrace': stacktrace});
     }
-    Map<String, dynamic> searchQuery = {};
+    var searchQuery = ImageSearchCriteria();
 
     // Search for specific tags
-    if (tagsList?.isNotEmpty ?? false)
-      searchQuery['tags'] = {'\$all': tagsList};
+    if (tagsList?.isNotEmpty ?? false) searchQuery.tags = tagsList;
 
-    if (authorList?.isNotEmpty ?? false)
-      searchQuery['author'] = {'\$or': authorList};
+    if (authorList?.isNotEmpty ?? false) searchQuery.authors = authorList;
 
     try {
-      var searchResults = await db.picCollection
-          .find(where.raw(searchQuery).limit(limit).skip(skip))
-          .toList();
+      var searchResults = await db.queryImg(searchQuery);
       return Response.ok(searchResults)..contentType = ContentType.json;
     } catch (e, stack) {
       print(e);
@@ -138,7 +133,7 @@ class ImgRequestHandler extends ResourceController {
     } catch (e) {
       return Response.badRequest(body: {'error': 'Bad id number'});
     }
-    var result = await db.picCollection.findOne(where.id(_id));
+    var result = await db.queryImgID(_id);
     return Response.ok(result)..contentType = ContentType.json;
   }
 
@@ -152,7 +147,7 @@ class ImgRequestHandler extends ResourceController {
     var _id = ObjectId.fromHexString(id);
     var result;
     try {
-      result = await db.picCollection.update(where.id(_id), newInfo);
+      result = await db.updateImgInfo(newInfo, _id);
     } catch (e) {
       return Response.badRequest(body: {'error': e, 'message': result});
     }
