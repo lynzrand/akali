@@ -12,6 +12,8 @@ import 'package:akali/data/mongodb.dart';
 import 'package:aqueduct/aqueduct.dart';
 import 'package:aqueduct/managed_auth.dart';
 
+import 'fs.dart';
+
 /// Akali's default API.
 class AkaliApi extends ApplicationChannel {
   ManagedContext context;
@@ -21,6 +23,9 @@ class AkaliApi extends ApplicationChannel {
 
   String databaseUri;
   AkaliDatabase _db;
+
+  String rootPath;
+  AkaliFileManager fileManager;
 
   bool useLocalFileStorage;
   String fileStoragePath;
@@ -51,9 +56,11 @@ class AkaliApi extends ApplicationChannel {
   Controller get entryPoint {
     final router = Router(basePath: '/api/v1');
 
-    router.route('/img/[:id]').link(() => ImgRequestHandler(_db, logger));
+    router
+        .route('/img/[:id]')
+        .link(() => ImgRequestHandler(_db, fileManager, logger));
 
-    router.route('/auth/token').link(() => AuthController(authServer));
+    router.route('/auth').link(() => AuthController(authServer));
 
     return router;
   }
@@ -68,9 +75,10 @@ class AkaliAuthDelegate<T> {}
 
 class ImgRequestHandler extends ResourceController {
   AkaliDatabase db;
+  AkaliFileManager fileManager;
   Logger logger;
 
-  ImgRequestHandler(this.db, this.logger);
+  ImgRequestHandler(this.db, this.fileManager, this.logger);
 
   /// GETs a picture by the following criteria:
   ///
@@ -126,6 +134,9 @@ class ImgRequestHandler extends ResourceController {
     }
   }
 
+  /// GET /img/[id]
+  ///
+  /// GETs the information of image [id]
   @Operation.get('id')
   Future<Response> getImage(@Bind.path('id') String id) async {
     var _id;
@@ -136,6 +147,24 @@ class ImgRequestHandler extends ResourceController {
     }
     var result = await db.queryImgID(_id);
     return Response.ok(result)..contentType = ContentType.json;
+  }
+
+  /// POST /img
+  ///
+  /// POSTs a new file to Akali server. Returns whether this operation is
+  /// successful, and the address to PUT/POST the image metadata to.
+  @Operation.post()
+  Future<Response> postNewImage(
+    @Bind.body() List<int> file,
+    @Bind.header('Content-Type') String fileType,
+    Request req,
+  ) async {
+    var id = ObjectId();
+    // The following code is only for DEBUG use
+    print(fileType);
+
+    // await fileManager.streamFileTo('img/${id.toHexString()}', file);
+    return Response.ok(id.toHexString());
   }
 
   @Operation.put('id')
@@ -154,6 +183,9 @@ class ImgRequestHandler extends ResourceController {
     }
     return Response.ok(result);
   }
+
+  @Operation.delete('id')
+  Future<Response> deleteImageId(@Bind.path('id') String id) {}
 
 /*
   Future<MediaMessage> getImageFile(String id) async {

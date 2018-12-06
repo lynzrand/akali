@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 
 abstract class AkaliFileManager {
-  FutureOr<FileManagementResponse> saveFile(
+  FutureOr<FileManagementResponse> streamFileFrom(
       Stream<List<int>> file, String path);
 }
 
@@ -16,7 +16,7 @@ class AkaliLocalFileManager implements AkaliFileManager {
   AkaliLocalFileManager(this.rootPath);
 
   @override
-  Future<FileManagementResponse> saveFile(
+  Future<FileManagementResponse> streamFileFrom(
     Stream<List<int>> file,
     String path,
   ) async {
