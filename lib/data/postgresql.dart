@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:akali/config.dart';
 import 'package:aqueduct/aqueduct.dart';
 import 'package:ulid/ulid.dart';
 
-import 'pic.dart';
-import 'db.dart';
+import 'package:akali/config.dart';
+import 'package:akali/models.dart';
 
 class AkaliPostgreSqlDb implements AkaliDatabase {
   @override

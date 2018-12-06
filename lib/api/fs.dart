@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'dart:async';
 
+/// Base class for File Managers in Akali
 abstract class AkaliFileManager {
+  /// Takes a binary input stream and pipe into the designated file
+  /// in the image folder
   FutureOr<FileManagementResponse> streamImageFileFrom(
       Stream<List<int>> file, String fileName);
 }
@@ -12,6 +15,7 @@ class FileManagementResponse {
   Map<String, dynamic> data;
 }
 
+/// Defaule file manager. Stores files in a local directory.
 class AkaliLocalFileManager implements AkaliFileManager {
   final String rootPath;
   final String webRootPath;
@@ -34,6 +38,7 @@ class AkaliLocalFileManager implements AkaliFileManager {
   }
 }
 
+/// Simple file manager for testing purposes
 class AkaliMockupFileManager implements AkaliFileManager {
   @override
   Future<FileManagementResponse> streamImageFileFrom(
