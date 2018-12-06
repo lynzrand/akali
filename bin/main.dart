@@ -35,7 +35,7 @@ Future main(List<String> args) async {
       abbr: 'S',
       help: 'Akali will store files under this path',
       valueHelp: 'path',
-      defaultsTo: '/data/akali',
+      defaultsTo: './akali/',
     )
     ..addOption(
       'web-root-path',
