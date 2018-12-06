@@ -38,6 +38,12 @@ Future main(List<String> args) async {
       defaultsTo: '/data/akali',
     )
     ..addOption(
+      'web-root-path',
+      help: 'Akali will assume your site is under this path',
+      valueHelp: 'path',
+      defaultsTo: 'http://localhost:8086/',
+    )
+    ..addOption(
       'isolates',
       abbr: 'i',
       help: 'Run Akali with <number> isolates',
@@ -74,6 +80,8 @@ Future main(List<String> args) async {
     return;
   }
 
+  RequestBody.maxSize = 100 * 1024 * 1024;
+
   // TODO: add configuration file reader
 
   var app = Application<AkaliApi>();
@@ -81,6 +89,7 @@ Future main(List<String> args) async {
     ..context = {
       'databaseUri': runConf['database'].toString(),
       'fileStoragePath': runConf['storage-path'],
+      'webRootPath': runConf['web-root-path'],
       'useLocalFileStorage': true,
     }
     ..port = int.tryParse(runConf['port'])

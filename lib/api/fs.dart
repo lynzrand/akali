@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:async';
 
 abstract class AkaliFileManager {
-  FutureOr<FileManagementResponse> streamFileFrom(
-      Stream<List<int>> file, String path);
+  FutureOr<FileManagementResponse> streamImageFileFrom(
+      Stream<List<int>> file, String fileName);
 }
 
 class FileManagementResponse {
@@ -14,20 +14,39 @@ class FileManagementResponse {
 
 class AkaliLocalFileManager implements AkaliFileManager {
   final String rootPath;
+  final String webRootPath;
+  static const String imgPath = 'img/';
 
-  AkaliLocalFileManager(this.rootPath);
+  AkaliLocalFileManager(this.rootPath, this.webRootPath);
 
   @override
-  Future<FileManagementResponse> streamFileFrom(
+  Future<FileManagementResponse> streamImageFileFrom(
     Stream<List<int>> file,
-    String path,
+    String fileName,
   ) async {
-    var f = File(rootPath + path);
+    var f = File(rootPath + imgPath + fileName);
     var writeSink = f.openWrite();
     await file.pipe(writeSink);
     await writeSink.close();
     return FileManagementResponse()
       ..success = true
-      ..path = rootPath + path;
+      ..path = webRootPath + imgPath + fileName;
+  }
+}
+
+class AkaliMockupFileManager implements AkaliFileManager {
+  @override
+  Future<FileManagementResponse> streamImageFileFrom(
+    Stream<List<int>> file,
+    String fileName,
+  ) async {
+    print(fileName);
+    await for (var chunk in file) {
+      print(chunk);
+    }
+    print('done!');
+    return FileManagementResponse()
+      ..success = true
+      ..path = fileName;
   }
 }

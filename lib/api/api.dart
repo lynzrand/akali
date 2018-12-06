@@ -29,6 +29,7 @@ class AkaliApi extends ApplicationChannel {
 
   bool useLocalFileStorage;
   String fileStoragePath;
+  String webRootPath;
 
   AuthServer authServer;
 
@@ -39,6 +40,10 @@ class AkaliApi extends ApplicationChannel {
     databaseUri = options.context['databaseUri'];
     _db = AkaliMongoDatabase(databaseUri, logger);
     await _db.init();
+
+    fileStoragePath = options.context['fileStoragePath'];
+    webRootPath = options.context['webRootPath'];
+    fileManager = AkaliLocalFileManager(fileStoragePath, webRootPath);
 
     final authDelegate = ManagedAuthDelegate(context);
     authServer = AuthServer(authDelegate);
@@ -58,7 +63,7 @@ class AkaliApi extends ApplicationChannel {
 
     router
         .route('/img/[:id]')
-        .link(() => ImgRequestHandler(_db, fileManager, logger));
+        .link(() => ImgRequestHandler(_db, fileManager, logger, webRootPath));
 
     router.route('/auth').link(() => AuthController(authServer));
 
@@ -78,7 +83,24 @@ class ImgRequestHandler extends ResourceController {
   AkaliFileManager fileManager;
   Logger logger;
 
-  ImgRequestHandler(this.db, this.fileManager, this.logger);
+  String webRootPath;
+
+  ImgRequestHandler(this.db, this.fileManager, this.logger, this.webRootPath);
+
+  /// Workaround for handling special behaviors
+  ///
+  /// This method should only be used in special cases like
+  /// dealing with an uploading file (...)
+  @override
+  FutureOr<RequestOrResponse> handle(Request request) async {
+    // File uploading is redirected
+    if ((request.method == 'POST' || request.method == 'PUT') &&
+        request.path.variables['id'] == null) {
+      await _customHandleUploadImage(request);
+    }
+    // do the rest of handling
+    return await super.handle(request);
+  }
 
   /// GETs a picture by the following criteria:
   ///
@@ -128,7 +150,7 @@ class ImgRequestHandler extends ResourceController {
       print(stack);
       return Response.serverError(body: {
         'error': e,
-        'message': 'PLEASE REPORT THIS INCIDENT TO WEBSITE ADMIN!',
+        'message': 'Please report this to website admins!',
         'stackTrace': stack,
       });
     }
@@ -143,12 +165,12 @@ class ImgRequestHandler extends ResourceController {
     try {
       _id = ObjectId.fromHexString(id);
     } catch (e) {
-      return Response.badRequest(body: {'error': 'Bad id number'});
+      throw Response.badRequest(body: {'error': 'Bad id number'});
     }
     var result = await db.queryImgID(_id);
     return Response.ok(result)..contentType = ContentType.json;
   }
-
+/*
   /// POST /img
   ///
   /// POSTs a new file to Akali server. Returns whether this operation is
@@ -165,6 +187,33 @@ class ImgRequestHandler extends ResourceController {
 
     // await fileManager.streamFileTo('img/${id.toHexString()}', file);
     return Response.ok(id.toHexString());
+  }
+*/
+
+  Future<Response> _customHandleUploadImage(Request upload) async {
+    // if (upload.raw.headers.value('file-name') == null) {
+    //   throw Response.badRequest(body: {"error": "File name not defined"});
+    // } else
+    if (upload.raw.headers.contentType.primaryType != 'image') {
+      throw Response.badRequest(
+          body: {"error": "You are not uploading an image"});
+    }
+    var id = ObjectId();
+    var path;
+    try {
+      path = await fileManager.streamImageFileFrom(upload.body.bytes,
+          id.toHexString() + '.' + upload.raw.headers.contentType.subType);
+      // return Response.created(path.path);
+    } catch (e, stackTrace) {
+      print(e);
+      print(stackTrace);
+      throw Response.serverError(body: {
+        "error": e,
+        "message": "Please report this to the developers",
+        'stacktrace': stackTrace,
+      });
+    }
+    return Response.created(webRootPath + path);
   }
 
   @Operation.put('id')
