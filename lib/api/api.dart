@@ -156,7 +156,7 @@ class ImgRequestHandler extends ResourceController {
     }
   }
 
-  /// GET /img/[id]
+  /// GET `/img/:id`
   ///
   /// GETs the information of image [id]
   @Operation.get('id')
@@ -190,6 +190,10 @@ class ImgRequestHandler extends ResourceController {
   }
 */
 
+  /// POST `img/`
+  ///
+  /// A custom handler function for image uploading.
+  /// Returns where to POST/PUT the image metadata.
   Future<Response> _customHandleUploadImage(Request upload) async {
     // if (upload.raw.headers.value('file-name') == null) {
     //   throw Response.badRequest(body: {"error": "File name not defined"});
@@ -216,6 +220,10 @@ class ImgRequestHandler extends ResourceController {
     return Response.created(webRootPath + path);
   }
 
+  /// PUT `img/:id`
+  ///
+  /// Updates image [id]'s data by [newInfo].
+  /// Requires authorization beforehand.
   @Operation.put('id')
   Future<Response> putImage(
     @Bind.path('id') String id,
@@ -234,6 +242,9 @@ class ImgRequestHandler extends ResourceController {
     return Response.ok(result);
   }
 
+  /// DELETE `/img/:id`
+  ///
+  /// Deletes the coresponding image and its metadata
   @Operation.delete('id')
   Future<Response> deleteImageId(@Bind.path('id') String id) {}
 }

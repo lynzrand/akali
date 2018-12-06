@@ -21,11 +21,17 @@ your.akali.site/
 
 The following content lists all apis used by Akali:
 
+**Since all APIs are prepended with `/api/v1`, we will omit this term below.**
+
 ## Picture-related
 
-| Method | Path                                       | Response  |
-|--------|--------------------------------------------|-----------|
-| `GET`  | `/api/v1/pic/list?tags=tags&author=author` | List<Pic> |
+| Method   | Path       | Description                               | Success Response |
+|----------|------------|-------------------------------------------|------------------|
+| `GET`    | `/img`     | Search image by `tags`, `author` and more | `List<Pic>`      |
+| `POST`   | `/img`     | Upload a binary image file                | Success Message  |
+| `GET`    | `/img/:id` | Get metadata for image `id`               | `Pic`            |
+| `PUT`    | `/img/:id` | Update image `id`'s metadata              | Success Message  |
+| `DELETE` | `/img/:id` | Deletes image `id` and its metadata       | Success Message  |
 
 TBD.
 
