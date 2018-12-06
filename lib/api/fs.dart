@@ -8,6 +8,8 @@ abstract class AkaliFileManager {
 
 class FileManagementResponse {
   bool success;
+  String path;
+  Map<String, dynamic> data;
 }
 
 class AkaliLocalFileManager implements AkaliFileManager {
@@ -23,7 +25,9 @@ class AkaliLocalFileManager implements AkaliFileManager {
     var f = File(rootPath + path);
     var writeSink = f.openWrite();
     await file.pipe(writeSink);
-    writeSink.close();
-    return FileManagementResponse()..success = true;
+    await writeSink.close();
+    return FileManagementResponse()
+      ..success = true
+      ..path = rootPath + path;
   }
 }

@@ -171,7 +171,8 @@ class ImgRequestHandler extends ResourceController {
   Future<Response> putImage(
     @Bind.path('id') String id,
     @Bind.body() Pic newInfo, [
-    @Bind.query('access_token') String token,
+    @Bind.query('access_token') String tokenQuery,
+    @Bind.header('Access-Token') String tokenHeader,
   ]) async {
     // TODO: authorization
     var _id = ObjectId.fromHexString(id);
@@ -186,36 +187,6 @@ class ImgRequestHandler extends ResourceController {
 
   @Operation.delete('id')
   Future<Response> deleteImageId(@Bind.path('id') String id) {}
-
-/*
-  Future<MediaMessage> getImageFile(String id) async {
-    // TODO: add file manager for remote file redirections if needed
-    var file = File('$fileStoragePath/img/$id.png');
-    if (!await file.exists()) {
-      throw BadRequestError('Image with id=$id does not exist!');
-    }
-    var msg = MediaMessage()..bytes = file.readAsBytesSync();
-    return msg;
-  }
-
-  Future<VoidMessage> postImageData(String token, Pic pic) async {
-    await db.postImageData(pic);
-    return VoidMessage();
-  }
-
-  Future<ImagePostRequestResponse> postImageFile(List<int> blob) async {
-    String blobLink = '$fileStoragePath/img';
-    // TODO: put blob to some link
-    var token = await db.addPendingImage(blobLink);
-    var file = File('$blobLink/$token.png');
-    await file.create();
-    await file.writeAsBytes(blob);
-    blobLink = file.path; // for DEBUG use.
-    return ImagePostRequestResponse()
-      ..token = token
-      ..imageLink = blobLink;
-  }
-  */
 }
 
 class ImagePostRequestResponse {
