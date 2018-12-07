@@ -96,7 +96,7 @@ class ImgRequestHandler extends ResourceController {
     // File uploading is redirected
     if ((request.method == 'POST' || request.method == 'PUT') &&
         request.path.variables['id'] == null) {
-      await _customHandleUploadImage(request);
+      return await _customHandleUploadImage(request);
     }
     // do the rest of handling
     return await super.handle(request);
@@ -138,10 +138,8 @@ class ImgRequestHandler extends ResourceController {
     var searchQuery = ImageSearchCriteria();
 
     // Search for specific tags
-    if (tagsList?.isNotEmpty ?? false) searchQuery.tags = tagsList;
-
-    if (authorList?.isNotEmpty ?? false) searchQuery.authors = authorList;
-
+    searchQuery.tags = tagsList;
+    searchQuery.authors = authorList;
     try {
       var searchResults = await db.queryImg(searchQuery);
       return Response.ok(searchResults)..contentType = ContentType.json;
@@ -217,7 +215,7 @@ class ImgRequestHandler extends ResourceController {
         'stacktrace': stackTrace,
       });
     }
-    return Response.created(webRootPath + path);
+    return Response.ok({"success": true, "dir": webRootPath + path});
   }
 
   /// PUT `img/:id`
