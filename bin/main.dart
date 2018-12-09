@@ -98,15 +98,4 @@ Future main(List<String> args) async {
   await app.start(
     numberOfInstances: int.parse(runConf['isolates']),
   );
-
-  // Deprecated code. Once switched to Aqueduct, they will be deleted.
-  // _____
-  // var loadBalancer = AkaliLoadBalancer(
-  //   1,
-  //   serverPort: int.tryParse(runConf['port']),
-  //   databaseUri: runConf['database'].toString(),
-  //   fileStoragePath: runConf['storage-path'],
-  //   useLocalFileStorage: true,
-  // );
-  // await loadBalancer.init();
 }

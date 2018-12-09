@@ -168,25 +168,6 @@ class ImgRequestHandler extends ResourceController {
     var result = await db.queryImgID(_id);
     return Response.ok(result)..contentType = ContentType.json;
   }
-/*
-  /// POST /img
-  ///
-  /// POSTs a new file to Akali server. Returns whether this operation is
-  /// successful, and the address to PUT/POST the image metadata to.
-  @Operation.post()
-  Future<Response> postNewImage(
-    @Bind.body() List<int> file,
-    @Bind.header('Content-Type') String fileType,
-    Request req,
-  ) async {
-    var id = ObjectId();
-    // The following code is only for DEBUG use
-    print(fileType);
-
-    // await fileManager.streamFileTo('img/${id.toHexString()}', file);
-    return Response.ok(id.toHexString());
-  }
-*/
 
   /// POST `img/`
   ///
