@@ -1,6 +1,6 @@
 name: akali
 description: An illustration site (booru) server
-version: 0.0.1
+version: 0.0.2
 
 authors:
   - Rynco Li <lynzrand@outlook.com>
@@ -16,7 +16,9 @@ dependencies:
   isolate: ^2.0.2
   crypto: ^2.0.6
 
-  # dev_dependencies:
+dev_dependencies:
+  test: any
+  aqueduct_test: any
   vm_service_lib: ^0.3.10
   vm_service_client: ^0.2.6
 

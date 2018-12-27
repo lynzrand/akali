@@ -35,7 +35,13 @@ Future main(List<String> args) async {
       abbr: 'S',
       help: 'Akali will store files under this path',
       valueHelp: 'path',
-      defaultsTo: '/data/akali',
+      defaultsTo: './akali/',
+    )
+    ..addOption(
+      'web-root-path',
+      help: 'Akali will assume your site is under this path',
+      valueHelp: 'path',
+      defaultsTo: 'http://localhost:8086/',
     )
     ..addOption(
       'isolates',
@@ -74,6 +80,8 @@ Future main(List<String> args) async {
     return;
   }
 
+  RequestBody.maxSize = 100 * 1024 * 1024;
+
   // TODO: add configuration file reader
 
   var app = Application<AkaliApi>();
@@ -81,6 +89,7 @@ Future main(List<String> args) async {
     ..context = {
       'databaseUri': runConf['database'].toString(),
       'fileStoragePath': runConf['storage-path'],
+      'webRootPath': runConf['web-root-path'],
       'useLocalFileStorage': true,
     }
     ..port = int.tryParse(runConf['port'])
@@ -89,15 +98,4 @@ Future main(List<String> args) async {
   await app.start(
     numberOfInstances: int.parse(runConf['isolates']),
   );
-
-  // Deprecated code. Once switched to Aqueduct, they will be deleted.
-  // _____
-  // var loadBalancer = AkaliLoadBalancer(
-  //   1,
-  //   serverPort: int.tryParse(runConf['port']),
-  //   databaseUri: runConf['database'].toString(),
-  //   fileStoragePath: runConf['storage-path'],
-  //   useLocalFileStorage: true,
-  // );
-  // await loadBalancer.init();
 }

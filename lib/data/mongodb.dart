@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:akali/config.dart';
 import 'package:aqueduct/aqueduct.dart';
 import 'package:ulid/ulid.dart';
 
-import 'pic.dart';
-import 'db.dart';
+import 'package:akali/config.dart';
+import 'package:akali/models.dart';
 
 /// Akali's default database implementation, using MongoDB
 class AkaliMongoDatabase implements AkaliDatabase {
@@ -76,9 +75,14 @@ class AkaliMongoDatabase implements AkaliDatabase {
 
   /// Search for image(s) meeting the criteria [crit].
   Future<List<Pic>> queryImg(ImageSearchCriteria crit) async {
-    return (await picCollection.find({'tags': crit.tags}).toList()).map(
-      (item) => Pic.readFromMap(item),
-    );
+    var query = where;
+
+    if (crit.tags != null) query = query.all('tags', crit.tags);
+    if (crit.authors != null) query = query.all('author', crit.authors);
+
+    return (await picCollection.find(query))
+        .map((item) => Pic.readFromMap(item))
+        .toList();
   }
 
   /// Find **the** picture with this [id].
