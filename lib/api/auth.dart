@@ -6,13 +6,28 @@ import 'package:aqueduct/managed_auth.dart';
 import 'package:ulid/ulid.dart';
 import 'package:crypto/crypto.dart';
 
-const int _hashSaltLength = 64;
+class _AkaliUser extends ManagedObject {
+  /// How much salt would you add on your hash?
+  static const _hashSaltLength = 64;
 
-class _AkaliUser {
+  /// How many time would you like the user to wait before validating?
+  static final _passwordCheckWaitTime = Duration(milliseconds: 200);
+
+  /// User identifier
   Ulid id;
+
+  /// Username, should be unique across platform
   String username;
+
+  /// Password hash that should be stored into database
   List<int> _hashedPassword;
+
+  /// The salt value used to calculate the password
   String _salt;
+
+  _AkaliUser() {}
+
+  _AkaliUser.fromMap(Map<String, dynamic> map) {}
 
   /// Generates a new salt and hashes the [password] with salt
   void setPassword(String password) {
@@ -34,9 +49,9 @@ class _AkaliUser {
     var validation = false;
     await Future.wait([
       // try to avoid timing attack. We assume that any comparison between
-      // fixed-sized int lists wouldn't exceed 500ms.
+      // fixed-sized int lists wouldn't exceed 200ms.
       // TODO: Use other validation methods like XORing buffers.
-      Future.delayed(Duration(milliseconds: 500)),
+      Future.delayed(_passwordCheckWaitTime),
       Future(() => validation = hashedBuf == _hashedPassword),
     ]);
     return validation;
