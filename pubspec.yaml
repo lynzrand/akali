@@ -14,6 +14,7 @@ dependencies:
   ulid: any
   mongo_dart: ^0.3.3
   isolate: ^2.0.2
+  crypto: ^2.0.6
 
   # dev_dependencies:
   vm_service_lib: ^0.3.10

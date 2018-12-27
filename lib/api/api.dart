@@ -71,8 +71,6 @@ class AkaliApi extends ApplicationChannel {
   }
 }
 
-class AkaliAuthDelegate<T> {}
-
 class ImgRequestHandler extends ResourceController {
   AkaliDatabase db;
   AkaliFileManager fileManager;
