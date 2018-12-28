@@ -30,6 +30,7 @@ Clone and run in local repository (Development use)
 ```sh
 git clone https://gitlab.com/01010101lzy/akali.git
 cd akali
+pub get
 # The executed script is bin/main.dart
 dart bin/main.dart
 ```
@@ -129,6 +130,6 @@ Yes, but not now. Aqueduct comes with PostgreSQL support out-of-the-box, but we 
 
 ---
 
-2018 © Rynco Li / WFCRS.
+2018 -- 2019 © Rynco Li / WFCRS.
 
 p.s. The name of the project, Akali, came from "alkali". Therefore, it is preferably pronounced `/'aka﹑lai/`_(aka-lai)_, with the "i" pronouncing `/ai/` like that in "alkali".
