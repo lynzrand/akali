@@ -89,6 +89,22 @@ Danbooru is more than 7 years old, and Moebooru is more than 5. I looked for man
 
 And we need a project in our school's competetion.
 
+
+
+### Is it Danbooru compatible?
+
+Considering. We are just starting to build up this whole thing, and a lot of things aren't determined yet. We may choose to be compatible with Danbooru/Moebooru frameworks only on the database side, but not on the API side.
+
+### Plugins?
+
+Yes, but not now. Plugin supports are in our to-do list for stable versions after 1.0.
+
+### When will this be usable?
+
+We are aiming at early 2019, with 1.0 releasing in summer 2019. Times may vary due to our pressure in study. Contributions are welcomed if you want to speed up our development!
+
+## Techinical FAQs
+
 ### Why use Dart? Shouldn't you use Go or something like that?
 
 Because Dart is easy (and fluent!) to write while still having a relatively high performance (compared to, maybe, Ruby and older solutions?). We may consider rewriting this project or create another compatible project using Go, but Dart is enough for now.
@@ -106,18 +122,6 @@ Because Aqueduct is one of the best HTTP server frameworks we could find in Dart
 ### PostgreSQL support?
 
 Yes, but not now. Aqueduct comes with PostgreSQL support out-of-the-box, but we decided to stick with MongoDB for now. An abstraction of the database is being built, so that Akali accepts custom database implementations if needed.
-
-### Danbooru compatible?
-
-Considering. We are just starting to build up this whole thing, and a lot of things aren't determined yet. We may choose to be compatible with Danbooru/Moebooru frameworks only on the database side, but not on the API side.
-
-### Plugins?
-
-Yes, but not now. Plugin supports are in our to-do list for stable versions after 1.0.
-
-### When will this be usable?
-
-We are aiming at early 2019, with 1.0 releasing in summer 2019. Times may vary due to our pressure in study. Contributions are welcomed if you want to speed up our development!
 
 ## License
 
