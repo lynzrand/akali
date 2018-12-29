@@ -114,17 +114,26 @@ class ImgRequestHandler extends ResourceController {
     @Bind.query('tags') String tags,
     @Bind.query('author') String author,
     @Bind.query('size') String sizeCriteria,
+    @Bind.query('height') String height,
+    @Bind.query('width') String width,
+    @Bind.query('ratio') String ratio,
     @Bind.query('limit') int limit = 20,
     @Bind.query('skip') int skip = 0,
   }) async {
     List<String> tagsList;
     List<String> authorList;
+    CriteriaTween heightRange;
+    CriteriaTween widthRange;
+    CriteriaTween ratioRange;
     // double minAspectRatio;
     // double maxAspectRatio;
     try {
       // Please note that seen by the server, query 'xxx+yyy' is the same as 'xxx yyy'.
-      tagsList = tags?.split(' ');
-      authorList = author?.split(' ');
+      tagsList = _queryStringParser(tags);
+      authorList = _queryStringParser(author);
+      heightRange = _queryRangeParser(height);
+      widthRange = _queryRangeParser(width);
+      ratioRange = _queryRatioRangeParser(ratio);
       // TODO: Add size search
       // if (minAspectRatioStr != null)
       //   minAspectRatio = double.tryParse(minAspectRatioStr);
@@ -133,11 +142,14 @@ class ImgRequestHandler extends ResourceController {
     } catch (e, stacktrace) {
       throw Response.badRequest(body: {'error': e, 'stacktrace': stacktrace});
     }
-    var searchQuery = ImageSearchCriteria();
-
     // Search for specific tags
-    searchQuery.tags = tagsList;
-    searchQuery.authors = authorList;
+    var searchQuery = ImageSearchCriteria()
+      ..tags = tagsList
+      ..authors = authorList
+      ..height = heightRange
+      ..width = widthRange
+      ..aspectRatio = ratioRange;
+      
     try {
       var searchResults = await db.queryImg(searchQuery);
       return Response.ok(searchResults)..contentType = ContentType.json;
@@ -224,6 +236,44 @@ class ImgRequestHandler extends ResourceController {
   /// Deletes the coresponding image and its metadata
   @Operation.delete('id')
   Future<Response> deleteImageId(@Bind.path('id') String id) {}
+
+  List<String> _queryStringParser(String query) {
+    return query?.split(' ');
+  }
+
+  CriteriaTween _queryRangeParser(String query) {
+    CriteriaTween parser_result;
+    List<String> parser_temp;
+    parser_temp = query?.split(' ');
+    if (parser_temp != null) {
+      if (parser_temp.length == 1)
+        parser_result.min = int.tryParse(parser_temp[0]);
+      else if (parser_temp.length == 2) {
+        parser_result.min = int.tryParse(parser_temp[0]);
+        parser_result.max = int.tryParse(parser_temp[1]);
+      }
+    }
+    return parser_result;
+  }
+
+  // Width / Height
+  CriteriaTween _queryRatioRangeParser(String query) {
+    CriteriaTween parser_result;
+    List<String> parser_temp;
+    parser_temp = query?.split(' ');
+    if (parser_temp != null) {
+      if (parser_temp.length == 2)
+        parser_result.min =
+            double.tryParse(parser_temp[0]) / double.tryParse(parser_temp[1]);
+      else if (parser_temp.length == 4) {
+        parser_result.min =
+            double.tryParse(parser_temp[0]) / double.tryParse(parser_temp[1]);
+        parser_result.max =
+            double.tryParse(parser_temp[2]) / double.tryParse(parser_temp[3]);
+      }
+    }
+    return parser_result;
+  }
 }
 
 class ImagePostRequestResponse {

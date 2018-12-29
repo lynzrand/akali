@@ -79,7 +79,20 @@ class AkaliMongoDatabase implements AkaliDatabase {
 
     if (crit.tags != null) query = query.all('tags', crit.tags);
     if (crit.authors != null) query = query.all('author', crit.authors);
-
+    if (crit.height != null) {
+      if (crit.height.max != null)
+        query = query.inRange('height', crit.height.min, crit.height.max,
+            maxInclude: true);
+      else
+        query = query.all('height', [crit.height.min]);
+    }
+    if (crit.width != null) {
+      if (crit.width.max != null)
+        query = query.inRange('width', crit.width.min, crit.width.max,
+            maxInclude: true);
+      else
+        query = query.all('height', [crit.width.min]);
+    }
     return (await picCollection.find(query))
         .map((item) => Pic.readFromMap(item))
         .toList();

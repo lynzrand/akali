@@ -160,17 +160,10 @@ class ImageSearchCriteria {
   CriteriaTween<int> width;
   CriteriaTween<int> height;
   CriteriaTween<double> aspectRatio;
-
   List<String> tags;
   List<String> authors;
 
-  ImageSearchCriteria() {
-    width = CriteriaTween();
-    height = CriteriaTween();
-    aspectRatio = CriteriaTween();
-    tags = [];
-    authors = [];
-  }
+  ImageSearchCriteria() {}
 
   Map<String, dynamic> asMongoDBQuery() {
     return {
