@@ -105,10 +105,6 @@ class ImgRequestHandler extends ResourceController {
   /// List separated with '+': [tags], [author]
   ///
   /// Integers: [minWidth], [maxWidth], [minHeight], [maxHeight]
-  // @ApiMethod(name: 'Search image by query', method: 'GET', path: 'img')
-  // Future<List<Pic>> getPicByQuery({
-  // ## Current workaround: call custon toJson() and return a string, instead of
-  // returning the object and let rpc do the job.
   @Operation.get()
   Future<Response> listPicByQuery({
     @Bind.query('tags') String tags,
@@ -116,6 +112,7 @@ class ImgRequestHandler extends ResourceController {
     @Bind.query('size') String sizeCriteria,
     @Bind.query('limit') int limit = 20,
     @Bind.query('skip') int skip = 0,
+    @Bind.query('pretty') bool pretty = false,
   }) async {
     List<String> tagsList;
     List<String> authorList;

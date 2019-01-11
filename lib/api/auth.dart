@@ -5,6 +5,7 @@ import 'package:aqueduct/aqueduct.dart';
 import 'package:aqueduct/managed_auth.dart';
 import 'package:ulid/ulid.dart';
 import 'package:crypto/crypto.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 
 class _AkaliUser extends ManagedObject {
   /// How much salt would you add on your hash?
@@ -19,8 +20,15 @@ class _AkaliUser extends ManagedObject {
   /// Username, should be unique across platform
   String username;
 
-  /// Password hash that should be stored into database
+  /// Password hash that should be stored into database.
+  ///
+  /// At ANY time this value should not be exposed
   List<int> _hashedPassword;
+
+  /// Gets the BSON Binary form of the hashed password. Goes to MondoDB entry.
+  BsonBinary get binaryHashedPassword {
+    return BsonBinary.from(_hashedPassword);
+  }
 
   /// The salt value used to calculate the password
   String _salt;
