@@ -16,8 +16,9 @@ abstract class AkaliDatabase {
   /// your own initialization function.
   FutureOr<void> init();
 
-  /// Search for a list of images satisfying [crit].
-  FutureOr<List<Pic>> queryImg(ImageSearchCriteria crit);
+  /// Search for a list of images satisfying [crit], limited to [limit] number
+  /// and skips the first [skip] items.
+  FutureOr<List<Pic>> queryImg(ImageSearchCriteria crit, {int limit, int skip});
 
   /// Get the specific picture with [id]
   FutureOr<Pic> queryImgID(ObjectId id);

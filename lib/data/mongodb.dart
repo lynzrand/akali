@@ -74,7 +74,11 @@ class AkaliMongoDatabase implements AkaliDatabase {
   }
 
   /// Search for image(s) meeting the criteria [crit].
-  Future<List<Pic>> queryImg(ImageSearchCriteria crit) async {
+  Future<List<Pic>> queryImg(
+    ImageSearchCriteria crit, {
+    int limit = 20,
+    int skip = 0,
+  }) async {
     var query = where;
 
     if (crit.tags != null) query = query.all('tags', crit.tags);
@@ -93,6 +97,9 @@ class AkaliMongoDatabase implements AkaliDatabase {
       else
         query = query.all('height', [crit.width.min]);
     }
+
+    query = query.limit(limit).skip(skip);
+
     return (await picCollection.find(query))
         .map((item) => Pic.readFromMap(item))
         .toList();

@@ -16,7 +16,11 @@ class AkaliPostgreSqlDb implements AkaliDatabase {
   }
 
   @override
-  FutureOr<List<Pic>> queryImg(ImageSearchCriteria crit) {
+  FutureOr<List<Pic>> queryImg(
+    ImageSearchCriteria crit, {
+    int limit,
+    int skip,
+  }) {
     // TODO: implement queryImg
     return null;
   }

@@ -9,10 +9,10 @@ authors:
 
 dependencies:
   # rpc: any
-  aqueduct: any
+  aqueduct: ^3.1.0
   yaml: ^2.1.15
-  ulid: any
-  mongo_dart: ^0.3.3
+  ulid: ^1.0.1
+  mongo_dart: ^0.3.4
   isolate: ^2.0.2
   crypto: ^2.0.6
 

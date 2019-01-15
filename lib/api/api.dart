@@ -109,7 +109,7 @@ class ImgRequestHandler extends ResourceController {
   Future<Response> listPicByQuery({
     @Bind.query('tags') String tags,
     @Bind.query('author') String author,
-    @Bind.query('size') String sizeCriteria,
+    // @Bind.query('size') String sizeCriteria,
     @Bind.query('height') String height,
     @Bind.query('width') String width,
     @Bind.query('ratio') String ratio,
@@ -146,7 +146,7 @@ class ImgRequestHandler extends ResourceController {
       ..height = heightRange
       ..width = widthRange
       ..aspectRatio = ratioRange;
-      
+
     try {
       var searchResults = await db.queryImg(searchQuery);
       return Response.ok(searchResults)..contentType = ContentType.json;

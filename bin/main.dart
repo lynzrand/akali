@@ -9,13 +9,20 @@ import 'package:akali/akali.dart';
 
 import 'package:aqueduct/aqueduct.dart';
 
-const String _akaliVersion = '0.0.1';
+const String _akaliVersion = '0.0.2';
 
 Future main(List<String> args) async {
   final parser = ArgParser(
     allowTrailingOptions: true,
     usageLineLength: 80,
   )
+    ..addOption(
+      'config',
+      abbr: 'c',
+      help: 'Use the file in <path> as configuration.',
+      valueHelp: 'path',
+    )
+    ..addSeparator('')
     ..addOption(
       'database',
       abbr: 'D',
@@ -53,8 +60,8 @@ Future main(List<String> args) async {
     ..addOption(
       'debug',
       abbr: 'd',
-      help:
-          'Run Akali in debug mode. Will enable hot reloading, and probably other features in the future. This option is only usable when running from a clone of the repository with "--observe=<port>" on.',
+      help: 'Run Akali in debug mode. Does nothing.',
+      // 'Run Akali in debug mode. Will enable hot reloading, and probably other features in the future. This option is only usable when running from a clone of the repository with "--observe=<port>" on.',
       valueHelp: 'port',
     )
     ..addFlag(
@@ -72,6 +79,8 @@ Future main(List<String> args) async {
   var runConf = parser.parse(args);
 
   if (runConf['help']) {
+    print(_akaliTextLogo);
+    print('Akali Server $_akaliVersion\n\n');
     print('Usage:');
     print(parser.usage);
     return;
@@ -99,3 +108,13 @@ Future main(List<String> args) async {
     numberOfInstances: int.parse(runConf['isolates']),
   );
 }
+
+const _akaliTextLogo = r'''
+
+ ────────────┐
+ ╲           │        _   _        _ _ 
+  │     __--¯│       /_\ | |____ _| (_)
+  │__--¯     │      / _ \| / / _` | | |
+  │          │     /_/ \_\_\_\__,_|_|_|
+  └──────────┘
+''';
