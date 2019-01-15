@@ -32,16 +32,23 @@ abstract class AkaliDatabase {
 
   // ---- Auth stuff ----
 
-  FutureOr<bool> checkToken(String accessToken, UserLevel level);
+  /// Check if the [accessToken] required has [privileges].
+  FutureOr<bool> checkToken(String accessToken, Set<UserPrivilege> privileges);
 
+  /// Add the [token] ([tokenName]) with [privileges] and [otherInfo]
+  /// granted by a user data manager to the token database.
   FutureOr<void> grantedToken(String token, String tokenName,
       {Set<UserPrivilege> privileges, dynamic otherInfo});
 
+  /// Delete the [token] from database.
   FutureOr<void> deletedToken(String token);
 
+  /// Add a new user having [username], [password] and [otherInfo]
+  /// to existing user database.
   FutureOr<AkaliUser> addUser(String username, String password,
       [Map<String, dynamic> otherInfo]);
 
+  /// Modify user [id]'s info to match [info]
   FutureOr<AkaliUser> changeUserInfo(int id, Map<String, dynamic> info);
 }
 

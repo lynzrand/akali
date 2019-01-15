@@ -7,9 +7,14 @@ import 'package:ulid/ulid.dart';
 
 import 'package:akali/config.dart';
 import 'package:akali/models.dart';
+import 'package:akali/data/auth/auth.dart';
 
 /// Akali's default database implementation, using MongoDB
 class AkaliMongoDatabase implements AkaliDatabase {
+  static const _picCollectionName = "pic";
+  static const _pendingPicCollectionName = "pendingPic";
+  static const _userDataCollectionName = "user";
+
   bool _initialized = false;
 
   Logger logger;
@@ -62,9 +67,9 @@ class AkaliMongoDatabase implements AkaliDatabase {
     logger.info("$_dbPrefix Connected to $uri.");
 
     // Initialize collections
-    picCollection = db.collection('pic');
-    pendingPicCollection = db.collection('pendingPic');
-    userCollection = db.collection('user');
+    picCollection = db.collection(_picCollectionName);
+    pendingPicCollection = db.collection(_pendingPicCollectionName);
+    userCollection = db.collection(_userDataCollectionName);
   }
 
   /// Post a new image to database. Returns the written confirmation.
@@ -128,4 +133,33 @@ class AkaliMongoDatabase implements AkaliDatabase {
   }
 
   Future addInfoToPendingImage(Pic info) {}
+
+  // =============
+
+  FutureOr<void> grantedToken(String token, String tokenName,
+      {Set<UserPrivilege> privileges, otherInfo}) {
+    // TODO: implement grantedToken
+    return null;
+  }
+
+  FutureOr<void> deletedToken(String token) {
+    // TODO: implement deletedToken
+    return null;
+  }
+
+  FutureOr<AkaliUser> addUser(String username, String password,
+      [Map<String, dynamic> otherInfo]) {
+    // TODO: implement addUser
+    return null;
+  }
+
+  FutureOr<bool> checkToken(String accessToken, Set<UserPrivilege> privileges) {
+    // TODO: implement checkToken
+    return null;
+  }
+
+  FutureOr<AkaliUser> changeUserInfo(int id, Map<String, dynamic> info) {
+    // TODO: implement changeUserInfo
+    return null;
+  }
 }
