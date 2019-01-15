@@ -7,7 +7,20 @@ import 'package:ulid/ulid.dart';
 import 'package:crypto/crypto.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
-class _AkaliUser extends ManagedObject {
+enum UserLevel {
+  Guest,
+  User,
+  Manager,
+  Admin,
+}
+
+enum UserPrivilege {
+  PostImage,
+  DeleteImage,
+  PostComment,
+}
+
+class AkaliUser extends ManagedObject {
   /// How much salt would you add on your hash?
   static const _hashSaltLength = 64;
 
@@ -33,9 +46,13 @@ class _AkaliUser extends ManagedObject {
   /// The salt value used to calculate the password
   String _salt;
 
-  _AkaliUser() {}
+  UserLevel userLevel;
 
-  _AkaliUser.fromMap(Map<String, dynamic> map) {}
+  Set<UserPrivilege> previleges;
+
+  AkaliUser() {}
+
+  AkaliUser.fromMap(Map<String, dynamic> map) {}
 
   /// Generates a new salt and hashes the [password] with salt
   void setPassword(String password) {

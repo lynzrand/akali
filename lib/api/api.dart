@@ -5,9 +5,9 @@ import 'dart:convert';
 
 import 'package:mongo_dart/mongo_dart.dart';
 
-import 'package:akali/data/db.dart';
-import 'package:akali/data/pic.dart';
-import 'package:akali/data/mongodb.dart';
+import 'package:akali/models.dart';
+import 'package:akali/data/db/mongodb.dart';
+import 'package:akali/data/auth/auth.dart';
 
 import 'package:aqueduct/aqueduct.dart';
 import 'package:aqueduct/managed_auth.dart';
@@ -64,8 +64,6 @@ class AkaliApi extends ApplicationChannel {
     router
         .route('/img/[:id]')
         .link(() => ImgRequestHandler(_db, fileManager, logger, webRootPath));
-
-    router.route('/auth').link(() => AuthController(authServer));
 
     return router;
   }
@@ -276,4 +274,14 @@ class ImgRequestHandler extends ResourceController {
 class ImagePostRequestResponse {
   String token;
   String imageLink;
+}
+
+class AkaliAuthorizer extends Controller {
+  AkaliDatabase _db;
+
+  @override
+  FutureOr<RequestOrResponse> handle(Request request) {
+    // TODO: implement handle
+    return request;
+  }
 }
