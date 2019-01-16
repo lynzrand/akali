@@ -10,11 +10,10 @@ import 'package:akali/models.dart';
 import 'package:akali/data/auth/auth.dart';
 export 'package:akali/data/auth/auth.dart';
 
-/// This controller is used ONLY to validate user tokens
-class AkaliAuthorizer extends Controller {
-  @override
-  FutureOr<RequestOrResponse> handle(Request request) {
-    request.raw.headers.value('access-token');
-    return request;
-  }
-}
+// TODO:
+// Dig into the OAuth 2 implementation of Aqueduct and write a custom
+// implementation reusing as many parts as possible. The original implementation
+// uses PostgreSQL, so we cannot directly use it as we also need compatibility
+// with MongoDB.
+//
+// Long way to go for Akali. *sigh*

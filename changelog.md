@@ -1,9 +1,14 @@
 # Changelog
 
-### 0.0.2 (until commit `6f774211`)
+### To be included in 0.0.3
 
-- Added basic APIs for getting, setting and fiddling with image metadatas.
-- Added an API for direct image uploading
+- [ ] External config support
+
+### To be included in 0.0.2
+
+- [x] Added basic APIs for getting, setting and fiddling with image metadatas.
+- [x] Added an API for direct image uploading
+- [ ] Basic user authorization (May not be that OAuth2)
 
 ### 0.0.1
 

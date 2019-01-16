@@ -3,11 +3,11 @@
 **AKALI IS NOT USABLE YET. KEY FEATURES NOT IMPLEMENTED.**
 
 **IMPORTANT!** 
-Akali is currently under heavy development. 
-Things could break between commits, or the whole program may not be able to work at all. 
+Akali is currently under heavy development. Things could break between commits, or the whole program may not be able to work at all. 
+
 Please use at your own risk.
 
-
+---
 
 Akali is an experimental _scalable and expandable_ pic site (booru) server written in Dart.
 
@@ -16,7 +16,7 @@ Mirror: [GitHub](https://github.com/01010101lzy/akali)
 
 ## Development
 
-Developing Akali (and running as well) requires the following software environment:
+Akali requires the following software environment:
 
 - Dart VM: `^2.1.0`
 - MongoDB: `^3.6.0`
@@ -90,8 +90,6 @@ Danbooru is more than 7 years old, and Moebooru is more than 5. I looked for man
 
 And we need a project in our school's competetion.
 
-
-
 ### Is it Danbooru compatible?
 
 Considering. We are just starting to build up this whole thing, and a lot of things aren't determined yet. We may choose to be compatible with Danbooru/Moebooru frameworks only on the database side, but not on the API side.
@@ -116,7 +114,7 @@ Because Aqueduct is one of the best HTTP server frameworks we could find in Dart
 
 - Has high performance;
 - Supports multithreading;
-- Supports the OAuth2 stuff out of the box;
+- Supports the OAuth2 stuff out of the box (though it needs fiddling by hand);
 - Is flexible enough to add custom features;
 - Is easy to write server logic with.
 
@@ -131,5 +129,3 @@ Yes, but not now. Aqueduct comes with PostgreSQL support out-of-the-box, but we 
 ---
 
 2018 -- 2019 © Rynco Li / WFCRS.
-
-p.s. The name of the project, Akali, came from "alkali". Therefore, it is preferably pronounced `/'aka﹑lai/`_(aka-lai)_, with the "i" pronouncing `/ai/` like that in "alkali".
