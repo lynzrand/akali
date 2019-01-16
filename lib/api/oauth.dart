@@ -8,6 +8,7 @@ import 'package:aqueduct/aqueduct.dart';
 
 import 'package:akali/models.dart';
 import 'package:akali/data/auth/auth.dart';
+export 'package:akali/data/auth/auth.dart';
 
 /// This controller is used ONLY to validate user tokens
 class AkaliAuthorizer extends Controller {

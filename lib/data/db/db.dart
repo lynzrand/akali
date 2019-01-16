@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:mongo_dart/mongo_dart.dart';
 
 import 'package:akali/config.dart';
-import 'package:akali/data/pic.dart';
+import 'package:akali/data/models/pic.dart';
 import 'package:akali/data/auth/auth.dart';
 
 import 'package:aqueduct/aqueduct.dart';
