@@ -14,10 +14,42 @@ enum UserLevel {
   Admin,
 }
 
+/// A list of what actions could the user do.
+// TODO: do we need more detailed privileges?
 enum UserPrivilege {
-  PostImage,
+  // Guest level
+  /// The ability to view public content on the site
+  ViewContent,
+
+  // User level
+  /// The ability to modify (including creating) an image by the user himself
+  EditImage,
+
+  /// The ability to delete an image posted by the user himself
   DeleteImage,
+
+  /// The ablility to post a comment
   PostComment,
+
+  /// The ablility to change the profile of the user himself
+  ChangeProfile,
+
+  // Manager level
+  /// The ability to manage users' own images (modify and/or delete)
+  ManageImage,
+
+  /// The ability to manage users' comments (modify and/or delete)
+  ManageComment,
+
+  /// The ability to change users' profile
+  ManageUserProfile,
+
+  /// The ability to change users' privileges (to at most this user's level)
+  ManagerUserPrivilege,
+
+  /// The ability to control the WHOLE site;
+  /// Should ONLY be given to the admin(s)
+  TotalControl,
 }
 
 class AkaliUser extends ManagedObject {

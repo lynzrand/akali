@@ -74,13 +74,3 @@ class AkaliApi extends ApplicationChannel {
     return req;
   }
 }
-
-class AkaliAuthorizer extends Controller {
-  AkaliDatabase _db;
-
-  @override
-  FutureOr<RequestOrResponse> handle(Request request) {
-    // TODO: implement handle
-    return request;
-  }
-}

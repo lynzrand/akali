@@ -8,6 +8,7 @@ import 'package:akali/models.dart';
 import 'package:aqueduct/aqueduct.dart';
 
 import 'fs.dart';
+import 'oauth.dart';
 
 class ImgRequestHandler extends ResourceController {
   AkaliDatabase db;
@@ -151,6 +152,9 @@ class ImgRequestHandler extends ResourceController {
     @Bind.header('Access-Token') String tokenHeader,
   ]) async {
     // TODO: authorization
+    db.checkToken(
+      tokenQuery ?? tokenHeader,
+    );
     var _id = ObjectId.fromHexString(id);
     var result;
     try {
