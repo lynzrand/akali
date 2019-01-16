@@ -15,6 +15,8 @@ class AkaliMongoDatabase implements AkaliDatabase {
   static const _pendingPicCollectionName = "pendingPic";
   static const _userDataCollectionName = "user";
   static const _tokenCollectionName = "token";
+  static const _authCodeCollectionName = "authCode";
+  static const _clientCollectionName = "client";
 
   bool _initialized = false;
 
@@ -28,6 +30,8 @@ class AkaliMongoDatabase implements AkaliDatabase {
   DbCollection pendingPicCollection;
   DbCollection userCollection;
   DbCollection tokenCollection;
+  DbCollection authCodeCollection;
+  DbCollection clientCollection;
 
   static String databaseType = "MongoDB";
   static String _dbPrefix = "[$databaseType]";
@@ -73,6 +77,8 @@ class AkaliMongoDatabase implements AkaliDatabase {
     pendingPicCollection = db.collection(_pendingPicCollectionName);
     userCollection = db.collection(_userDataCollectionName);
     tokenCollection = db.collection(_tokenCollectionName);
+    clientCollection = db.collection(_clientCollectionName);
+    authCodeCollection = db.collection(_authCodeCollectionName);
   }
 
   /// Post a new image to database. Returns the written confirmation.
@@ -135,33 +141,50 @@ class AkaliMongoDatabase implements AkaliDatabase {
     return id.toHexString();
   }
 
-  Future addInfoToPendingImage(Pic info) {}
+  Future addInfoToPendingImage(Pic info) async {
+    // TODO: implement addInfoToPendingImage
+    return null;
+  }
 
   // =============
 
-  FutureOr<void> grantedToken(UserToken token) {
+  FutureOr<void> addToken(AuthToken token) async {
     // TODO: implement grantedToken
 
     return null;
   }
 
-  FutureOr<void> deletedToken(String token) {
-    // TODO: implement deletedToken
-    return null;
-  }
-
-  FutureOr<AkaliUser> addUser(String username, String password,
-      [Map<String, dynamic> otherInfo]) {
-    // TODO: implement addUser
-    return null;
-  }
-
-  FutureOr<bool> checkToken(String accessToken, Set<int> privileges) {
+  FutureOr<bool> checkToken(String accessToken) async {
     // TODO: implement checkToken
     return null;
   }
 
-  FutureOr<AkaliUser> changeUserInfo(int id, Map<String, dynamic> info) {
+  FutureOr<void> removeToken(String token) async {
+    // TODO: implement deletedToken
+    return null;
+  }
+
+  FutureOr<void> removeAllTokens(int resourceOwnerID) async {}
+
+  FutureOr<AkaliUser> addUser(AkaliUser user) async {
+    await userCollection.insert(user.asMap());
+    return null;
+  }
+
+  FutureOr<AkaliUser> getUser(String username) async {
+    return AkaliUser.fromMap(
+        await userCollection.findOne(where.eq("username", username)));
+  }
+
+  FutureOr<void> deleteUser(String username) async {
+    await userCollection.remove(where.eq('username', username));
+  }
+
+  FutureOr<void> deleteUserById(ObjectId id) async {
+    await userCollection.remove(where.id(id));
+  }
+
+  FutureOr<AkaliUser> changeUserInfo(int id, Map<String, dynamic> info) async {
     // TODO: implement changeUserInfo
     return null;
   }

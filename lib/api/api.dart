@@ -62,9 +62,14 @@ class AkaliApi extends ApplicationChannel {
   Controller get entryPoint {
     final router = Router(basePath: '/api/v1');
 
+    router.route('/ping').linkFunction(
+        (req) => Response.ok('HTTP 200. The server is all right!'));
+
     router
         .route('/img/[:id]')
         .link(() => ImgRequestHandler(_db, fileManager, logger, webRootPath));
+
+    router.route('/auth/:action');
 
     return router;
   }

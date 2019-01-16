@@ -9,6 +9,7 @@ import 'package:akali/config.dart';
 import 'package:akali/models.dart';
 import 'package:akali/data/auth/auth.dart';
 
+/// The PostgreSQL implementation of [AkaliDatabase]. Mostly undone.
 class AkaliPostgreSqlDb implements AkaliDatabase {
   @override
   FutureOr<void> init() {
@@ -40,12 +41,12 @@ class AkaliPostgreSqlDb implements AkaliDatabase {
 
   // =============
 
-  FutureOr<void> grantedToken(UserToken token) {
+  FutureOr<void> addToken(UserToken token) {
     // TODO: implement grantedToken
     return null;
   }
 
-  FutureOr<void> deletedToken(String token) {
+  FutureOr<void> removeToken(String token) {
     // TODO: implement deletedToken
     return null;
   }

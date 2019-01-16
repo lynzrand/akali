@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:convert';
 import 'package:aqueduct/aqueduct.dart';
-import 'package:aqueduct/managed_auth.dart';
+import 'package:aqueduct/src/auth/auth.dart';
 import 'package:ulid/ulid.dart';
 import 'package:crypto/crypto.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -14,19 +14,13 @@ enum UserLevel {
   Admin,
 }
 
+// TODO: switch to a more flexible AuthScope implementation
+// Do we need more detailed privileges? -- YES!
+
 /// A list of what actions could the user do, in an abstract class.
 ///
 /// This is a workaround form as valued enums are not present in Dart.
 abstract class UserPrivilege {
-  // TODO: do we need more detailed privileges?
-  // TODO: When Dart FINALLY accepts valued enums, we need to rewrite this.
-
-  /* === CAUTION ===
-   * The values in this fake enum should not be changed once determined
-   * to preserve backward compatibility. If we DO need to change this,
-   * mark as a breaking update.
-   */
-
   // Using SCREAMING_CAPS because this is an enum! =w=
 
   // === Guest level ===
@@ -80,18 +74,18 @@ abstract class UserPrivilege {
   // === Admin Level ===
   /// The ability to have full control of the site;
   /// Should ONLY be given to the site admin(s)
-  static const FULL_CONTROL = 300;
+  static const FULL_CONTROL = 451;
 }
 
-class AkaliUser extends ManagedObject {
-  /// How much salt would you add on your hash?
-  static const _hashSaltLength = 64;
-
+class AkaliUser extends ManagedObject implements ResourceOwner {
   /// How many time would you like the user to wait before validating?
   static const _passwordCheckWaitTime = Duration(milliseconds: 200);
 
-  /// User identifier
-  Ulid id;
+  /// Unique User identifier
+  // Wait... MongoDB uses a 96-bit integer as ObjectID, and the
+  // ultimate implementation of Akali needs to use a 128-bit integer as ID.
+  // TODO: make these things compatible with a 64-bit id  -- Rynco
+  int id;
 
   /// Username, should be unique across platform
   String username;
@@ -99,12 +93,8 @@ class AkaliUser extends ManagedObject {
   /// Password hash that should be stored into database.
   ///
   /// At ANY time this value should not be exposed
-  List<int> _hashedPassword;
-
-  /// Gets the BSON Binary form of the hashed password. Goes to MondoDB entry.
-  BsonBinary get binaryHashedPassword {
-    return BsonBinary.from(_hashedPassword);
-  }
+  // "String is okay. But I thought a buffer *could* be better."  -- Rynco
+  String _hashedPassword;
 
   /// The salt value used to calculate the password
   String _salt;
@@ -115,18 +105,17 @@ class AkaliUser extends ManagedObject {
 
   AkaliUser() {}
 
-  AkaliUser.fromMap(Map<String, dynamic> map) {}
+  AkaliUser.fromMap(final Map<String, dynamic> map) {}
 
   /// Generates a new salt and hashes the [password] with salt
   void setPassword(String password) {
-    var randomizer = Random.secure();
-    // Generate salt from a list of secure random integers
-    _salt = String.fromCharCodes(
-      List.generate(_hashSaltLength, (_) => randomizer.nextInt(95) + 32),
-    );
+    // Replaced with existing HashedPassword generation function
+    // provided by Aqueduct.
+    //    Maximum code reusing! Yay! >_<
+    _salt = AuthUtility.generateRandomSalt();
+
     // Add salt to password and hash it
-    var buf = utf8.encode(password + _salt);
-    _hashedPassword = sha256.convert(buf).bytes;
+    _hashedPassword = AuthUtility.generatePasswordHash(password, _salt);
   }
 
   /// Checks if [passwordToCheck] matches. Takes 500ms before returning, so
@@ -144,33 +133,4 @@ class AkaliUser extends ManagedObject {
     ]);
     return validation;
   }
-}
-
-/// A token for user authorization.
-class UserToken extends ManagedObject {
-  int userId;
-  String token;
-  String name;
-  Map<String, dynamic> otherInfo;
-  DateTime expires;
-
-  UserToken(
-    this.token,
-    this.name, {
-    this.otherInfo,
-    this.expires,
-  });
-}
-
-/// A token for authorized 3rd party software to access user information
-class UserAccessToken extends UserToken {
-  Set<int> privileges;
-
-  UserAccessToken(
-    token,
-    name, {
-    this.privileges,
-    otherInfo,
-    expires,
-  }) : super(token, name, otherInfo: otherInfo, expires: expires);
 }
