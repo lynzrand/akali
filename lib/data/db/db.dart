@@ -33,7 +33,7 @@ abstract class AkaliDatabase {
   // ---- Auth stuff ----
 
   /// Check if the [accessToken] required has [privileges].
-  FutureOr<bool> checkToken(String accessToken, Set<UserPrivilege> privileges);
+  FutureOr<bool> checkToken(String accessToken, Set<int> privileges);
 
   /// Add the [token] ([tokenName]) with [privileges] and [otherInfo]
   /// granted by a user data manager to the token database.

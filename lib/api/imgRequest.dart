@@ -154,7 +154,7 @@ class ImgRequestHandler extends ResourceController {
     // TODO: authorization
     db.checkToken(
       tokenQuery ?? tokenHeader,
-      Set.of([UserPrivilege.EditImage]),
+      Set.of([UserPrivilege.EDIT_OWN_CONTENT]),
     );
     var _id = ObjectId.fromHexString(id);
     var result;

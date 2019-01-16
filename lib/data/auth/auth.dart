@@ -14,42 +14,73 @@ enum UserLevel {
   Admin,
 }
 
-/// A list of what actions could the user do.
-// TODO: do we need more detailed privileges?
-enum UserPrivilege {
-  // Guest level
-  /// The ability to view public content on the site
-  ViewContent,
+/// A list of what actions could the user do, in an abstract class.
+///
+/// This is a workaround form as valued enums are not present in Dart.
+abstract class UserPrivilege {
+  // TODO: do we need more detailed privileges?
+  // TODO: When Dart FINALLY accepts valued enums, we need to rewrite this.
 
-  // User level
-  /// The ability to modify (including creating) an image by the user himself
-  EditImage,
+  /* === CAUTION ===
+   * The values in this fake enum should not be changed once determined
+   * to preserve backward compatibility. If we DO need to change this,
+   * mark as a breaking update.
+   */
 
-  /// The ability to delete an image posted by the user himself
-  DeleteImage,
+  // Using SCREAMING_CAPS because this is an enum! =w=
+
+  // === Guest level ===
+  /// The ability to view public content on the site.
+  /// Too bad if one cannot view any of the content in this website.
+  static const VIEW_CONTENT = 0;
+
+  // === User level ===
+  /// The ability to modify (including creating) contents posted
+  /// by the user himself
+  static const EDIT_OWN_CONTENT = 1;
+
+  /// The ability to tag other users' contents
+  static const TAG_PUBLIC_CONTENT = 2;
+
+  /// The ability to delete contents posted by the user himself
+  static const DELETE_OWN_CONTENT = 3;
 
   /// The ablility to post a comment
-  PostComment,
+  static const POST_COMMENT = 11;
 
   /// The ablility to change the profile of the user himself
-  ChangeProfile,
+  static const CHANGE_OWN_PROFILE = 21;
 
-  // Manager level
-  /// The ability to manage users' own images (modify and/or delete)
-  ManageImage,
+  // === Moderator level ===
+  /// The ability to manage contents across the site
+  static const EDIT_SITE_CONTENT = 100;
 
-  /// The ability to manage users' comments (modify and/or delete)
-  ManageComment,
+  /// The ability to delete contents across the site
+  static const DELETE_SITE_CONTENT = 101;
+
+  /// The ability to delete comments across the site
+  static const DELETE_SITE_COMMENT = 111;
 
   /// The ability to change users' profile
-  ManageUserProfile,
+  static const EDIT_USER_PROFILE = 120;
 
-  /// The ability to change users' privileges (to at most this user's level)
-  ManagerUserPrivilege,
+  /// The ability to change users' privileges (to at most this user's level);
+  ///
+  /// This also means that this moderator could disable other users' privileges
+  /// privilege in order to ban users.
+  static const EDIT_USER_PRIVILEGE = 121;
 
-  /// The ability to control the WHOLE site;
-  /// Should ONLY be given to the admin(s)
-  TotalControl,
+  /// The ability to approve other users' content
+  /// (if the site is configured to force approvement before showing contents)
+  static const APPROVE_CONTENT = 140;
+
+  /// The ability to access the statistic data of the site.
+  static const ACCESS_SITE_STATISTICS = 200;
+
+  // === Admin Level ===
+  /// The ability to have full control of the site;
+  /// Should ONLY be given to the site admin(s)
+  static const FULL_CONTROL = 300;
 }
 
 class AkaliUser extends ManagedObject {
@@ -80,7 +111,7 @@ class AkaliUser extends ManagedObject {
 
   UserLevel userLevel;
 
-  Set<UserPrivilege> previleges;
+  Set<int> previleges;
 
   AkaliUser() {}
 
@@ -133,7 +164,7 @@ class UserToken extends ManagedObject {
 
 /// A token for authorized 3rd party software to access user information
 class UserAccessToken extends UserToken {
-  Set<UserPrivilege> privileges;
+  Set<int> privileges;
 
   UserAccessToken(
     token,

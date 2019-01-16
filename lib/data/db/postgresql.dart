@@ -56,7 +56,7 @@ class AkaliPostgreSqlDb implements AkaliDatabase {
     return null;
   }
 
-  FutureOr<bool> checkToken(String accessToken, Set<UserPrivilege> privileges) {
+  FutureOr<bool> checkToken(String accessToken, Set<int> privileges) {
     // TODO: implement checkToken
     return null;
   }
