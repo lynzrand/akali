@@ -40,8 +40,7 @@ class AkaliPostgreSqlDb implements AkaliDatabase {
 
   // =============
 
-  FutureOr<void> grantedToken(String token, String tokenName,
-      {Set<UserPrivilege> privileges, otherInfo}) {
+  FutureOr<void> grantedToken(UserToken token) {
     // TODO: implement grantedToken
     return null;
   }

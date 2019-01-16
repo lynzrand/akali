@@ -25,7 +25,7 @@ class AkaliUser extends ManagedObject {
   static const _hashSaltLength = 64;
 
   /// How many time would you like the user to wait before validating?
-  static final _passwordCheckWaitTime = Duration(milliseconds: 200);
+  static const _passwordCheckWaitTime = Duration(milliseconds: 200);
 
   /// User identifier
   Ulid id;
@@ -81,4 +81,33 @@ class AkaliUser extends ManagedObject {
     ]);
     return validation;
   }
+}
+
+/// A token for user authorization.
+class UserToken extends ManagedObject {
+  int userId;
+  String token;
+  String name;
+  Map<String, dynamic> otherInfo;
+  DateTime expires;
+
+  UserToken(
+    this.token,
+    this.name, {
+    this.otherInfo,
+    this.expires,
+  });
+}
+
+/// A token for authorized 3rd party software to access user information
+class UserAccessToken extends UserToken {
+  Set<UserPrivilege> privileges;
+
+  UserAccessToken(
+    token,
+    name, {
+    this.privileges,
+    otherInfo,
+    expires,
+  }) : super(token, name, otherInfo: otherInfo, expires: expires);
 }

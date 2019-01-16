@@ -37,8 +37,7 @@ abstract class AkaliDatabase {
 
   /// Add the [token] ([tokenName]) with [privileges] and [otherInfo]
   /// granted by a user data manager to the token database.
-  FutureOr<void> grantedToken(String token, String tokenName,
-      {Set<UserPrivilege> privileges, dynamic otherInfo});
+  FutureOr<void> grantedToken(UserToken token);
 
   /// Delete the [token] from database.
   FutureOr<void> deletedToken(String token);

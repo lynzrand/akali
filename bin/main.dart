@@ -16,13 +16,15 @@ Future main(List<String> args) async {
     allowTrailingOptions: true,
     usageLineLength: 80,
   )
+
+    // === Options ===
+    ..addSeparator('Options')
     ..addOption(
       'config',
       abbr: 'c',
       help: 'Use the file in <path> as configuration.',
       valueHelp: 'path',
     )
-    ..addSeparator('')
     ..addOption(
       'database',
       abbr: 'D',
@@ -57,13 +59,21 @@ Future main(List<String> args) async {
       valueHelp: 'number',
       defaultsTo: '1',
     )
-    ..addOption(
-      'debug',
-      abbr: 'd',
-      help: 'Run Akali in debug mode. Does nothing.',
-      // 'Run Akali in debug mode. Will enable hot reloading, and probably other features in the future. This option is only usable when running from a clone of the repository with "--observe=<port>" on.',
-      valueHelp: 'port',
-    )
+    // ..addOption(
+    //   'debug',
+    //   abbr: 'd',
+    //   help: 'Run Akali in debug mode. Does nothing.',
+    //   // 'Run Akali in debug mode. Will enable hot reloading, and probably other features in the future. This option is only usable when running from a clone of the repository with "--observe=<port>" on.',
+    //   valueHelp: 'port',
+    // )
+
+    // === Flags ===
+    ..addSeparator('Flags')
+    ..addFlag('debug')
+    ..addFlag('verbose', abbr: 'V')
+
+    // === Extras ===
+    ..addSeparator('Extras')
     ..addFlag(
       'version',
       abbr: 'v',

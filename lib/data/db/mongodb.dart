@@ -14,6 +14,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
   static const _picCollectionName = "pic";
   static const _pendingPicCollectionName = "pendingPic";
   static const _userDataCollectionName = "user";
+  static const _tokenCollectionName = "token";
 
   bool _initialized = false;
 
@@ -26,6 +27,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
   DbCollection picCollection;
   DbCollection pendingPicCollection;
   DbCollection userCollection;
+  DbCollection tokenCollection;
 
   static String databaseType = "MongoDB";
   static String _dbPrefix = "[$databaseType]";
@@ -70,6 +72,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
     picCollection = db.collection(_picCollectionName);
     pendingPicCollection = db.collection(_pendingPicCollectionName);
     userCollection = db.collection(_userDataCollectionName);
+    tokenCollection = db.collection(_tokenCollectionName);
   }
 
   /// Post a new image to database. Returns the written confirmation.
@@ -136,9 +139,9 @@ class AkaliMongoDatabase implements AkaliDatabase {
 
   // =============
 
-  FutureOr<void> grantedToken(String token, String tokenName,
-      {Set<UserPrivilege> privileges, otherInfo}) {
+  FutureOr<void> grantedToken(UserToken token) {
     // TODO: implement grantedToken
+
     return null;
   }
 
