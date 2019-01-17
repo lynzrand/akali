@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:aqueduct/aqueduct.dart';
 import 'package:aqueduct/managed_auth.dart';
 import 'package:aqueduct/src/auth/auth.dart';
 import 'package:ulid/ulid.dart';
+import 'package:uuid/uuid.dart';
 import 'package:crypto/crypto.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -82,13 +84,65 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
   /// How many time would you like the user to wait before validating?
   static const _passwordCheckWaitTime = Duration(milliseconds: 200);
 
-  /// Unique User identifier
+  /// (Probably) the Unique User identifier. It's not the key in
+  /// any databases, but _should_ be stored in case we need it.
+  ///
+  /// It's basically the last 64 bits of the ObjectID. With this much
+  /// randomness we _hope_ it would not collide with others.
+  ///
   // Wait... MongoDB uses a 96-bit integer as ObjectID, and the
   // ultimate implementation of Akali needs to use a 128-bit integer as ID.
-  // TODO: make these things compatible with a 64-bit id  -- Rynco
-  int get id;
+  //
+  // Alright screw that I'll use my own implementation
+  int get id {
+    return _id.id.byteArray.getInt64(1);
+  }
 
-  Ulid _id;
+  /// The identifier used by MongoDB
+  ObjectId get objectId => _id;
+
+  /// The inner user identifier. Databases other than MongoDB
+  /// should use this value and pad 32 bits of zeros after it.
+  ObjectId _id;
+
+  /// The UUID of this user. Basically it's just the ObjectID reformed with
+  /// some zeros. If your database does not store 96-bit integers, try storing
+  /// this as it matches the 128-bit UUID format.
+  ///
+  /// The conversion works as shown to maintain a stable conversion:
+  ///
+  ///     ObjectId:
+  ///     [ Timestamp: 4 bytes ] [ Machine: 3 bytes ]
+  ///     [ PID: 2 bytes ] [ Random: 3 bytes ]
+  ///
+  ///     UUID (v1):
+  ///     msecs: [ Timestamp ]          (32 bits, as miliseconds)
+  ///     nsecs: [ PID ] >> 3           (13 bits)
+  ///     clockseq: [ PID ] & 0xC       (3 bits)
+  ///     node:  [ Machine ] [ Random ] (48 bits)
+  ///
+  /// And yes, you can still retrieve the time data from the UUID.
+  String get uuid {
+    final bytes = _id.id.byteArray;
+    final msecs = _id.dateTime.millisecondsSinceEpoch;
+    final nsecs = bytes.getUint16(7) / 8;
+    final clockseq = bytes.getUint8(8) % 8;
+    final node = [
+      bytes.getUint8(4),
+      bytes.getUint8(5),
+      bytes.getUint8(6),
+      bytes.getUint8(9),
+      bytes.getUint8(10),
+      bytes.getUint8(11)
+    ];
+
+    return Uuid().v1(options: {
+      "msecs": msecs,
+      "nsecs": nsecs,
+      "clockseq": clockseq,
+      "node": node
+    });
+  }
 
   /// Username, should be unique across platform
   String username;
@@ -96,17 +150,15 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
   /// Password hash that should be stored into database.
   ///
   /// At ANY time this value should not be exposed
-  // "String is okay. But I thought a buffer *could* be better."  -- Rynco
-  String _hashedPassword;
+  // String is okay. But I thought a buffer *could* be better.  -- Rynco
+  String hashedPassword;
 
-  /// The salt value used to calculate the password
-  String _salt;
-
-  UserLevel userLevel;
+  /// Salt used to calculate hash
+  String salt;
 
   List<AuthScope> previleges;
 
-  AkaliUser() {}
+  AkaliUser() : super();
 
   AkaliUser.fromMap(final Map<String, dynamic> map) {}
 
@@ -114,8 +166,8 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
   Map<String, dynamic> asMap([toDatabase = false]) {
     var map = super.asMap();
     if (toDatabase) {
-      map['_salt'] = _salt;
-      map['_hashedPassword'] = _hashedPassword;
+      map['_salt'] = salt;
+      map['_hashedPassword'] = hashedPassword;
     }
     return map;
   }
@@ -125,24 +177,24 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
     // Replaced with existing HashedPassword generation function
     // provided by Aqueduct.
     //    Maximum code reusing! Yay! >_<
-    _salt = AuthUtility.generateRandomSalt();
+    salt = AuthUtility.generateRandomSalt();
 
     // Add salt to password and hash it
-    _hashedPassword = AuthUtility.generatePasswordHash(password, _salt);
+    hashedPassword = AuthUtility.generatePasswordHash(password, salt);
   }
 
   /// Checks if [passwordToCheck] matches. Takes 500ms before returning, so
-  /// we need to use async methods.
+  /// we need to use async methods. Should not be needed in most cases since
+  /// we could use OAuth.
   Future<bool> checkPassword(String passwordToCheck) async {
-    var bufToCheck = utf8.encode(passwordToCheck + _salt);
-    var hashedBuf = sha256.convert(bufToCheck).bytes;
+    var hash = AuthUtility.generatePasswordHash(passwordToCheck, salt);
     var validation = false;
     await Future.wait([
       // try to avoid timing attack. We assume that any comparison between
       // fixed-sized int lists wouldn't exceed 200ms.
       // TODO: Use other validation methods like XORing buffers.
       Future.delayed(_passwordCheckWaitTime),
-      Future(() => validation = hashedBuf == _hashedPassword),
+      Future(() => validation = hash == hashedPassword),
     ]);
     return validation;
   }
@@ -155,7 +207,7 @@ class SeriManagedToken extends ManagedAuthToken {
   SeriManagedToken.fromCode(AuthCode code) : super.fromCode(code);
 
   /// Serializes this token into a MongoDB entry
-  Map<String, dynamic> toMongoDBEntry() {
+  Map<String, dynamic> asMongoDBEntry() {
     return {
       "id": id,
       "code": code,

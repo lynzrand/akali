@@ -151,7 +151,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
 
   FutureOr<void> addToken(AuthToken token, {AuthCode issuedFrom}) async {
     final serializableToken = SeriManagedToken.fromToken(token);
-    final map = serializableToken.toMongoDBEntry();
+    final map = serializableToken.asMongoDBEntry();
     if (issuedFrom != null) {
       map['issuedFrom'] = issuedFrom.code;
     }
@@ -200,24 +200,20 @@ class AkaliMongoDatabase implements AkaliDatabase {
   }
 
   @override
-  FutureOr<void> addCode(AuthCode code) {
-    // TODO: implement addCode
+  FutureOr<void> addCode(AuthCode code) async {
+    await authCodeCollection
+        .insert(SeriManagedToken.fromCode(code).asMongoDBEntry());
     return null;
   }
 
   @override
-  FutureOr<AuthClient> getClient(String clientID) {
-    // TODO: implement getClient
-    return null;
+  FutureOr<AuthCode> getCode(String code) async {
+    return SeriManagedToken.readFromMap(
+            await authCodeCollection.findOne(where.eq('code', code)))
+        .asAuthCode();
   }
 
-  @override
-  FutureOr<AuthCode> getCode(String code) {
-    // TODO: implement getCode
-    return null;
-  }
-
-  // TODO: this thing definitely needs optimization
+  // TODO: this thing definitely needs optimization... or does it?
   FutureOr<AuthToken> getTokenByAccessToken(String accessToken) async {
     return SeriManagedToken.readFromMap(
             await tokenCollection.findOne(where.eq('accessToken', accessToken)))
@@ -234,6 +230,12 @@ class AkaliMongoDatabase implements AkaliDatabase {
   @override
   FutureOr<AkaliUser> getUserById(ObjectId id) {
     // TODO: implement getUserById
+    return null;
+  }
+
+  @override
+  FutureOr<AuthClient> getClient(String clientID) {
+    // TODO: implement getClient
     return null;
   }
 
