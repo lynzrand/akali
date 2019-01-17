@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:aqueduct/aqueduct.dart';
+import 'package:aqueduct/managed_auth.dart';
 import 'package:ulid/ulid.dart';
 
 import 'package:akali/config.dart';
@@ -148,10 +149,13 @@ class AkaliMongoDatabase implements AkaliDatabase {
 
   // =============
 
-  FutureOr<void> addToken(AuthToken token) async {
-    // TODO: implement grantedToken
-
-    return null;
+  FutureOr<void> addToken(AuthToken token, {AuthCode issuedFrom}) async {
+    final serializableToken = SeriManagedToken.fromToken(token);
+    final map = serializableToken.toMongoDBEntry();
+    if (issuedFrom != null) {
+      map['issuedFrom'] = issuedFrom.code;
+    }
+    await tokenCollection.insert(map);
   }
 
   FutureOr<bool> checkToken(String accessToken) async {
@@ -160,11 +164,12 @@ class AkaliMongoDatabase implements AkaliDatabase {
   }
 
   FutureOr<void> removeToken(String token) async {
-    // TODO: implement deletedToken
-    return null;
+    await tokenCollection.remove(where.eq('accessToken', token));
   }
 
-  FutureOr<void> removeAllTokens(int resourceOwnerID) async {}
+  FutureOr<void> removeAllTokens(int resourceOwnerID) async {
+    await tokenCollection.remove(where.eq('resourceOwner', resourceOwnerID));
+  }
 
   FutureOr<AkaliUser> addUser(AkaliUser user) async {
     await userCollection.insert(user.asMap());
@@ -186,6 +191,74 @@ class AkaliMongoDatabase implements AkaliDatabase {
 
   FutureOr<AkaliUser> changeUserInfo(int id, Map<String, dynamic> info) async {
     // TODO: implement changeUserInfo
+    return null;
+  }
+
+  @override
+  FutureOr<AuthClient> addClient(AuthClient client) async {
+    return null;
+  }
+
+  @override
+  FutureOr<void> addCode(AuthCode code) {
+    // TODO: implement addCode
+    return null;
+  }
+
+  @override
+  FutureOr<AuthClient> getClient(String clientID) {
+    // TODO: implement getClient
+    return null;
+  }
+
+  @override
+  FutureOr<AuthCode> getCode(String code) {
+    // TODO: implement getCode
+    return null;
+  }
+
+  // TODO: this thing definitely needs optimization
+  FutureOr<AuthToken> getTokenByAccessToken(String accessToken) async {
+    return SeriManagedToken.readFromMap(
+            await tokenCollection.findOne(where.eq('accessToken', accessToken)))
+        .asToken();
+  }
+
+  @override
+  FutureOr<AuthToken> getTokenByRefreshToken(String refreshToken) async {
+    return SeriManagedToken.readFromMap(await tokenCollection
+            .findOne(where.eq('refreshToken', refreshToken)))
+        .asToken();
+  }
+
+  @override
+  FutureOr<AkaliUser> getUserById(ObjectId id) {
+    // TODO: implement getUserById
+    return null;
+  }
+
+  @override
+  FutureOr removeClient(String clientID) {
+    // TODO: implement removeClient
+    return null;
+  }
+
+  @override
+  FutureOr removeCode(String code) {
+    // TODO: implement removeCode
+    return null;
+  }
+
+  @override
+  FutureOr<void> removeTokenByCode(AuthCode code) {
+    // TODO: implement removeTokenByCode
+    return null;
+  }
+
+  @override
+  FutureOr<void> updateToken(String oldToken, String newToken,
+      DateTime newIssueDate, DateTime newExpirationDate) {
+    // TODO: implement updateToken
     return null;
   }
 }

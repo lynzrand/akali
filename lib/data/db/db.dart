@@ -8,6 +8,7 @@ import 'package:akali/data/models/pic.dart';
 import 'package:akali/data/auth/auth.dart';
 
 import 'package:aqueduct/aqueduct.dart';
+import 'package:aqueduct/managed_auth.dart';
 import 'package:ulid/ulid.dart';
 
 /// Database for Akali.

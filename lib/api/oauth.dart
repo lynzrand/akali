@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:mongo_dart/mongo_dart.dart';
 
 import 'package:aqueduct/aqueduct.dart';
+import 'package:aqueduct/managed_auth.dart';
 
 import 'package:akali/models.dart';
 import 'package:akali/data/auth/auth.dart';

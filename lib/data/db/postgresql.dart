@@ -41,7 +41,7 @@ class AkaliPostgreSqlDb implements AkaliDatabase {
 
   // =============
 
-  FutureOr<void> addToken(UserToken token) {
+  FutureOr<void> addToken(AuthToken token, {AuthCode issuedFrom}) {
     // TODO: implement grantedToken
     return null;
   }
@@ -51,8 +51,7 @@ class AkaliPostgreSqlDb implements AkaliDatabase {
     return null;
   }
 
-  FutureOr<AkaliUser> addUser(String username, String password,
-      [Map<String, dynamic> otherInfo]) {
+  FutureOr<AkaliUser> addUser(AkaliUser user) {
     // TODO: implement addUser
     return null;
   }
@@ -64,6 +63,97 @@ class AkaliPostgreSqlDb implements AkaliDatabase {
 
   FutureOr<AkaliUser> changeUserInfo(int id, Map<String, dynamic> info) {
     // TODO: implement changeUserInfo
+    return null;
+  }
+
+  @override
+  FutureOr<AuthClient> addClient(AuthClient client) {
+    // TODO: implement addClient
+    return null;
+  }
+
+  @override
+  FutureOr<void> addCode(AuthCode code) {
+    // TODO: implement addCode
+    return null;
+  }
+
+  @override
+  FutureOr deleteUser(String username) {
+    // TODO: implement deleteUser
+    return null;
+  }
+
+  @override
+  FutureOr deleteUserById(ObjectId id) {
+    // TODO: implement deleteUserById
+    return null;
+  }
+
+  @override
+  FutureOr<AuthClient> getClient(String clientID) {
+    // TODO: implement getClient
+    return null;
+  }
+
+  @override
+  FutureOr<AuthCode> getCode(String code) {
+    // TODO: implement getCode
+    return null;
+  }
+
+  @override
+  FutureOr<AuthToken> getTokenByAccessToken(String accessToken) {
+    // TODO: implement getTokenByAccessToken
+    return null;
+  }
+
+  @override
+  FutureOr<AuthToken> getTokenByRefreshToken(String refreshToken) {
+    // TODO: implement getTokenByRefreshToken
+    return null;
+  }
+
+  @override
+  FutureOr<AkaliUser> getUser(String username) {
+    // TODO: implement getUser
+    return null;
+  }
+
+  @override
+  FutureOr<AkaliUser> getUserById(ObjectId id) {
+    // TODO: implement getUserById
+    return null;
+  }
+
+  @override
+  FutureOr<void> removeAllTokens(int resourceOwnerID) {
+    // TODO: implement removeAllTokens
+    return null;
+  }
+
+  @override
+  FutureOr removeClient(String clientID) {
+    // TODO: implement removeClient
+    return null;
+  }
+
+  @override
+  FutureOr removeCode(String code) {
+    // TODO: implement removeCode
+    return null;
+  }
+
+  @override
+  FutureOr<void> removeTokenByCode(AuthCode code) {
+    // TODO: implement removeTokenByCode
+    return null;
+  }
+
+  @override
+  FutureOr<void> updateToken(String oldToken, String newToken,
+      DateTime newIssueDate, DateTime newExpirationDate) {
+    // TODO: implement updateToken
     return null;
   }
 }

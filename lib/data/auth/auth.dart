@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:convert';
 import 'package:aqueduct/aqueduct.dart';
+import 'package:aqueduct/managed_auth.dart';
 import 'package:aqueduct/src/auth/auth.dart';
 import 'package:ulid/ulid.dart';
 import 'package:crypto/crypto.dart';
@@ -85,7 +86,9 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
   // Wait... MongoDB uses a 96-bit integer as ObjectID, and the
   // ultimate implementation of Akali needs to use a 128-bit integer as ID.
   // TODO: make these things compatible with a 64-bit id  -- Rynco
-  int id;
+  int get id;
+
+  Ulid _id;
 
   /// Username, should be unique across platform
   String username;
@@ -106,6 +109,16 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
   AkaliUser() {}
 
   AkaliUser.fromMap(final Map<String, dynamic> map) {}
+
+  @override
+  Map<String, dynamic> asMap([toDatabase = false]) {
+    var map = super.asMap();
+    if (toDatabase) {
+      map['_salt'] = _salt;
+      map['_hashedPassword'] = _hashedPassword;
+    }
+    return map;
+  }
 
   /// Generates a new salt and hashes the [password] with salt
   void setPassword(String password) {
@@ -134,3 +147,33 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
     return validation;
   }
 }
+
+/// A more versatile auth token that also serializes to a MongoDB entry
+class SeriManagedToken extends ManagedAuthToken {
+  SeriManagedToken() : super();
+  SeriManagedToken.fromToken(AuthToken token) : super.fromToken(token);
+  SeriManagedToken.fromCode(AuthCode code) : super.fromCode(code);
+
+  /// Serializes this token into a MongoDB entry
+  Map<String, dynamic> toMongoDBEntry() {
+    return {
+      "id": id,
+      "code": code,
+      "accessToken": accessToken,
+      "refreshToken": refreshToken,
+      "scope": scope.split(' '),
+      "issueDate": issueDate,
+      "expirationDate": expirationDate,
+      "resourceOwner": resourceOwner.id,
+      "client": client.id,
+      "type": type,
+    };
+  }
+
+  SeriManagedToken.readFromMap(Map<String, dynamic> keyValues) {
+    keyValues['scope'] = (keyValues['scope'] as List).join(' ');
+    super.readFromMap(keyValues);
+  }
+}
+
+class SeriAuthClient extends ManagedAuthClient {}
