@@ -60,8 +60,45 @@ class AkaliAuthDelegate extends AuthServerDelegate {
     }
   }
 
-  @override
-  FutureOr removeToken(AuthServer server, AuthCode grantedByCode) {
-    // TODO: implement removeToken
+  FutureOr removeToken(AuthServer server, AuthCode grantedByCode) async {
+    await db.removeTokenByCode(grantedByCode);
+  }
+
+  FutureOr<void> removeTokens(AuthServer server, int resourceOwnerID) async {
+    await db.removeAllTokens(resourceOwnerID);
+  }
+
+  FutureOr<void> addToken(AuthServer server, AuthToken token,
+      {AuthCode issuedFrom}) async {
+    await db.addToken(token, issuedFrom: issuedFrom);
+  }
+
+  FutureOr updateToken(
+      AuthServer server,
+      String oldAccessToken,
+      String newAccessToken,
+      DateTime newIssueDate,
+      DateTime newExpirationDate) async {
+    await db.updateToken(
+        oldAccessToken, newAccessToken, newIssueDate, newExpirationDate);
+  }
+
+  FutureOr addCode(AuthServer server, AuthCode code) async {
+    await db.addCode(code);
+  }
+
+  FutureOr<AuthCode> getCode(AuthServer server, String code) async {
+    return await db.getCode(code);
+  }
+
+  FutureOr<void> removeCode(AuthServer server, String code) async {
+    await db.removeCode(code);
+  }
+
+  List<AuthScope> getAllowedScopes(ResourceOwner owner) {
+    if (ResourceOwner is! AkaliUser) {
+      throw ArgumentError.value(owner);
+    }
+    return (owner as AkaliUser).previleges;
   }
 }

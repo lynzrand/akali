@@ -101,7 +101,7 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
 
   UserLevel userLevel;
 
-  Set<int> previleges;
+  List<AuthScope> previleges;
 
   AkaliUser() {}
 

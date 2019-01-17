@@ -151,11 +151,6 @@ class ImgRequestHandler extends ResourceController {
     @Bind.query('access_token') String tokenQuery,
     @Bind.header('Access-Token') String tokenHeader,
   ]) async {
-    // TODO: authorization
-    db.checkToken(
-      tokenQuery ?? tokenHeader,
-      Set.of([UserPrivilege.EDIT_OWN_CONTENT]),
-    );
     var _id = ObjectId.fromHexString(id);
     var result;
     try {

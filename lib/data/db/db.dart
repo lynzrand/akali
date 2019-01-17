@@ -43,13 +43,14 @@ abstract class AkaliDatabase {
 
   /// Add the [token]
   /// granted by a user data manager to the token database.
-  FutureOr<void> addToken(AuthToken token);
+  FutureOr<void> addToken(AuthToken token, {AuthCode issuedFrom});
 
   FutureOr<AuthToken> getTokenByAccessToken(String accessToken);
   FutureOr<AuthToken> getTokenByRefreshToken(String refreshToken);
 
   /// Delete the [token] from database.
   FutureOr<void> removeToken(String token);
+  FutureOr<void> removeTokenByCode(AuthCode code);
   FutureOr<void> updateToken(String oldToken, String newToken,
       DateTime newIssueDate, DateTime newExpirationDate);
 
@@ -58,6 +59,10 @@ abstract class AkaliDatabase {
   FutureOr<AuthClient> addClient(AuthClient client);
   FutureOr<AuthClient> getClient(String clientID);
   FutureOr removeClient(String clientID);
+
+  FutureOr<void> addCode(AuthCode code);
+  FutureOr<AuthCode> getCode(String code);
+  FutureOr removeCode(String code);
 
   /// Add a new user having [username], [password] and [otherInfo]
   /// to existing user database.
