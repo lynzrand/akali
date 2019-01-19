@@ -43,7 +43,6 @@ class ImgRequestHandler extends ResourceController {
   Future<Response> listPicByQuery({
     @Bind.query('tags') String tags,
     @Bind.query('author') String author,
-    // @Bind.query('size') String sizeCriteria,
     @Bind.query('height') String height,
     @Bind.query('width') String width,
     @Bind.query('ratio') String ratio,
@@ -56,8 +55,6 @@ class ImgRequestHandler extends ResourceController {
     CriteriaTween heightRange;
     CriteriaTween widthRange;
     CriteriaTween ratioRange;
-    // double minAspectRatio;
-    // double maxAspectRatio;
     try {
       // Please note that seen by the server, query 'xxx+yyy' is the same as 'xxx yyy'.
       tagsList = _queryStringParser(tags);
@@ -65,10 +62,6 @@ class ImgRequestHandler extends ResourceController {
       heightRange = _queryRangeParser(height);
       widthRange = _queryRangeParser(width);
       ratioRange = _queryRatioRangeParser(ratio);
-      // if (minAspectRatioStr != null)
-      //   minAspectRatio = double.tryParse(minAspectRatioStr);
-      // if (maxAspectRatioStr != null)
-      //   maxAspectRatio = double.tryParse(maxAspectRatioStr);
     } catch (e, stacktrace) {
       throw Response.badRequest(body: {'error': e, 'stacktrace': stacktrace});
     }
@@ -164,7 +157,10 @@ class ImgRequestHandler extends ResourceController {
   ///
   /// Deletes the coresponding image and its metadata
   @Operation.delete('id')
-  Future<Response> deleteImageId(@Bind.path('id') String id) {}
+  Future<Response> deleteImageId(@Bind.path('id') String id) {
+    // TODO: implement
+    return null;
+  }
 
   List<String> _queryStringParser(String query) {
     return query?.split(' ');

@@ -157,7 +157,7 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
   /// Salt used to calculate hash
   String salt;
 
-  List<AuthScope> previleges;
+  List<AuthScope> privileges;
 
   AkaliUser() : super();
 
