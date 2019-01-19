@@ -27,7 +27,7 @@ class AkaliAuthDelegate extends AuthServerDelegate {
   ///
   /// Unlike the vanilla [ManagedAuthDelegate], this one does not care what
   /// database you pass in as long as it implements [AkaliDatabase].
-  AkaliAuthDelegate({this.db});
+  AkaliAuthDelegate({this.db}) : super();
 
   AkaliDatabase db;
 

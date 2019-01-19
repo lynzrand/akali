@@ -14,6 +14,7 @@ import 'package:aqueduct/managed_auth.dart';
 
 import 'fs.dart';
 import 'imgRequest.dart';
+import 'oauth.dart';
 
 /// Akali's default API.
 class AkaliApi extends ApplicationChannel {
@@ -46,7 +47,7 @@ class AkaliApi extends ApplicationChannel {
     webRootPath = options.context['webRootPath'];
     fileManager = AkaliLocalFileManager(fileStoragePath, webRootPath);
 
-    final authDelegate = ManagedAuthDelegate(context);
+    final authDelegate = AkaliAuthDelegate(db: _db);
     authServer = AuthServer(authDelegate);
 
     // logger.onRecord.listen(_handleLog);
@@ -68,6 +69,9 @@ class AkaliApi extends ApplicationChannel {
     router
         .route('/img/[:id]')
         .link(() => ImgRequestHandler(_db, fileManager, logger, webRootPath));
+
+    router.route('/auth/token').link(() => AuthController(authServer));
+    router.route('/auth/code').link(() => AuthCodeController(authServer));
 
     router.route('/auth/:action');
 
