@@ -234,33 +234,59 @@ class AkaliMongoDatabase implements AkaliDatabase {
   }
 
   @override
-  FutureOr<AuthClient> getClient(String clientID) {
-    // TODO: implement getClient
+  FutureOr<AuthClient> getClient(String clientID) async {
+    final result = await clientCollection.aggregate([
+      {
+        "\$match": {"id": clientID}
+      },
+      {
+        "\$lookup": {
+          "localField": "tokenIDs",
+          "from": _tokenCollectionName,
+          "foreignField": "id",
+          "as": "tokenMaps",
+        }
+      }
+    ], allowDiskUse: true);
+    if (result['result'] is List && (result['result'] as List).length == 1) {
+      return SeriAuthClient.readFromMap(
+              result['result'][0] as Map<String, dynamic>)
+          .asClient();
+    }
+    throw ArgumentError.value(clientID);
+  }
+
+  @override
+  FutureOr<void> removeClient(String clientID) async {
+    final client = await clientCollection.findOne(where.eq('id', clientID));
+    final tokens = client['tokenIDs'] as List<String>;
+    await tokenCollection.remove(where.oneFrom('id', tokens));
+    await authCodeCollection.remove(where.oneFrom('id', tokens));
+    await clientCollection.remove(where.eq('id', clientID));
     return null;
   }
 
   @override
-  FutureOr removeClient(String clientID) {
-    // TODO: implement removeClient
-    return null;
+  FutureOr<void> removeCode(String code) async {
+    await authCodeCollection.remove(where.eq('code', code));
   }
 
   @override
-  FutureOr removeCode(String code) {
-    // TODO: implement removeCode
-    return null;
-  }
-
-  @override
-  FutureOr<void> removeTokenByCode(AuthCode code) {
-    // TODO: implement removeTokenByCode
+  FutureOr<void> removeTokenByCode(AuthCode code) async {
+    await tokenCollection.remove(where.eq('code', code));
     return null;
   }
 
   @override
   FutureOr<void> updateToken(String oldToken, String newToken,
-      DateTime newIssueDate, DateTime newExpirationDate) {
-    // TODO: implement updateToken
-    return null;
+      DateTime newIssueDate, DateTime newExpirationDate) async {
+    await tokenCollection.findAndModify(
+      query: where.eq('accessToken', oldToken),
+      update: {
+        "accessToken": newToken,
+        "issueDate": newIssueDate,
+        "expirationDate": newExpirationDate,
+      },
+    );
   }
 }

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:aqueduct/aqueduct.dart';
 import 'package:aqueduct/managed_auth.dart';
 import 'package:aqueduct/src/auth/auth.dart';
+import 'package:akali/data/db/db.dart';
 import 'package:ulid/ulid.dart';
 import 'package:uuid/uuid.dart';
 import 'package:crypto/crypto.dart';
@@ -162,8 +163,11 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
 
   AkaliUser.fromMap(final Map<String, dynamic> map) {}
 
-  @override
-  Map<String, dynamic> asMap([toDatabase = false]) {
+  Map<String, dynamic> asMongoDBEntry() {
+    return asMap(true);
+  }
+
+  Map<String, dynamic> asMap([final bool toDatabase = false]) {
     var map = super.asMap();
     if (toDatabase) {
       map['_salt'] = salt;
@@ -222,10 +226,81 @@ class SeriManagedToken extends ManagedAuthToken {
     };
   }
 
-  SeriManagedToken.readFromMap(Map<String, dynamic> keyValues) {
-    keyValues['scope'] = (keyValues['scope'] as List).join(' ');
-    super.readFromMap(keyValues);
+  SeriManagedToken.readFromMap(Map<String, dynamic> map) {
+    map['scope'] = (map['scope'] as List).join(' ');
+    super.readFromMap(map);
   }
 }
 
-class SeriAuthClient extends ManagedAuthClient {}
+class SeriAuthClient extends ManagedAuthClient {
+  /* 
+    /// The client identifier of this client.
+  ///
+  /// An OAuth 2.0 client represents the client application that authorizes on behalf of the user
+  /// with this server. For example 'com.company.mobile_apps'. This value is required.
+  @Column(primaryKey: true)
+  String id;
+
+  /// The client secret, hashed with [salt], if this client is confidential.
+  ///
+  /// A confidential client requires its secret to be included when used. If this value is null,
+  /// this client is a public client.
+  @Column(nullable: true)
+  String hashedSecret;
+
+  /// The hashing salt for [hashedSecret].
+  @Column(nullable: true)
+  String salt;
+
+  /// The redirect URI for the authorization code flow.
+  ///
+  /// This value must be a valid URI to allow the authorization code flow. A user agent
+  /// is redirected to this URI with an authorization code that can be exchanged
+  /// for a token. Only confidential clients may have a value.
+  @Column(nullable: true)
+  String redirectURI;
+
+  /// Scopes that this client allows.
+  ///
+  /// If null, this client does not support scopes and all tokens are valid for all routes.
+  @Column(nullable: true)
+  String allowedScope;
+
+  /// Tokens that have been issued for this client.
+  ManagedSet<ManagedAuthToken> tokens;
+  */
+  SeriAuthClient() : super();
+  SeriAuthClient.fromClient(AuthClient client) : super.fromClient(client);
+
+  Map<String, dynamic> asMongoDBEntry() {
+    return {
+      "id": id,
+      "hashedSecret": hashedSecret,
+      "hashedCode": hashCode,
+      "redirectURI": redirectURI,
+      "allowedScope": allowedScope.split(' '),
+      "tokenIDs": tokens.map((token) => token.id)
+    };
+  }
+
+  /// Reads the client data from a map.
+  ///
+  /// **CAUTION: This method does not read the tokens associated with this**
+  /// **client on itself! Please make sure you assign them afterwards or pass
+  /// them under the "tokenMaps" key!**
+  ///
+  /// This is a workaround for compatibility between
+  /// PostgreSQL and MongoDB.
+  SeriAuthClient.readFromMap(Map<String, dynamic> map) {
+    super.readFromMap(map);
+
+    // Pass token maps if they are already present
+    if (map['tokenMaps'] != null &&
+        map['tokenMaps'] is List<Map<String, dynamic>>) {
+      final tokenMaps = map['tokenMaps'] as List<Map<String, dynamic>>;
+      this.tokens = ManagedSet.from(tokenMaps.map((map) {
+        return SeriManagedToken.readFromMap(map);
+      }));
+    }
+  }
+}

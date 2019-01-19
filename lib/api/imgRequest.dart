@@ -65,7 +65,6 @@ class ImgRequestHandler extends ResourceController {
       heightRange = _queryRangeParser(height);
       widthRange = _queryRangeParser(width);
       ratioRange = _queryRatioRangeParser(ratio);
-      // TODO: Add size search
       // if (minAspectRatioStr != null)
       //   minAspectRatio = double.tryParse(minAspectRatioStr);
       // if (maxAspectRatioStr != null)
