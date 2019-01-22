@@ -173,7 +173,8 @@ class AkaliMongoDatabase implements AkaliDatabase {
 
   FutureOr<AkaliUser> addUser(AkaliUser user) async {
     await userCollection.insert(user.asMap());
-    return null;
+    return AkaliUser.fromMap(
+        await userCollection.findOne(where.eq("username", user.username)));
   }
 
   FutureOr<AkaliUser> getUser(String username) async {
@@ -196,7 +197,9 @@ class AkaliMongoDatabase implements AkaliDatabase {
 
   @override
   FutureOr<AuthClient> addClient(AuthClient client) async {
-    return null;
+    await clientCollection
+        .insert(SeriAuthClient.fromClient(client).asMongoDBEntry());
+    return client;
   }
 
   @override

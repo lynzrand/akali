@@ -17,7 +17,7 @@ enum UserLevel {
   Manager,
   Admin,
 }
-
+/*
 // TODO: switch to a more flexible AuthScope implementation
 // Do we need more detailed privileges? -- YES!
 
@@ -79,7 +79,26 @@ abstract class UserPrivilege {
   /// The ability to have full control of the site;
   /// Should ONLY be given to the site admin(s)
   static const FULL_CONTROL = 451;
-}
+}*/
+
+const List<String> userPrivileges = [
+  'guest.viewContents',
+  'user.sendContent',
+  'user.editOwnContent',
+  'user.deleteOwnContent',
+  'user.sendComment',
+  'user.editOwnComment',
+  'user.deleteOwnComment',
+  'user.editOwnTags',
+  'user.editAllTags',
+  'user.reportContent',
+  'admin.editSiteContent',
+  'admin.deleteSiteContent',
+  'admin.approveContent',
+  'admin.deleteSiteComment',
+  'admin.accessStatistics',
+  'admin.fullControl',
+];
 
 class AkaliUser extends ManagedObject implements ResourceOwner {
   /// How many time would you like the user to wait before validating?

@@ -71,7 +71,7 @@ class AkaliApi extends ApplicationChannel {
         .link(() => ImgRequestHandler(_db, fileManager, logger, webRootPath));
 
     router.route('/auth/token').link(() => AuthController(authServer));
-    router.route('/auth/code').link(() => AuthCodeController(authServer));
+    router.route('/auth/code').link(() => AuthRedirectController(authServer));
 
     router.route('/auth/:action');
 

@@ -103,3 +103,13 @@ class AkaliAuthDelegate extends AuthServerDelegate {
     return (owner as AkaliUser).privileges;
   }
 }
+
+class AkaliRegisterController extends ResourceController {
+  AkaliDatabase db;
+  AkaliRegisterController(this.db);
+
+  @Operation.post()
+  Future<AkaliUser> register(@Bind.body() AkaliUser user) async {
+    return await db.addUser(user);
+  }
+}
