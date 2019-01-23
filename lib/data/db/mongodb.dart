@@ -147,6 +147,10 @@ class AkaliMongoDatabase implements AkaliDatabase {
     return null;
   }
 
+  Future<void> deleteImg(ObjectId id) async {
+    await picCollection.remove(where.id(id));
+  }
+
   // =============
 
   FutureOr<void> addToken(AuthToken token, {AuthCode issuedFrom}) async {

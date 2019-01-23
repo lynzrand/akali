@@ -37,6 +37,8 @@ abstract class AkaliDatabase {
   /// Update the information of image [id] with [newInfo]
   FutureOr<dynamic> updateImgInfo(Pic newInfo, ObjectId id);
 
+  Future<void> deleteImg(ObjectId id);
+
   // ---- Auth stuff ----
 
   // /// Check if the [accessToken] required has [privileges].
