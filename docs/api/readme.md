@@ -15,8 +15,9 @@ your.akali.site/
         :id         GET, PUT, DELETE
       tags/         GET, POST
         [TBD]
-      user/
-        [TBD]
+      auth/
+        code        GET
+        
 ```
 
 The following content lists all apis used by Akali:

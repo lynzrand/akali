@@ -113,3 +113,14 @@ class AkaliRegisterController extends ResourceController {
     return await db.addUser(user);
   }
 }
+
+class AkaliClientRegisterController extends ResourceController {
+  AkaliDatabase db;
+
+  AkaliClientRegisterController(this.db);
+
+  @Operation.post()
+  Future<void> registerClient(@Bind.body() SeriAuthClient client) async {
+    await db.addClient(client.asClient());
+  }
+}
