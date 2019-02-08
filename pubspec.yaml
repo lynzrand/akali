@@ -16,12 +16,15 @@ dependencies:
   mongo_dart: ^0.3.4
   isolate: ^2.0.2
   crypto: ^2.0.6
+  dson: 0.15.3
 
 dev_dependencies:
   test: any
   aqueduct_test: any
   vm_service_lib: ^0.3.10
   vm_service_client: ^0.2.6
+  build_runner: any
+  build_web_compilers: any
 
 executables:
   akali: main
