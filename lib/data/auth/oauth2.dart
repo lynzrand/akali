@@ -40,7 +40,7 @@ class User {
 
   // Screw those ObjectIDs and UUIDs. Just use Ulid for simplicity.
   /// The unique identifier generated when the user is created.
-  @
+  @ignore
   Ulid _id;
 
   /// Basically just renders its ULID into UUID format.
@@ -83,11 +83,11 @@ class User {
     hashedPassword = base64Encode(sha256.convert(value.codeUnits).bytes);
   }
 
-  Map<String, dynamic> toInfoMap(){
+  Map<String, dynamic> toInfoMap() {
     return toMap(this, exclude: ['hashedPassword', 'salt', '_id']);
   }
 
-  Map<String, dynamic> toStorageMap(){
+  Map<String, dynamic> toStorageMap() {
     return toMap(this);
   }
 }
@@ -96,4 +96,12 @@ class User {
 class AccessToken {
   String token;
   String refreshToken;
+  Ulid user;
+  DateTime expires;
+}
+
+@serializable
+class Client {
+  String id;
+  String secret;
 }

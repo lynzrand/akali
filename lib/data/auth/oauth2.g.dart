@@ -20,6 +20,8 @@ abstract class _$UserSerializable extends SerializableMap {
   void set salt(String v);
   void set password(String v);
   dynamic _generateSalt();
+  Map<String, dynamic> toInfoMap();
+  Map<String, dynamic> toStorageMap();
 
   operator [](Object __key) {
     switch (__key) {
@@ -39,6 +41,10 @@ abstract class _$UserSerializable extends SerializableMap {
         return uuidBsonBinary;
       case '_generateSalt':
         return _generateSalt;
+      case 'toInfoMap':
+        return toInfoMap;
+      case 'toStorageMap':
+        return toStorageMap;
     }
     throwFieldNotFoundException(__key, 'User');
   }
@@ -67,6 +73,82 @@ abstract class _$UserSerializable extends SerializableMap {
   Iterable<String> get keys => UserClassMirror.fields.keys;
 }
 
+abstract class _$AccessTokenSerializable extends SerializableMap {
+  String get token;
+  String get refreshToken;
+  Ulid get user;
+  DateTime get expires;
+  void set token(String v);
+  void set refreshToken(String v);
+  void set user(Ulid v);
+  void set expires(DateTime v);
+
+  operator [](Object __key) {
+    switch (__key) {
+      case 'token':
+        return token;
+      case 'refreshToken':
+        return refreshToken;
+      case 'user':
+        return user;
+      case 'expires':
+        return expires;
+    }
+    throwFieldNotFoundException(__key, 'AccessToken');
+  }
+
+  operator []=(Object __key, __value) {
+    switch (__key) {
+      case 'token':
+        token = __value;
+        return;
+      case 'refreshToken':
+        refreshToken = __value;
+        return;
+      case 'user':
+        user = fromSerialized(__value, () => new Ulid());
+        return;
+      case 'expires':
+        expires = fromSerializedDateTime(__value);
+        return;
+    }
+    throwFieldNotFoundException(__key, 'AccessToken');
+  }
+
+  Iterable<String> get keys => AccessTokenClassMirror.fields.keys;
+}
+
+abstract class _$ClientSerializable extends SerializableMap {
+  String get id;
+  String get secret;
+  void set id(String v);
+  void set secret(String v);
+
+  operator [](Object __key) {
+    switch (__key) {
+      case 'id':
+        return id;
+      case 'secret':
+        return secret;
+    }
+    throwFieldNotFoundException(__key, 'Client');
+  }
+
+  operator []=(Object __key, __value) {
+    switch (__key) {
+      case 'id':
+        id = __value;
+        return;
+      case 'secret':
+        secret = __value;
+        return;
+    }
+    throwFieldNotFoundException(__key, 'Client');
+  }
+
+  Iterable<String> get keys => ClientClassMirror.fields.keys;
+}
+
 // **************************************************************************
 // MirrorsGenerator
 // **************************************************************************
@@ -77,7 +159,8 @@ const $$User_fields_SALT_LENGTH =
     const DeclarationMirror(name: 'SALT_LENGTH', type: int);
 const $$User_fields_PASSWORD_CHECK_TIME =
     const DeclarationMirror(name: 'PASSWORD_CHECK_TIME', type: int);
-const $$User_fields__id = const DeclarationMirror(name: '_id', type: Ulid);
+const $$User_fields__id = const DeclarationMirror(
+    name: '_id', type: Ulid, annotations: const [ignore]);
 const $$User_fields_username =
     const DeclarationMirror(name: 'username', type: String);
 const $$User_fields_hashedPassword =
@@ -121,5 +204,74 @@ const UserClassMirror = const ClassMirror(name: 'User', constructors: const {
   '_generateSalt': const FunctionMirror(
     name: '_generateSalt',
     returnType: dynamic,
+  ),
+  'toInfoMap': const FunctionMirror(
+    name: 'toInfoMap',
+    returnType: const [
+      Map,
+      const [String, dynamic]
+    ],
+  ),
+  'toStorageMap': const FunctionMirror(
+    name: 'toStorageMap',
+    returnType: const [
+      Map,
+      const [String, dynamic]
+    ],
   )
 });
+
+_AccessToken__Constructor([positionalParams, namedParams]) => new AccessToken();
+
+const $$AccessToken_fields_token =
+    const DeclarationMirror(name: 'token', type: String);
+const $$AccessToken_fields_refreshToken =
+    const DeclarationMirror(name: 'refreshToken', type: String);
+const $$AccessToken_fields_user =
+    const DeclarationMirror(name: 'user', type: Ulid);
+const $$AccessToken_fields_expires =
+    const DeclarationMirror(name: 'expires', type: DateTime);
+
+const AccessTokenClassMirror =
+    const ClassMirror(name: 'AccessToken', constructors: const {
+  '': const FunctionMirror(name: '', $call: _AccessToken__Constructor)
+}, fields: const {
+  'token': $$AccessToken_fields_token,
+  'refreshToken': $$AccessToken_fields_refreshToken,
+  'user': $$AccessToken_fields_user,
+  'expires': $$AccessToken_fields_expires
+}, getters: const [
+  'token',
+  'refreshToken',
+  'user',
+  'expires'
+], setters: const [
+  'token',
+  'refreshToken',
+  'user',
+  'expires'
+]);
+
+_Client__Constructor([positionalParams, namedParams]) => new Client();
+
+const $$Client_fields_id = const DeclarationMirror(name: 'id', type: String);
+const $$Client_fields_secret =
+    const DeclarationMirror(name: 'secret', type: String);
+
+const ClientClassMirror = const ClassMirror(
+    name: 'Client',
+    constructors: const {
+      '': const FunctionMirror(name: '', $call: _Client__Constructor)
+    },
+    fields: const {
+      'id': $$Client_fields_id,
+      'secret': $$Client_fields_secret
+    },
+    getters: const [
+      'id',
+      'secret'
+    ],
+    setters: const [
+      'id',
+      'secret'
+    ]);
