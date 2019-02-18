@@ -114,6 +114,7 @@ class ImgRequestHandler extends ResourceController {
       throw Response.badRequest(
           body: {"error": "You are not uploading an image"});
     }
+    //TODO:: using UUID
     var id = ObjectId();
     var path;
     try {
@@ -143,10 +144,9 @@ class ImgRequestHandler extends ResourceController {
     @Bind.query('access_token') String tokenQuery,
     @Bind.header('Access-Token') String tokenHeader,
   ]) async {
-    var _id = ObjectId.fromHexString(id);
     var result;
     try {
-      result = await db.updateImgInfo(newInfo, _id);
+      result = await db.updateImgInfo(newInfo, id);
     } catch (e) {
       return Response.badRequest(body: {'error': e, 'message': result});
     }

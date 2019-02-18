@@ -1,31 +1,8 @@
 import 'dart:convert';
 
-import 'package:mongo_dart/mongo_dart.dart' as mongo;
-import 'package:aqueduct/aqueduct.dart';
-
-class Pic implements Serializable {
-  /// Unique identifier of the picture.
-  /// Should contain timestamp according to MongoDB's configuration.
-  ///
-  /// If you use other databases, you must manually add a timestamp property
-  /// instead of using [timestamp].
-
-  mongo.ObjectId _id;
-
-  String get id {
-    return _id.toHexString();
-  }
-
-  set id(value) {
-    if (value == null)
-      _id = mongo.ObjectId(clientMode: true);
-    else if (value is mongo.ObjectId)
-      _id = value;
-    else if (value is String)
-      _id = mongo.ObjectId.fromHexString(value);
-    else
-      throw ArgumentError.value(value);
-  }
+class Pic {
+  // UUID of the pictures
+  String id;
 
   /// title of the picture
   String title;
@@ -37,7 +14,7 @@ class Pic implements Serializable {
   String author;
 
   /// The ID of the uploader
-  int uploaderId;
+  String uploaderId;
 
   /// link to the picture
   ///
@@ -72,14 +49,10 @@ class Pic implements Serializable {
   /// tags
   List<String> tags;
 
-  DateTime get timestamp {
-    return _id.dateTime;
-  }
+  /// timestamp
+  DateTime dueDate;
 
-  APISchemaObject documentSchema(APIDocumentContext context) {
-    return APISchemaObject.map();
-  }
-
+  /// return mapped information
   Map<String, dynamic> asMap() {
     return {
       '_id': id,
@@ -94,7 +67,7 @@ class Pic implements Serializable {
       'previewLink': previewLink,
       'previewWidth': previewWidth,
       'previewHeight': previewHeight,
-      'tags': tags,
+      'tags': tags
     };
   }
 
@@ -103,7 +76,7 @@ class Pic implements Serializable {
   }
 
   String toString() {
-    return this.toJson();
+    return this.toString();
   }
 
   Pic.readFromMap(Map<String, dynamic> map) {
@@ -135,8 +108,6 @@ class Pic implements Serializable {
     previewHeight = map['previewHeight'];
     if (map['tags'] != null) tags = List<String>.from(map['tags']);
   }
-
-  Pic();
 }
 
 enum ImageRating { safe, questionable, explicit }
@@ -150,13 +121,6 @@ class CriteriaTween<T> {
 }
 
 class ImageSearchCriteria {
-  // int width.min;
-  // int maxWidth;
-  // int height.min;
-  // int maxHeight;
-  // double minAspectRatio;
-  // double maxAspectRatio;
-
   CriteriaTween<int> width;
   CriteriaTween<int> height;
   CriteriaTween<double> aspectRatio;
@@ -165,12 +129,12 @@ class ImageSearchCriteria {
 
   ImageSearchCriteria() {}
 
-  Map<String, dynamic> asMongoDBQuery() {
-    return {
-      'tags': {'\$all': tags},
-      'author': {'\$any': authors},
-    };
-  }
+  // Map<String, dynamic> asMongoDBQuery() {
+  //   return {
+  //     'tags': {'\$all': tags},
+  //     'author': {'\$any': authors},
+  //   };
+  // }
 
   static const int breakpointSmallPic = 960;
   static const int breakpointMediumPic = 1080;
@@ -222,8 +186,8 @@ class ImageSearchCriteria {
     return this;
   }
 
-  ImageSearchCriteria orientation(ImageOrientation o) {
-    switch (o) {
+  ImageSearchCriteria orientation(ImageOrientation _) {
+    switch (_) {
       case ImageOrientation.any:
         break;
       case ImageOrientation.horizontal:

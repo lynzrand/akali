@@ -123,12 +123,14 @@ class AkaliMongoDatabase implements AkaliDatabase {
   /// Find **the** picture with this [id].
   ///
   /// Preferably used when viewing specific pictures.
-  Future<Pic> queryImgID(ObjectId id) async {
-    return Pic.readFromMap(await picCollection.findOne(where.id(id)));
+  Future<Pic> queryImgID(String id) async {
+    return Pic.readFromMap(
+        await picCollection.findOne(where.id(ObjectId.fromHexString(id))));
   }
 
-  Future<dynamic> updateImgInfo(Pic newInfo, ObjectId id) async {
-    return await picCollection.update(where.id(id), newInfo.asMap());
+  Future<dynamic> updateImgInfo(Pic newInfo, String id) async {
+    return await picCollection.update(
+        where.id(ObjectId.fromHexString(id)), newInfo.asMap());
   }
 
   /// Adds an image with link [blobLink] and no info related
@@ -147,8 +149,8 @@ class AkaliMongoDatabase implements AkaliDatabase {
     return null;
   }
 
-  Future<void> deleteImg(ObjectId id) async {
-    await picCollection.remove(where.id(id));
+  Future<void> deleteImg(String id) async {
+    await picCollection.remove(where.id(ObjectId.fromHexString(id)));
   }
 
   // =============
@@ -190,8 +192,8 @@ class AkaliMongoDatabase implements AkaliDatabase {
     await userCollection.remove(where.eq('username', username));
   }
 
-  FutureOr<void> deleteUserById(ObjectId id) async {
-    await userCollection.remove(where.id(id));
+  FutureOr<void> deleteUserById(String id) async {
+    await userCollection.remove(where.id(ObjectId.fromHexString(id)));
   }
 
   FutureOr<AkaliUser> changeUserInfo(int id, Map<String, dynamic> info) async {
@@ -235,7 +237,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
   }
 
   @override
-  FutureOr<AkaliUser> getUserById(ObjectId id) {
+  FutureOr<AkaliUser> getUserById(String id) {
     // TODO: implement getUserById
     return null;
   }

@@ -106,6 +106,7 @@ Future main(List<String> args) async {
   var app = Application<AkaliApi>();
   app.options
     ..context = {
+      //TODO::Protocol analysis
       'databaseUri': runConf['database'].toString(),
       'fileStoragePath': runConf['storage-path'],
       'webRootPath': runConf['web-root-path'],

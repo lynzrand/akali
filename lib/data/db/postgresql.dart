@@ -1,20 +1,61 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:mongo_dart/mongo_dart.dart';
+import 'package:postgres/postgres.dart';
 import 'package:aqueduct/aqueduct.dart';
-import 'package:ulid/ulid.dart';
 
-import 'package:akali/config.dart';
 import 'package:akali/models.dart';
 import 'package:akali/data/auth/auth.dart';
 
 /// The PostgreSQL implementation of [AkaliDatabase]. Mostly undone.
 class AkaliPostgreSqlDb implements AkaliDatabase {
+  bool _initialized = false;
+
+  Logger logger;
+  String host;
+  int port;
+  String databaseName;
+  String username;
+  String password;
+
+  PostgreSQLConnection dbConn;
+
+  static String databaseType = "PostgresqlDB";
+  static String _dbPrefix = "[$databaseType]";
+
+  AkaliPostgreSqlDb(String uri, Logger logger) {
+    this.logger = logger;
+  }
+
   @override
-  FutureOr<void> init() {
-    // TODO: implement init
-    return null;
+  FutureOr<void> init() async {
+    if (_initialized) return;
+    _initialized = true;
+
+    int tryTimes = 0;
+    const maxTryTimes = 5;
+
+    while (tryTimes < maxTryTimes) {
+      logger.info("$_dbPrefix Connecting to $databaseName");
+      dbConn = new PostgreSQLConnection(host, port, databaseName,
+          username: username, password: password);
+      try {
+        await dbConn.open();
+        break;
+      } catch (e, stacktrace) {
+        logger.warning(
+            "$_dbPrefix Unable to connect with $databaseName", e, stacktrace);
+        await Future.delayed(Duration(seconds: 1));
+        tryTimes++;
+      }
+    }
+    if (tryTimes >= maxTryTimes) {
+      logger.severe("$_dbPrefix Unable to connect $databaseName. Giving up.");
+      exit(25);
+    }
+    logger.info("$_dbPrefix Connected to $databaseName.");
+
+    // Initialize collections
   }
 
   @override
@@ -28,16 +69,19 @@ class AkaliPostgreSqlDb implements AkaliDatabase {
   }
 
   @override
-  FutureOr<Pic> queryImgID(ObjectId id) {
+  FutureOr<Pic> queryImgID(String id) {
     // TODO: implement queryImgID
     return null;
   }
 
   @override
-  FutureOr updateImgInfo(Pic newInfo, ObjectId id) {
+  FutureOr updateImgInfo(Pic newInfo, String id) {
     // TODO: implement updateImgInfo
     return null;
   }
+
+  @override
+  Future<void> deleteImg(String id) {}
 
   // =============
 
@@ -85,7 +129,7 @@ class AkaliPostgreSqlDb implements AkaliDatabase {
   }
 
   @override
-  FutureOr deleteUserById(ObjectId id) {
+  FutureOr deleteUserById(String id) {
     // TODO: implement deleteUserById
     return null;
   }
@@ -121,7 +165,7 @@ class AkaliPostgreSqlDb implements AkaliDatabase {
   }
 
   @override
-  FutureOr<AkaliUser> getUserById(ObjectId id) {
+  FutureOr<AkaliUser> getUserById(String id) {
     // TODO: implement getUserById
     return null;
   }

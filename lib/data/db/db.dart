@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:mongo_dart/mongo_dart.dart';
-
 import 'package:akali/config.dart';
 import 'package:akali/data/models/pic.dart';
 import 'package:akali/data/auth/auth.dart';
 
 import 'package:aqueduct/aqueduct.dart';
 import 'package:aqueduct/managed_auth.dart';
-import 'package:ulid/ulid.dart';
 
 /// Database for Akali.
 ///
@@ -32,12 +29,12 @@ abstract class AkaliDatabase {
   FutureOr<List<Pic>> queryImg(ImageSearchCriteria crit, {int limit, int skip});
 
   /// Get the specific picture with [id]
-  FutureOr<Pic> queryImgID(ObjectId id);
+  FutureOr<Pic> queryImgID(String id);
 
   /// Update the information of image [id] with [newInfo]
-  FutureOr<dynamic> updateImgInfo(Pic newInfo, ObjectId id);
+  FutureOr<dynamic> updateImgInfo(Pic newInfo, String id);
 
-  Future<void> deleteImg(ObjectId id);
+  Future<void> deleteImg(String id);
 
   // ---- Auth stuff ----
 
@@ -75,7 +72,7 @@ abstract class AkaliDatabase {
   FutureOr<AkaliUser> getUser(String username);
 
   /// Gets the information of user [id].
-  FutureOr<AkaliUser> getUserById(ObjectId id);
+  FutureOr<AkaliUser> getUserById(String id);
 
   /// Deletes the specific user by [username].
   // Flagging them for deletion and delete after a period of time may be a
@@ -83,7 +80,7 @@ abstract class AkaliDatabase {
   FutureOr deleteUser(String username);
 
   /// Deletes the specific user by [id].
-  FutureOr deleteUserById(ObjectId id);
+  FutureOr deleteUserById(String id);
 
   /// Modify user [id]'s info to match [info]
   FutureOr<AkaliUser> changeUserInfo(int id, Map<String, dynamic> info);

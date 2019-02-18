@@ -40,6 +40,7 @@ class AkaliApi extends ApplicationChannel {
   @override
   Future prepare() async {
     databaseUri = options.context['databaseUri'];
+    //TODO::Protocol analysis
     _db = AkaliMongoDatabase(databaseUri, logger);
     await _db.init();
 
