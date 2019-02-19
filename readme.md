@@ -14,13 +14,6 @@ Akali is an experimental _scalable and expandable_ pic site (booru) server writt
 Main repository: [GitLab](https://gitlab.com/01010101lzy/akali)  
 Mirror: [GitHub](https://github.com/01010101lzy/akali)
 
-## Development
-
-Akali requires the following software environment:
-
-- Dart VM: `^2.1.0`
-- MongoDB: `^3.6.0`
-
 ## Installation
 
 After Akali is published to [Dart Pub](https://pub.dartlang.com/), you may install it with `pub global activate akali`. But before that, you should activate with either way listed below:
