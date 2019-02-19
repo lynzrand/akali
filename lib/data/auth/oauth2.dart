@@ -105,3 +105,11 @@ class Client {
   String id;
   String secret;
 }
+
+abstract class OAuthDatabase<UserClass extends User,
+    TokenClass extends AccessToken, ClientClass extends Client> {
+  UserClass addUser(UserClass user);
+}
+
+class OAuthManager<UserClass extends User, TokenClass extends AccessToken,
+    ClientClass extends Client> {}
