@@ -88,8 +88,7 @@ class User {
   _generateSalt() {
     var randomizer = Random.secure();
     // generate
-    salt = String.fromCharCodes(
-        Iterable.generate(SALT_LENGTH, (_) => randomizer.nextInt(92) + 32));
+    salt = _generateRandomString(SALT_LENGTH)
     // clear hashed password because it's no longer usable
     hashedPassword = null;
   }
@@ -110,10 +109,34 @@ class User {
 
 @serializable
 class AccessToken {
+  static const _ACCESS_TOKEN_LENGTH = 32;
+  static const _REFRESH_TOKEN_LENGTH = 32;
+
+  AccessToken.generate(this.user,
+      {Duration validDuration = const Duration(days: 15), dynamic scope}) {
+    if (scope is Set<String>)
+      this.scope = scope;
+    else if (scope is List<String>)
+      this.scope = Set<String>.from(scope);
+    else if (scope is String)
+      this.scope = Set<String>.from(scope.split(' '));
+    else
+      throw ArgumentError.value(
+        scope,
+        'The scope of an AccessToken must be a List, Set or String.',
+      );
+
+    this.expires = DateTime.now().toUtc().add(validDuration);
+
+    this.token = _generateRandomString(_ACCESS_TOKEN_LENGTH);
+    this.refreshToken = _generateRandomString(_REFRESH_TOKEN_LENGTH);
+  }
+
   String token;
   String refreshToken;
-  @ignore
-  Ulid user;
+
+  String user;
+  String client;
   DateTime expires;
   Set<String> scope;
 }
@@ -122,12 +145,9 @@ class AccessToken {
 class AuthCode {
   static const _CODE_LENGTH = 26;
 
-  factory AuthCode.generate(String clientId, DateTime expires) {
+  AuthCode.generate(this.clientId, this.expires) {
     var code = _generateRandomString(_CODE_LENGTH);
-    return AuthCode()
-      ..code = code
-      ..clientId = clientId
-      ..expires = expires;
+    this.code = code;
   }
 
   AuthCode();
@@ -139,15 +159,20 @@ class AuthCode {
 @serializable
 class Client {
   String id;
+
+  String name;
+  String desc;
+
   String secret;
   String redirectUri;
 }
 
 _generateRandomString(int length) {
   var randomizer = Random.secure();
+  const charSet = 'ybndrfg8ejkmcpqxot1uwisza345h769';
   // generate
-  return String.fromCharCodes(
-      Iterable.generate(length, (_) => randomizer.nextInt(92) + 32));
+  return 
+      Iterable.generate(length, (_) => charSet[randomizer.nextInt(32)]).join();
 }
 
 abstract class OAuthDatabase<U extends User, T extends AccessToken,
@@ -193,8 +218,8 @@ class ErrorResponse {
       {this.error_description, this.error_uri, this.state});
 }
 
-class AuthCodeGranter<D extends OAuthDatabase, A extends AuthCode,
-    C extends Client> extends ResourceController {
+class AuthCodeGranter<D extends OAuthDatabase, C extends Client>
+    extends ResourceController {
   final D database;
   AuthCodeGranter(this.database);
 
@@ -218,7 +243,7 @@ class AuthCodeGranter<D extends OAuthDatabase, A extends AuthCode,
 
     C client = await database.findClientById(clientID);
 
-// Unmatching Redirect URI
+    // Unmatching Redirect URI
     if (redirectUri != null && client.redirectUri != redirectUri) {
       throw Response.badRequest(
         body: ErrorResponse(
@@ -228,20 +253,29 @@ class AuthCodeGranter<D extends OAuthDatabase, A extends AuthCode,
       );
     }
 
-// TODO: add scope verification and storage
+    // TODO: add scope verification and storage
 
-    var code =
-        A.generate(clientID, DateTime.now().toUtc().add(_CODE_EXPIRES_TIME));
+    var code = AuthCode.generate(
+        clientID, DateTime.now().toUtc().add(_CODE_EXPIRES_TIME));
+
     await database.grantedAuthCode(code);
 
     redirectUri = redirectUri ?? client.redirectUri;
     return Response(
         302,
         {
-          'Location': Uri.encodeQueryComponent(
-            'code=${code.code}&state=$state',
-          )
+          'Location': redirectUri +
+              Uri.encodeQueryComponent(
+                'code=${code.code}&state=$state',
+              )
         },
         'You are being redirected.');
   }
+}
+
+class AccessTokenGranter extends ResourceController {
+  @Operation.post('/code')
+  Response tokenGranter(
+    @Bind.query('code') code,
+  ) {}
 }
