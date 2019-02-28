@@ -40,9 +40,27 @@ class AkaliApi extends ApplicationChannel {
   @override
   Future prepare() async {
     databaseUri = options.context['databaseUri'];
-    //TODO::Protocol analysis
-    _db = AkaliMongoDatabase(databaseUri, logger);
-    await _db.init();
+
+    // protocol parse
+    String protocol;
+    RegExp regProtocol = new RegExp(r"(\d+)://");
+    Match matchProtocl = regProtocol.firstMatch(databaseUri);
+    if (matchProtocl != null) {
+      protocol = matchProtocl.group(1);
+    } else {
+      logger.info("bad database uri.");
+      return;
+    }
+
+    switch (protocol) {
+      case "mongodb":
+        _db = AkaliMongoDatabase(databaseUri, logger);
+        await _db.init();
+        break;
+      default:
+        logger.info("not supported database protocol");
+        return;
+    }
 
     fileStoragePath = options.context['fileStoragePath'];
     webRootPath = options.context['webRootPath'];
