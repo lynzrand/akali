@@ -1,6 +1,9 @@
 import 'dart:convert';
 
-class Pic {
+import 'package:aqueduct/aqueduct.dart';
+import 'package:mongo_dart/mongo_dart.dart';
+
+class Pic implements Serializable {
   // UUID of the pictures
   String id;
 
@@ -80,7 +83,7 @@ class Pic {
   }
 
   Pic.readFromMap(Map<String, dynamic> map) {
-    id = map['_id'];
+    id = map['_id'] is String ? map['_id'] : map['_id'].toString();
     title = map['title'];
     desc = map['desc'];
     author = map['author'];
@@ -95,7 +98,7 @@ class Pic {
   }
 
   void readFromMap(Map<String, dynamic> map) {
-    id = map['_id'];
+    id = map['_id'] is String ? map['_id'] : map['_id'].toString();
     title = map['title'];
     desc = map['desc'];
     author = map['author'];
@@ -107,6 +110,23 @@ class Pic {
     previewWidth = map['previewWidth'];
     previewHeight = map['previewHeight'];
     if (map['tags'] != null) tags = List<String>.from(map['tags']);
+  }
+
+  @override
+  APISchemaObject documentSchema(APIDocumentContext context) {
+    return APISchemaObject.object({
+      "id": APISchemaObject.freeForm(),
+      "title": APISchemaObject.string(),
+      "desc": APISchemaObject.string(),
+      "author": APISchemaObject.string(),
+      "uploaderId": APISchemaObject.string(),
+      "link": APISchemaObject.string(),
+      "width": APISchemaObject.integer(),
+      "height": APISchemaObject.integer(),
+      "previewLink": APISchemaObject.string(),
+      "previewWidth": APISchemaObject.integer(),
+      "previewHeight": APISchemaObject.integer(),
+    });
   }
 }
 

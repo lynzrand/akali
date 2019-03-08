@@ -43,13 +43,13 @@ class AkaliApi extends ApplicationChannel {
 
     // protocol parse
     String protocol;
-    RegExp regProtocol = new RegExp(r"(\d+)://");
-    Match matchProtocl = regProtocol.firstMatch(databaseUri);
-    if (matchProtocl != null) {
-      protocol = matchProtocl.group(1);
+    RegExp regProtocol = new RegExp(r"^(.+)://");
+    Match matchProtocol = regProtocol.firstMatch(databaseUri);
+    if (matchProtocol != null) {
+      protocol = matchProtocol.group(1);
     } else {
-      logger.info("bad database uri.");
-      return;
+      throw ArgumentError.value(
+          databaseUri, "databaseUri", "Bad database uri!");
     }
 
     switch (protocol) {
@@ -58,8 +58,8 @@ class AkaliApi extends ApplicationChannel {
         await _db.init();
         break;
       default:
-        logger.info("not supported database protocol");
-        return;
+        throw ArgumentError.value(
+            databaseUri, "databaseUri", "Bad database protocol!");
     }
 
     fileStoragePath = options.context['fileStoragePath'];

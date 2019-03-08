@@ -68,8 +68,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
       }
     }
     if (tryTimes >= maxTryTimes) {
-      logger.severe("$_dbPrefix Unable to connect $uri. Giving up.");
-      exit(25);
+      throw ConnectionException("Unable to connect to $uri");
     }
     logger.info("$_dbPrefix Connected to $uri.");
 
