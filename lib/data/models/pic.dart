@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:aqueduct/aqueduct.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
-class Pic implements Serializable {
+class Pic extends Serializable {
   // UUID of the pictures
   String id;
 
@@ -83,18 +83,23 @@ class Pic implements Serializable {
   }
 
   Pic.readFromMap(Map<String, dynamic> map) {
-    id = map['_id'] is String ? map['_id'] : map['_id'].toString();
-    title = map['title'];
-    desc = map['desc'];
-    author = map['author'];
-    uploaderId = map['uploaderId'];
-    link = map['link'];
-    width = map['width'];
-    height = map['height'];
-    previewLink = map['previewLink'];
-    previewWidth = map['previewWidth'];
-    previewHeight = map['previewHeight'];
-    if (map['tags'] != null) tags = List<String>.from(map['tags']);
+    try {
+      id = map['_id'] is String ? map['_id'] : map['_id'].toString();
+      title = map['title'];
+      desc = map['desc'];
+      author = map['author'];
+      uploaderId = map['uploaderId'];
+      link = map['link'];
+      width = map['width'];
+      height = map['height'];
+      previewLink = map['previewLink'];
+      previewWidth = map['previewWidth'];
+      previewHeight = map['previewHeight'];
+      if (map['tags'] != null) tags = List<String>.from(map['tags']);
+    } catch (e) {
+      print(map);
+      throw e;
+    }
   }
 
   void readFromMap(Map<String, dynamic> map) {

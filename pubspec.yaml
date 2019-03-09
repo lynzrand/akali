@@ -9,7 +9,7 @@ authors:
 
 dependencies:
   # rpc: any
-  aqueduct: ^3.1.0
+  aqueduct: ^3.2.0
   yaml: ^2.1.15
   ulid: ^1.0.1
   uuid: ^1.0.3

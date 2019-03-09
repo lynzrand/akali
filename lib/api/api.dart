@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -15,6 +16,7 @@ import 'package:aqueduct/managed_auth.dart';
 import 'fs.dart';
 import 'imgRequest.dart';
 import 'oauth.dart';
+import 'package:akali/logger/logger.dart';
 
 /// Akali's default API.
 class AkaliApi extends ApplicationChannel {
@@ -39,6 +41,9 @@ class AkaliApi extends ApplicationChannel {
 
   @override
   Future prepare() async {
+    isolateName = Random().nextInt(9999);
+    print("Starting Akali $isolateName");
+
     databaseUri = options.context['databaseUri'];
 
     // protocol parse
@@ -49,18 +54,18 @@ class AkaliApi extends ApplicationChannel {
       protocol = matchProtocol.group(1);
     } else {
       throw ArgumentError.value(
-          databaseUri, "databaseUri", "Bad database uri!");
+          databaseUri, "databaseUri", "No protocol specified in uri");
     }
 
     switch (protocol) {
       case "mongodb":
         _db = AkaliMongoDatabase(databaseUri, logger);
-        await _db.init();
         break;
       default:
         throw ArgumentError.value(
-            databaseUri, "databaseUri", "Bad database protocol!");
+            databaseUri, "databaseUri", "Unable to determine protocol");
     }
+    await _db.init();
 
     fileStoragePath = options.context['fileStoragePath'];
     webRootPath = options.context['webRootPath'];
@@ -69,13 +74,11 @@ class AkaliApi extends ApplicationChannel {
     final authDelegate = AkaliAuthDelegate(db: _db);
     authServer = AuthServer(authDelegate);
 
-    // logger.onRecord.listen(_handleLog);
+    if (options.context['verbosity'] != null &&
+        options.context['verbosity'] is String)
+      logger.onRecord.listen(logHandlerFactory(options.context['verbosity']));
 
-    logger.info("Akali listening on ${options.address}:${options.port}");
-  }
-
-  void _handleLog(LogRecord rec) {
-    print(rec);
+    print("Akali $isolateName listening on ${options.address}:${options.port}");
   }
 
   @override

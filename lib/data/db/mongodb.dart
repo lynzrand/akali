@@ -62,7 +62,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
         await db.open();
         break;
       } catch (e, stacktrace) {
-        logger.warning("$_dbPrefix Unable to connect with $uri", e, stacktrace);
+        logger.severe("$_dbPrefix Unable to connect with $uri", e, stacktrace);
         await Future.delayed(Duration(seconds: 1));
         tryTimes++;
       }
@@ -123,8 +123,12 @@ class AkaliMongoDatabase implements AkaliDatabase {
   ///
   /// Preferably used when viewing specific pictures.
   Future<Pic> queryImgID(String id) async {
-    return Pic.readFromMap(
-        await picCollection.findOne(where.id(ObjectId.fromHexString(id))));
+    var result =
+        await picCollection.findOne(where.id(ObjectId.fromHexString(id)));
+    if (result == null)
+      throw ArgumentError.value(id);
+    else
+      return Pic.readFromMap(result);
   }
 
   Future<dynamic> updateImgInfo(Pic newInfo, String id) async {

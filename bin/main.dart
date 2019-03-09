@@ -6,12 +6,15 @@ import 'package:args/args.dart';
 
 import 'package:akali/config.dart';
 import 'package:akali/akali.dart';
+import 'package:akali/logger/logger.dart';
 
 import 'package:aqueduct/aqueduct.dart';
 
 const String _akaliVersion = '0.0.2';
 
 Future main(List<String> args) async {
+  hierarchicalLoggingEnabled = true;
+
   final parser = ArgParser(
     allowTrailingOptions: true,
     usageLineLength: 80,
@@ -30,7 +33,7 @@ Future main(List<String> args) async {
       abbr: 'D',
       help: 'Use <uri> as your database',
       valueHelp: 'uri',
-      defaultsTo: '127.0.0.1:27017',
+      defaultsTo: 'mongodb://localhost',
     )
     ..addOption(
       'port',
@@ -59,6 +62,15 @@ Future main(List<String> args) async {
       valueHelp: 'number',
       defaultsTo: '1',
     )
+    ..addOption(
+      'verbose',
+      abbr: 'V',
+      help: 'Logs more information. Allowed values: '
+          'numbers (if you know what they mean), '
+          'shout, severe, warning, info, config, fine, finer, finest, all',
+      valueHelp: 'verbosity',
+      defaultsTo: 'warning',
+    )
     // ..addOption(
     //   'debug',
     //   abbr: 'd',
@@ -70,7 +82,6 @@ Future main(List<String> args) async {
     // === Flags ===
     ..addSeparator('Flags')
     ..addFlag('debug')
-    ..addFlag('verbose', abbr: 'V')
 
     // === Extras ===
     ..addSeparator('Extras')
@@ -99,6 +110,8 @@ Future main(List<String> args) async {
     return;
   }
 
+  var runtimeVerbosity = runtimeVerbosityDeterminer(runConf['verbose']);
+
   RequestBody.maxSize = 100 * 1024 * 1024;
 
   // TODO: add configuration file reader
@@ -111,13 +124,57 @@ Future main(List<String> args) async {
       'fileStoragePath': runConf['storage-path'],
       'webRootPath': runConf['web-root-path'],
       'useLocalFileStorage': true,
+      'verbosity': runtimeVerbosity,
     }
     ..port = int.tryParse(runConf['port'])
     ..address = InternetAddress.anyIPv6;
 
-  await app.start(
-    numberOfInstances: int.parse(runConf['isolates']),
-  );
+  app.logger.log(Level.ALL, "Akali $_akaliVersion");
+  app.logger.onRecord.listen(logHandlerFactory(runtimeVerbosity));
+
+  try {
+    await app.start(
+      numberOfInstances: int.parse(runConf['isolates']),
+    );
+  } catch (e, stack) {
+    print("Akali has encountered an error, and must close now.\n Error:");
+    print(e);
+    print("\nStacktrace:");
+    print(stack);
+    exit(-1);
+  }
+}
+
+Level runtimeVerbosityDeterminer(String verbosity) {
+  var numericVerbosity = int.tryParse(verbosity);
+  if (numericVerbosity == null) {
+    verbosity = verbosity.toLowerCase();
+    switch (verbosity) {
+      case 'shout':
+        return Level.SHOUT;
+      case 'severe':
+        return Level.SEVERE;
+      case 'warning':
+        return Level.WARNING;
+      case 'info':
+        return Level.INFO;
+      case 'config':
+        return Level.CONFIG;
+      case 'fine':
+        return Level.FINE;
+      case 'finer':
+        return Level.FINER;
+      case 'finest':
+        return Level.FINEST;
+      case 'all':
+        return Level.ALL;
+      default:
+        throw ArgumentError.value(
+            verbosity, '--verbose=', 'verbosity not supported');
+    }
+  } else {
+    return Level('custom', numericVerbosity);
+  }
 }
 
 const _akaliTextLogo = r'''
