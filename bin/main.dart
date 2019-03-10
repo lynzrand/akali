@@ -13,7 +13,7 @@ import 'package:aqueduct/aqueduct.dart';
 const String _akaliVersion = '0.0.2';
 
 Future main(List<String> args) async {
-  hierarchicalLoggingEnabled = true;
+  hierarchicalLoggingEnabled = false;
 
   final parser = ArgParser(
     allowTrailingOptions: true,

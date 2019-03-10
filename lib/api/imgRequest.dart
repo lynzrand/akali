@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -92,13 +93,13 @@ class ImgRequestHandler extends ResourceController {
   /// GETs the information of image [id]
   @Operation.get('id')
   Future<Response> getImage(@Bind.path('id') String id) async {
-    var _id;
+    var result;
     try {
-      _id = ObjectId.fromHexString(id);
+      // _id = ObjectId.fromHexString(id);
+      result = await db.queryImgID(id);
     } catch (e) {
       throw Response.badRequest(body: {'error': 'Bad id number'});
     }
-    var result = await db.queryImgID(_id);
     return Response.ok(result)..contentType = ContentType.json;
   }
 
@@ -132,6 +133,42 @@ class ImgRequestHandler extends ResourceController {
     }
     return Response.ok({"success": true, "dir": webRootPath + path});
   }
+
+  // static final extensionParser = RegExp(r"(\..+?)$");
+
+  // @Operation.get('id', 'operation')
+  // Future<dynamic> operationWrapper(@Bind.path('id') String id,
+  //     @Bind.path('operation') String operation) async {
+  //   switch (operation) {
+  //     case 'file':
+  //       return await getImageFile(id);
+  //     default:
+  //       return Response.badRequest();
+  //   }
+  // }
+
+  // Future<Response> getImageFile(String id) async {
+  //   Stream<List<int>> fileStream;
+  //   Pic pic;
+  //   try {
+  //     pic = await db.queryImgID(id);
+  //   } catch (e) {
+  //     throw Response.notFound();
+  //   }
+  //   var extension = extensionParser.firstMatch(pic.link).group(1);
+  //   try {
+  //     fileStream = await fileManager.streamFileTo(id, extension);
+  //   } catch (e) {
+  //     throw Response.serverError(body: e.toString());
+  //   }
+  //   try {
+  //     return Response.ok(fileStream)
+  //       ..encodeBody = false
+  //       ..contentType = new ContentType('image', extension.substring(1));
+  //   } catch (e) {
+  //     throw Response.serverError(body: e.toString());
+  //   }
+  // }
 
   /// PUT `img/:id`
   ///

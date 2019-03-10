@@ -55,9 +55,10 @@ class AkaliMongoDatabase implements AkaliDatabase {
     int tryTimes = 0;
     const maxTryTimes = 5;
 
+    db = new Db(uri);
+
     while (tryTimes < maxTryTimes) {
       logger.info("$_dbPrefix Connecting to $uri");
-      db = new Db(uri);
       try {
         await db.open();
         break;
