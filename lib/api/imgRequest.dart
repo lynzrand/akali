@@ -131,6 +131,9 @@ class ImgRequestHandler extends ResourceController {
       path = await fileManager.streamImageFileFrom(upload.body.bytes,
           id.toHexString() + '.' + upload.raw.headers.contentType.subType);
       // return Response.created(path.path);
+      db.createImgId(id);
+
+      return Response.ok({"success": true, "id": id});
     } catch (e, stackTrace) {
       print(e);
       print(stackTrace);
@@ -140,7 +143,6 @@ class ImgRequestHandler extends ResourceController {
         'stacktrace': stackTrace,
       });
     }
-    return Response.ok({"success": true, "dir": webRootPath + path});
   }
 
   // static final extensionParser = RegExp(r"(\..+?)$");

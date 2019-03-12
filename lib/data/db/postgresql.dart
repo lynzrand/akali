@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:mongo_dart/mongo_dart.dart';
 import 'package:postgres/postgres.dart';
 import 'package:aqueduct/aqueduct.dart';
 
@@ -198,6 +199,18 @@ class AkaliPostgreSqlDb implements AkaliDatabase {
   FutureOr<void> updateToken(String oldToken, String newToken,
       DateTime newIssueDate, DateTime newExpirationDate) {
     // TODO: implement updateToken
+    return null;
+  }
+
+  @override
+  FutureOr createImg(Pic img) {
+    // TODO: implement createImg
+    return null;
+  }
+
+  @override
+  FutureOr createImgId(ObjectId id) {
+    // TODO: implement createImgId
     return null;
   }
 }

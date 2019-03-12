@@ -7,6 +7,7 @@ import 'package:akali/data/auth/auth.dart';
 
 import 'package:aqueduct/aqueduct.dart';
 import 'package:aqueduct/managed_auth.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 
 /// Database for Akali.
 ///
@@ -33,6 +34,10 @@ abstract class AkaliDatabase {
 
   /// Update the information of image [id] with [newInfo]
   FutureOr<dynamic> updateImgInfo(Pic newInfo, String id);
+
+  /// Create a new image
+  FutureOr<dynamic> createImg(Pic img);
+  FutureOr<dynamic> createImgId(ObjectId id);
 
   Future<void> deleteImg(String id);
 

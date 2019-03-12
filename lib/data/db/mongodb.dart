@@ -152,6 +152,17 @@ class AkaliMongoDatabase implements AkaliDatabase {
     return id.toHexString();
   }
 
+  @override
+  FutureOr createImg(Pic img) {
+    // TODO: implement createImg
+    return null;
+  }
+
+  @override
+  FutureOr createImgId(ObjectId id) {
+    picCollection.insert({"_id": id});
+  }
+
   Future addInfoToPendingImage(Pic info) async {
     // TODO: implement addInfoToPendingImage
     return null;
