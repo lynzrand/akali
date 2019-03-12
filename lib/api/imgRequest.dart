@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -80,9 +81,19 @@ class ImgRequestHandler extends ResourceController {
 
     try {
       var searchResults = await db.queryImg(searchQuery);
-      return Response.ok(searchResults)..contentType = ContentType.json;
+      if (pretty == false)
+        return Response.ok(searchResults)..contentType = ContentType.json;
+      else
+        return Response.ok(
+          Utf8Encoder().convert(JsonEncoder.withIndent('  ').convert(
+              searchResults
+                  .map<Map<String, dynamic>>((p) => p.asMap())
+                  .toList())),
+        )
+          ..contentType = ContentType.json
+          ..encodeBody = false;
     } catch (e, stack) {
-      logger.severe("Error when querying image", e, stack);
+      logger.severe("Error when querying image: $e", e, stack);
       return Response.serverError(body: {
         'error': e,
         'message': 'Please report this to website admins!',
@@ -195,8 +206,10 @@ class ImgRequestHandler extends ResourceController {
     var result;
     try {
       result = await db.updateImgInfo(newInfo, id);
-    } catch (e) {
-      return Response.badRequest(body: {'error': e, 'message': result});
+    } catch (e, stack) {
+      logger.severe("Error in putImage()", e, stack);
+      throw Response.badRequest(
+          body: {'error': e, 'message': result, 'stackTrace': stack});
     }
     return Response.ok(result);
   }

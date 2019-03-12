@@ -5,7 +5,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 class Pic extends Serializable {
   // UUID of the pictures
-  String id;
+  ObjectId id;
 
   /// title of the picture
   String title;
@@ -82,14 +82,19 @@ class Pic extends Serializable {
     return this.toString();
   }
 
+  Pic();
+
   Pic.readFromMap(Map<String, dynamic> map) {
     try {
-      id = map['_id'] is String ? map['_id'] : map['_id'].toString();
+      id = map['_id'] is ObjectId
+          ? map['_id']
+          : ObjectId.fromHexString(map['_id']);
       title = map['title'];
       desc = map['desc'];
       author = map['author'];
       uploaderId = map['uploaderId'];
       link = map['link'];
+      fileSize = map['fileSize'];
       width = map['width'];
       height = map['height'];
       previewLink = map['previewLink'];
@@ -103,12 +108,15 @@ class Pic extends Serializable {
   }
 
   void readFromMap(Map<String, dynamic> map) {
-    id = map['_id'] is String ? map['_id'] : map['_id'].toString();
+    id = map['_id'] is ObjectId
+        ? map['_id']
+        : ObjectId.fromHexString(map['_id']);
     title = map['title'];
     desc = map['desc'];
     author = map['author'];
     uploaderId = map['uploaderId'];
     link = map['link'];
+    fileSize = map['fileSize'];
     width = map['width'];
     height = map['height'];
     previewLink = map['previewLink'];
@@ -120,7 +128,7 @@ class Pic extends Serializable {
   @override
   APISchemaObject documentSchema(APIDocumentContext context) {
     return APISchemaObject.object({
-      "id": APISchemaObject.freeForm(),
+      "id": APISchemaObject.string(),
       "title": APISchemaObject.string(),
       "desc": APISchemaObject.string(),
       "author": APISchemaObject.string(),

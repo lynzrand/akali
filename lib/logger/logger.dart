@@ -7,7 +7,11 @@ import 'package:aqueduct/aqueduct.dart';
 
 Function logHandlerFactory(Level verbosity) {
   return (LogRecord rec) {
-    if (rec.level >= verbosity) print('$rec');
+    if (rec.level >= verbosity) {
+      print('$rec');
+      if (rec.error != null) print(rec.error);
+      if (rec.stackTrace != null) print(rec.stackTrace);
+    }
   };
 }
 
