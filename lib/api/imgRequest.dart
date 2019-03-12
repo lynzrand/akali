@@ -18,7 +18,9 @@ class ImgRequestHandler extends ResourceController {
 
   String webRootPath;
 
-  ImgRequestHandler(this.db, this.fileManager, this.logger, this.webRootPath);
+  ImgRequestHandler(this.db, this.fileManager, this.webRootPath) {
+    this.logger = new Logger("akalihandle");
+  }
 
   /// Workaround for handling special behaviors
   ///
@@ -74,12 +76,13 @@ class ImgRequestHandler extends ResourceController {
       ..width = widthRange
       ..aspectRatio = ratioRange;
 
+    logger.log(Level.FINE, "Search image $searchQuery");
+
     try {
       var searchResults = await db.queryImg(searchQuery);
       return Response.ok(searchResults)..contentType = ContentType.json;
     } catch (e, stack) {
-      print(e);
-      print(stack);
+      logger.severe("Error when querying image", e, stack);
       return Response.serverError(body: {
         'error': e,
         'message': 'Please report this to website admins!',
@@ -97,8 +100,14 @@ class ImgRequestHandler extends ResourceController {
     try {
       // _id = ObjectId.fromHexString(id);
       result = await db.queryImgID(id);
-    } catch (e) {
-      throw Response.badRequest(body: {'error': 'Bad id number'});
+    } catch (e, stack) {
+      if (e is ArgumentError) {
+        logger.info("Client requested bad ID $id", e, stack);
+        throw Response.badRequest(body: {'error': 'Bad id number'});
+      } else {
+        logger.severe("Internal error when handling getImage()", e, stack);
+        throw Response.serverError();
+      }
     }
     return Response.ok(result)..contentType = ContentType.json;
   }

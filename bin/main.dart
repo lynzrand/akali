@@ -13,7 +13,7 @@ import 'package:aqueduct/aqueduct.dart';
 const String _akaliVersion = '0.0.2';
 
 Future main(List<String> args) async {
-  hierarchicalLoggingEnabled = false;
+  // hierarchicalLoggingEnabled = true;
 
   final parser = ArgParser(
     allowTrailingOptions: true,
@@ -129,8 +129,14 @@ Future main(List<String> args) async {
     ..port = int.tryParse(runConf['port'])
     ..address = InternetAddress.anyIPv6;
 
-  app.logger.log(Level.ALL, "Akali $_akaliVersion");
+  app.logger.parent.level = runtimeVerbosity;
   app.logger.onRecord.listen(logHandlerFactory(runtimeVerbosity));
+
+  app.logger.log(
+    Level.INFO,
+    "Akali $_akaliVersion: Starting up at ${DateTime.now()}",
+  );
+  app.logger.log(Level.INFO, "Log level $runtimeVerbosity");
 
   try {
     await app.start(
@@ -146,6 +152,7 @@ Future main(List<String> args) async {
 }
 
 Level runtimeVerbosityDeterminer(String verbosity) {
+  if (verbosity == null) return Level.WARNING;
   var numericVerbosity = int.tryParse(verbosity);
   if (numericVerbosity == null) {
     verbosity = verbosity.toLowerCase();

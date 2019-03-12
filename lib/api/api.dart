@@ -42,7 +42,12 @@ class AkaliApi extends ApplicationChannel {
   @override
   Future prepare() async {
     isolateName = Random().nextInt(9999);
-    print("Starting Akali $isolateName");
+
+    if (options.context['verbosity'] != null &&
+        options.context['verbosity'] is Level) {
+      logger.onRecord.listen(logHandlerFactory(options.context['verbosity']));
+    }
+    logger.info("Starting Akali $isolateName");
 
     databaseUri = options.context['databaseUri'];
 
@@ -59,7 +64,7 @@ class AkaliApi extends ApplicationChannel {
 
     switch (protocol) {
       case "mongodb":
-        _db = AkaliMongoDatabase(databaseUri, logger);
+        _db = AkaliMongoDatabase(databaseUri);
         break;
       default:
         throw ArgumentError.value(
@@ -74,11 +79,8 @@ class AkaliApi extends ApplicationChannel {
     final authDelegate = AkaliAuthDelegate(db: _db);
     authServer = AuthServer(authDelegate);
 
-    if (options.context['verbosity'] != null &&
-        options.context['verbosity'] is String)
-      logger.onRecord.listen(logHandlerFactory(options.context['verbosity']));
-
-    print("Akali $isolateName listening on ${options.address}:${options.port}");
+    logger.info(
+        "Akali $isolateName listening on ${options.address}:${options.port}");
   }
 
   @override
@@ -90,7 +92,7 @@ class AkaliApi extends ApplicationChannel {
 
     router
         .route('/img/[:id]')
-        .link(() => ImgRequestHandler(_db, fileManager, logger, webRootPath));
+        .link(() => ImgRequestHandler(_db, fileManager, webRootPath));
 
     router.route('/file/*').link(() => FileController(fileStoragePath));
 

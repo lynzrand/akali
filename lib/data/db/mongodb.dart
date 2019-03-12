@@ -35,15 +35,16 @@ class AkaliMongoDatabase implements AkaliDatabase {
   DbCollection clientCollection;
 
   static String databaseType = "MongoDB";
-  static String _dbPrefix = "[$databaseType]";
+  // static String _dbPrefix = "[$databaseType]";
 
   /// Connect to MongoDB at [uri].
   ///
   /// Remember to call [init] after creating a new [AkaliMongoDatabase] instance.
-  AkaliMongoDatabase(this.uri, this.logger) {
+  AkaliMongoDatabase(this.uri) {
     assert(this.uri != null);
     // A simple check for valid mongodb address and fixes if it's not
     if (!uri.startsWith('mongodb://')) uri = 'mongodb://' + uri;
+    this.logger = new Logger("mongodb");
   }
 
   /// Initialize database connection.
@@ -58,12 +59,12 @@ class AkaliMongoDatabase implements AkaliDatabase {
     db = new Db(uri);
 
     while (tryTimes < maxTryTimes) {
-      logger.info("$_dbPrefix Connecting to $uri");
+      logger.info("Connecting to $uri");
       try {
         await db.open();
         break;
       } catch (e, stacktrace) {
-        logger.severe("$_dbPrefix Unable to connect with $uri", e, stacktrace);
+        logger.severe("Unable to connect with $uri", e, stacktrace);
         await Future.delayed(Duration(seconds: 1));
         tryTimes++;
       }
@@ -71,7 +72,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
     if (tryTimes >= maxTryTimes) {
       throw ConnectionException("Unable to connect to $uri");
     }
-    logger.info("$_dbPrefix Connected to $uri.");
+    logger.info("Connected to $uri.");
 
     // Initialize collections
     picCollection = db.collection(_picCollectionName);
@@ -95,6 +96,8 @@ class AkaliMongoDatabase implements AkaliDatabase {
     int skip = 0,
   }) async {
     var query = where;
+
+    logger.fine("Query image $crit");
 
     if (crit.tags != null) query = query.all('tags', crit.tags);
     if (crit.authors != null) query = query.all('author', crit.authors);
@@ -124,6 +127,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
   ///
   /// Preferably used when viewing specific pictures.
   Future<Pic> queryImgID(String id) async {
+    logger.fine("Query image #$id");
     var result =
         await picCollection.findOne(where.id(ObjectId.fromHexString(id)));
     if (result == null)
