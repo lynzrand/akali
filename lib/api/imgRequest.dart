@@ -205,9 +205,19 @@ class ImgRequestHandler extends ResourceController {
   ///
   /// Deletes the coresponding image and its metadata
   @Operation.delete('id')
-  Future<Response> deleteImageId(@Bind.path('id') String id) {
-    // TODO: implement
-    return null;
+  Future<Response> deleteImageId(@Bind.path('id') String id) async {
+    var result;
+    try {
+      await db.deleteImg(id);
+    } catch (e, stack) {
+      if (e is ArgumentError) {
+        logger.info("Client requested bad ID $id", e, stack);
+        throw Response.badRequest(body: {"error": "Bad id number"});
+      } else {
+        logger.severe("Internal error when handling deleteImage()", e, stack);
+      }
+    }
+    return Response.ok({"success": true, "id": id});
   }
 
   List<String> _queryStringParser(String query) {
