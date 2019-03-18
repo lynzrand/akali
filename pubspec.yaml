@@ -2,6 +2,9 @@ name: akali
 description: An illustration site (booru) server
 version: 0.0.2
 
+environment:
+  sdk: ">=2.2.0 <3.0.0"
+
 authors:
   - Rynco Li <lynzrand@outlook.com>
   - Chaos Lun
@@ -16,12 +19,14 @@ dependencies:
   mongo_dart: ^0.3.4
   isolate: ^2.0.2
   crypto: ^2.0.6
+  dson: any
 
 dev_dependencies:
   test: any
   aqueduct_test: any
   vm_service_lib: ^0.3.10
   vm_service_client: ^0.2.6
+  build_runner: any
 
 executables:
   akali: main

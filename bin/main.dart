@@ -4,7 +4,6 @@ import 'dart:cli';
 
 import 'package:args/args.dart';
 
-import 'package:akali/config.dart';
 import 'package:akali/akali.dart';
 import 'package:akali/logger/logger.dart';
 
@@ -114,6 +113,11 @@ Future main(List<String> args) async {
 
   RequestBody.maxSize = 100 * 1024 * 1024;
 
+  String rootPath = runConf['storage-path'];
+  if (!rootPath.endsWith('/')) rootPath += '/';
+  String webRootPath = runConf['web-root-path'];
+  if (!webRootPath.endsWith('/')) webRootPath += '/';
+
   // TODO: add configuration file reader
 
   var app = Application<AkaliApi>();
@@ -121,8 +125,8 @@ Future main(List<String> args) async {
     ..context = {
       //TODO::Protocol analysis
       'databaseUri': runConf['database'].toString(),
-      'fileStoragePath': runConf['storage-path'],
-      'webRootPath': runConf['web-root-path'],
+      'fileStoragePath': rootPath,
+      'webRootPath': webRootPath,
       'useLocalFileStorage': true,
       'verbosity': runtimeVerbosity,
     }

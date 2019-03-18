@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:akali/config.dart';
 import 'package:akali/data/models/pic.dart';
 import 'package:akali/data/auth/auth.dart';
 

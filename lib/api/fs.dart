@@ -30,7 +30,7 @@ class AkaliLocalFileManager implements AkaliFileManager {
   final String webRootPath;
   static const String imgPath = 'img/';
 
-  AkaliLocalFileManager(this.rootPath, this.webRootPath);
+  AkaliLocalFileManager(this.rootPath, this.webRootPath) {}
 
   @override
   Future<FileManagementResponse> streamImageFileFrom(

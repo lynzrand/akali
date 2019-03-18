@@ -143,7 +143,6 @@ class ImgRequestHandler extends ResourceController {
           id.toHexString() + '.' + upload.raw.headers.contentType.subType);
       // return Response.created(path.path);
       db.createImgId(id);
-
       return Response.ok({"success": true, "id": id});
     } catch (e, stackTrace) {
       print(e);

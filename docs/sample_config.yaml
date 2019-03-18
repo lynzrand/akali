@@ -1,0 +1,11 @@
+# Akali Sample Config
+
+verbosity: info
+database: mongodb://ipv6.ayaya.rynco.me/akali
+websiteRoot: localhost:8086/
+isolate: 4
+
+plugins:
+  primitive_preview:
+    src: ../primitive_preview
+    version: ^0.1.0

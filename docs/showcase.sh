@@ -54,7 +54,7 @@ echo "---------------------------"
 echo "Showcase 3: Query single images"
 read -rsn1
 (set -x
-curl "http://localhost:8086/api/v1/img/5bf5794432694a289873e751" | head -n27
+curl "http://localhost:8086/api/v1/img/5c25cec2fd72af4c5c02b538" | head -n27
 )
 echo
 echo
@@ -66,9 +66,11 @@ echo "---------------------------"
 echo "Showcase 4: Putting images"
 read -rsn1
 (set -x
-curl "http://localhost:8086/api/v1/img/5bf5794432694a289873e751" -X PUT -d '{"_id":"5bf5794432694a289873e751","title":"123123123123","desc":"This is a test","author":"Btapple Lun","uploaderId":"2345678910abcdef","link":"https://upload.wikimedia.org/wikipedia/commons/8/8d/Shadowsocks_logo.png","fileSize":120000,"width":1500,"height":500,"previewLink":"https://upload.wikimedia.org/wikipedia/commons/8/8d/Shadowsocks_logo.png","previewWidth":200,"previewHeight":200,"tags":["test_tag_0","test_tag_1","test_tag_2"]}' -H "Content-Type: application/json"
+curl "http://localhost:8086/api/v1/img/5c8867c3e25fcaf8e694fe40"
+read -rsn1
+curl "http://localhost:8086/api/v1/img/5c8867c3e25fcaf8e694fe40" -X PUT -d '{"_id":"5c8867c3e25fcaf8e694fe40","title":"New Title","desc":"This is a test","author":"Btapple Lun","uploaderId":"2345678910abcdef","link":"https://upload.wikimedia.org/wikipedia/commons/8/8d/Shadowsocks_logo.png","fileSize":120000,"width":1500,"height":500,"previewLink":"https://upload.wikimedia.org/wikipedia/commons/8/8d/Shadowsocks_logo.png","previewWidth":200,"previewHeight":200,"tags":["test_tag_0","test_tag_1","test_tag_2"]}' -H "Content-Type: application/json"
 echo
-curl "http://localhost:8086/api/v1/img/5bf5794432694a289873e751"
+curl "http://localhost:8086/api/v1/img/5c8867c3e25fcaf8e694fe40"
 )
 echo
 echo
@@ -79,10 +81,10 @@ echo "---------------------------"
 echo "Showcase 5: Uploading images and retrieving"
 read -rsn1
 (set -x
-curl "http://localhost:8086/api/v1/img" -X POST --data-raw @post_showcase.png -H "Content-Type: image/png"
+curl "http://localhost:8086/api/v1/img/" -X POST -T @post_showcase.png -H "Content-Type: image/png"
 echo
 read -rsn1
-curl "http://localhost:8086/api/v1/file/img/5bf5794432694a289873e751.png"
+curl "http://localhost:8086/api/v1/file/img/5c25cec2fd72af4c5c02b538.png"
 )
 echo
 echo
@@ -93,7 +95,7 @@ echo "---------------------------"
 echo "Showcase 6: Deleting"
 read -rsn1
 (set -x
-curl "http://localhost:8086/api/v1/img/5bf5794432694a289873e751" -X DELETE
+curl "http://localhost:8086/api/v1/img/5c25cec2fd72af4c5c02b538" -X DELETE
 )
 echo
 echo

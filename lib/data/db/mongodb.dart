@@ -6,7 +6,6 @@ import 'package:aqueduct/aqueduct.dart';
 import 'package:aqueduct/managed_auth.dart';
 import 'package:ulid/ulid.dart';
 
-import 'package:akali/config.dart';
 import 'package:akali/models.dart';
 import 'package:akali/data/auth/auth.dart';
 
