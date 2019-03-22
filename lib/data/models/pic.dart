@@ -78,6 +78,9 @@ class ImageInformation extends aqueduct.Serializable {
   /// Link of the image
   String link;
 
+  /// ID of the file; Used by GridFS
+  ObjectId fileId;
+
   /// Extension of the image
   String ext;
 

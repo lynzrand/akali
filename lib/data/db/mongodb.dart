@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:akali/data/models/results.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:aqueduct/aqueduct.dart';
 import 'package:aqueduct/managed_auth.dart';
@@ -91,7 +92,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
   }
 
   /// Search for image(s) meeting the criteria [crit].
-  Future<List<Pic>> queryImg(
+  Future<SearchResult<Pic>> queryImg(
     ImageSearchCriteria crit, {
     int limit = 20,
     int skip = 0,
@@ -119,9 +120,11 @@ class AkaliMongoDatabase implements AkaliDatabase {
 
     query = query.limit(limit).skip(skip);
 
-    return (await picCollection.find(query))
-        .map((item) => fromMap(item, Pic))
+    List<Pic> result = await (await picCollection.find(query))
+        .map<Pic>((item) => fromMap(item, Pic))
         .toList();
+
+    return SearchResult()..result = result;
   }
 
   /// Find **the** picture with this [id].
@@ -137,9 +140,18 @@ class AkaliMongoDatabase implements AkaliDatabase {
       return fromMap(result, Pic);
   }
 
-  Future<dynamic> updateImgInfo(Pic newInfo, String id) async {
-    return await picCollection.update(
-        where.id(ObjectId.fromHexString(id)), newInfo.asMap());
+  Future<ActionResult<Pic>> updateImgInfo(Pic newInfo, String id) async {
+    var _id = ObjectId.fromHexString(id);
+    var result = await picCollection.update(where.id(_id), toMap(newInfo));
+    newInfo.id = _id;
+    bool success = result['nModified'] > 0;
+    if (success)
+      return ActionResult()
+        ..success = true
+        ..data = newInfo
+        ..affected = result['nModified'];
+    else
+      return ActionResult()..success = false;
   }
 
   /// Adds an image with link [blobLink] and no info related
@@ -154,14 +166,15 @@ class AkaliMongoDatabase implements AkaliDatabase {
   }
 
   @override
-  FutureOr createImg(Pic img) {
+  FutureOr<ActionResult<Pic>> createImg(Pic img) {
     // TODO: implement createImg
     return null;
   }
 
   @override
-  FutureOr createImgId(ObjectId id) {
-    picCollection.insert({"_id": id});
+  FutureOr<ActionResult<Pic>> createImgId(ObjectId id) {
+    // TODO: implement createImgId
+    return null;
   }
 
   Future addInfoToPendingImage(Pic info) async {
@@ -169,7 +182,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
     return null;
   }
 
-  Future<void> deleteImg(String id) async {
+  Future<ActionResult> deleteImg(String id) async {
     await picCollection.remove(where.id(ObjectId.fromHexString(id)));
   }
 

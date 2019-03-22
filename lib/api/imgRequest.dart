@@ -84,12 +84,10 @@ class ImgRequestHandler extends ResourceController {
       if (pretty == false)
         return Response.ok(searchResults)..contentType = ContentType.json;
       else
-        return Response.ok(
-          Utf8Encoder().convert(JsonEncoder.withIndent('  ').convert(
-              searchResults
-                  .map<Map<String, dynamic>>((p) => p.asMap())
-                  .toList())),
-        )
+        return Response.ok(Utf8Encoder().convert(
+          JsonEncoder.withIndent('  ').convert(
+              searchResults.result.map<Map<String, dynamic>>((p) => p.asMap())),
+        ))
           ..contentType = ContentType.json
           ..encodeBody = false;
     } catch (e, stack) {

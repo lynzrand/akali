@@ -5,12 +5,16 @@ import 'package:aqueduct/aqueduct.dart';
 
 /// Base class for File Managers in Akali
 abstract class AkaliFileManager {
+  static final String identifier = "AkaliFileManager";
+
+  Future<void> init();
+
   /// Takes a binary input stream and pipe into the designated file
   /// in the image folder
   FutureOr<FileManagementResponse> streamImageFileFrom(
       Stream<List<int>> file, String fileName);
 
-  FutureOr<Stream<List<int>>> streamFileTo(String id, String ext);
+  FutureOr<bool> streamFileTo(String id, String ext, IOSink target);
 }
 
 class FileManagementResponse {
@@ -47,9 +51,20 @@ class AkaliLocalFileManager implements AkaliFileManager {
   }
 
   @override
-  FutureOr<Stream<List<int>>> streamFileTo(String id, String ext) {
-    var f = File(rootPath + imgPath + id + ext);
-    return f.openRead();
+  FutureOr<bool> streamFileTo(String id, String ext, IOSink target) {
+    File f;
+    // If error directly return
+    f = File(rootPath + imgPath + id + ext);
+
+    // return f.openRead();
+    f.openRead().pipe(target);
+    return true;
+  }
+
+  @override
+  Future<void> init() {
+    // Local file system doesnt need initialization
+    return null;
   }
 }
 
@@ -71,7 +86,13 @@ class AkaliMockupFileManager implements AkaliFileManager {
   }
 
   @override
-  FutureOr<Stream<List<int>>> streamFileTo(String id, String ext) {
+  Future<void> init() {
+    // TODO: implement init
+    return null;
+  }
+
+  @override
+  FutureOr<bool> streamFileTo(String id, String ext, IOSink target) {
     // TODO: implement streamFileTo
     return null;
   }

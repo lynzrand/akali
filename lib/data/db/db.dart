@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:akali/data/models/pic.dart';
 import 'package:akali/data/auth/auth.dart';
+import 'package:akali/data/models/results.dart';
 
 import 'package:aqueduct/aqueduct.dart';
 import 'package:aqueduct/managed_auth.dart';
@@ -26,19 +27,20 @@ abstract class AkaliDatabase {
 
   /// Search for a list of images satisfying [crit], limited to [limit] number
   /// and skips the first [skip] items.
-  FutureOr<List<Pic>> queryImg(ImageSearchCriteria crit, {int limit, int skip});
+  FutureOr<SearchResult<Pic>> queryImg(ImageSearchCriteria crit,
+      {int limit, int skip});
 
   /// Get the specific picture with [id]
   FutureOr<Pic> queryImgID(String id);
 
   /// Update the information of image [id] with [newInfo]
-  FutureOr<dynamic> updateImgInfo(Pic newInfo, String id);
+  FutureOr<ActionResult<Pic>> updateImgInfo(Pic newInfo, String id);
 
   /// Create a new image
-  FutureOr<dynamic> createImg(Pic img);
-  FutureOr<dynamic> createImgId(ObjectId id);
+  FutureOr<ActionResult<Pic>> createImg(Pic img);
+  FutureOr<ActionResult<Pic>> createImgId(ObjectId id);
 
-  Future<void> deleteImg(String id);
+  Future<ActionResult> deleteImg(String id);
 
   // ---- Auth stuff ----
 
