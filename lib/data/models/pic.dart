@@ -1,9 +1,17 @@
 import 'dart:convert';
 
-import 'package:aqueduct/aqueduct.dart';
+import 'package:akali/data/models/tag.dart';
+import 'package:aqueduct/aqueduct.dart' as aqueduct;
+import 'package:dson/dson.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
-class Pic extends Serializable {
+part "pic.g.dart";
+
+typedef aqueduct.APISchemaObject APISchemaObject();
+typedef aqueduct.APIDocumentContext APIDocumentContext();
+
+@serializable
+class Pic extends aqueduct.Serializable {
   // UUID of the pictures
   ObjectId id;
 
@@ -19,59 +27,27 @@ class Pic extends Serializable {
   /// The ID of the uploader
   String uploaderId;
 
-  /// link to the picture
-  ///
-  /// Should be a full link for convinience. If you would like to use a
-  /// relative link, please use _link as the property name and write your own
-  /// get link method.
-  String link;
-
   /// File size in bytes.
   int fileSize;
 
-  /// image width
-  int width;
+  /// Information of the original image
+  ImageInformation original;
 
-  /// image height
-  int height;
+  /// Information of the compressed (JPEG) image
+  ImageInformation compressed;
 
-  /// image aspect ratio
-  double get aspectRatio {
-    return width / height;
-  }
-
-  /// link to the preview image
-  String previewLink;
-
-  /// preview width
-  int previewWidth;
-
-  /// preview height
-  int previewHeight;
+  /// Information of the preview image
+  ImageInformation preview;
 
   /// tags
-  List<String> tags;
+  List<Tag> tags;
 
   /// timestamp
   DateTime dueDate;
 
   /// return mapped information
   Map<String, dynamic> asMap() {
-    return {
-      '_id': id,
-      'title': title,
-      'desc': desc,
-      'author': author,
-      'uploaderId': uploaderId,
-      'link': link,
-      'fileSize': fileSize,
-      'width': width,
-      'height': height,
-      'previewLink': previewLink,
-      'previewWidth': previewWidth,
-      'previewHeight': previewHeight,
-      'tags': tags
-    };
+    return toMap(this);
   }
 
   String toJson() {
@@ -84,62 +60,39 @@ class Pic extends Serializable {
 
   Pic();
 
-  Pic.readFromMap(Map<String, dynamic> map) {
-    try {
-      id = map['_id'] is ObjectId
-          ? map['_id']
-          : ObjectId.fromHexString(map['_id']);
-      title = map['title'];
-      desc = map['desc'];
-      author = map['author'];
-      uploaderId = map['uploaderId'];
-      link = map['link'];
-      fileSize = map['fileSize'];
-      width = map['width'];
-      height = map['height'];
-      previewLink = map['previewLink'];
-      previewWidth = map['previewWidth'];
-      previewHeight = map['previewHeight'];
-      if (map['tags'] != null) tags = List<String>.from(map['tags']);
-    } catch (e) {
-      print(map);
-      throw e;
-    }
-  }
-
   void readFromMap(Map<String, dynamic> map) {
-    id = map['_id'] is ObjectId
-        ? map['_id']
-        : ObjectId.fromHexString(map['_id']);
-    title = map['title'];
-    desc = map['desc'];
-    author = map['author'];
-    uploaderId = map['uploaderId'];
-    link = map['link'];
-    fileSize = map['fileSize'];
-    width = map['width'];
-    height = map['height'];
-    previewLink = map['previewLink'];
-    previewWidth = map['previewWidth'];
-    previewHeight = map['previewHeight'];
-    if (map['tags'] != null) tags = List<String>.from(map['tags']);
+    if (map['_id'] is! ObjectId)
+      map['_id'] = ObjectId.fromHexString(map['_id']);
+    fromMap(map, this);
+  }
+}
+
+@serializable
+class ImageInformation extends aqueduct.Serializable {
+  /// Width of the image
+  int width;
+
+  /// Height of the image
+  int height;
+
+  /// Link of the image
+  String link;
+
+  /// Extension of the image
+  String ext;
+
+  double get aspectRatio {
+    return width.toDouble() / height;
   }
 
   @override
-  APISchemaObject documentSchema(APIDocumentContext context) {
-    return APISchemaObject.object({
-      "id": APISchemaObject.string(),
-      "title": APISchemaObject.string(),
-      "desc": APISchemaObject.string(),
-      "author": APISchemaObject.string(),
-      "uploaderId": APISchemaObject.string(),
-      "link": APISchemaObject.string(),
-      "width": APISchemaObject.integer(),
-      "height": APISchemaObject.integer(),
-      "previewLink": APISchemaObject.string(),
-      "previewWidth": APISchemaObject.integer(),
-      "previewHeight": APISchemaObject.integer(),
-    });
+  Map<String, dynamic> asMap() {
+    return toMap(this);
+  }
+
+  @override
+  void readFromMap(Map<String, dynamic> object) {
+    // TODO: implement readFromMap
   }
 }
 
@@ -174,8 +127,8 @@ class ImageSearchCriteria {
   static const int breakpointLargePic = 1440;
 
   // aspectRatio = width / height
-  static const double breakpointLandscape = 1.05;
-  static const double breakpointPortrait = 0.95;
+  static const double breakpointLandscape = 1.09;
+  static const double breakpointPortrait = 0.9;
 
   ImageSearchCriteria.mediumAndLarger({
     List<String> this.tags,

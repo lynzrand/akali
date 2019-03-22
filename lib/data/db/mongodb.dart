@@ -9,6 +9,8 @@ import 'package:ulid/ulid.dart';
 import 'package:akali/models.dart';
 import 'package:akali/data/auth/auth.dart';
 
+import 'package:dson/dson.dart';
+
 /// Akali's default database implementation, using MongoDB
 class AkaliMongoDatabase implements AkaliDatabase {
   static const _picCollectionName = "pic";
@@ -118,7 +120,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
     query = query.limit(limit).skip(skip);
 
     return (await picCollection.find(query))
-        .map((item) => Pic.readFromMap(item))
+        .map((item) => fromMap(item, Pic))
         .toList();
   }
 
@@ -132,7 +134,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
     if (result == null)
       throw ArgumentError.value(id);
     else
-      return Pic.readFromMap(result);
+      return fromMap(result, Pic);
   }
 
   Future<dynamic> updateImgInfo(Pic newInfo, String id) async {
