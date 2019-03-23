@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 
-import 'package:aqueduct/aqueduct.dart';
+import 'package:aqueduct/aqueduct.dart' as Aqueduct;
 
 /// Base class for File Managers in Akali
 abstract class AkaliFileManager {
@@ -17,13 +17,24 @@ abstract class AkaliFileManager {
   FutureOr<bool> streamFileTo(String id, String ext, IOSink target);
 }
 
-class FileManagementResponse {
+class FileManagementResponse extends Aqueduct.Serializable {
   bool success;
   String path;
-  Map<String, dynamic> data;
+  dynamic data;
+
+  @override
+  Map<String, dynamic> asMap() {
+    return {"success": success, "path": path, "data": data};
+  }
+
+  @override
+  void readFromMap(Map<String, dynamic> object) {
+    return;
+    // We don't need this method
+  }
 }
 
-class AkaliFileController extends FileController {
+class AkaliFileController extends Aqueduct.FileController {
   AkaliFileController(String pathOfDirectoryToServe)
       : super(pathOfDirectoryToServe);
 }

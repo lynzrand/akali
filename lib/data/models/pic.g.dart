@@ -126,11 +126,13 @@ abstract class _$ImageInformationSerializable extends SerializableMap {
   int get width;
   int get height;
   String get link;
+  ObjectId get fileId;
   String get ext;
   double get aspectRatio;
   void set width(int v);
   void set height(int v);
   void set link(String v);
+  void set fileId(ObjectId v);
   void set ext(String v);
   Map<String, dynamic> asMap();
   void readFromMap(Map<String, dynamic> object);
@@ -148,6 +150,8 @@ abstract class _$ImageInformationSerializable extends SerializableMap {
         return height;
       case 'link':
         return link;
+      case 'fileId':
+        return fileId;
       case 'ext':
         return ext;
       case 'aspectRatio':
@@ -174,6 +178,9 @@ abstract class _$ImageInformationSerializable extends SerializableMap {
         return;
       case 'link':
         link = __value;
+        return;
+      case 'fileId':
+        fileId = fromSerialized(__value, () => new ObjectId());
         return;
       case 'ext':
         ext = __value;
@@ -325,6 +332,8 @@ const $$ImageInformation_fields_height =
     const DeclarationMirror(name: 'height', type: int);
 const $$ImageInformation_fields_link =
     const DeclarationMirror(name: 'link', type: String);
+const $$ImageInformation_fields_fileId =
+    const DeclarationMirror(name: 'fileId', type: ObjectId);
 const $$ImageInformation_fields_ext =
     const DeclarationMirror(name: 'ext', type: String);
 const $$ImageInformation_fields_aspectRatio =
@@ -339,11 +348,12 @@ const ImageInformationClassMirror = const ClassMirror(
       'width': $$ImageInformation_fields_width,
       'height': $$ImageInformation_fields_height,
       'link': $$ImageInformation_fields_link,
+      'fileId': $$ImageInformation_fields_fileId,
       'ext': $$ImageInformation_fields_ext,
       'aspectRatio': $$ImageInformation_fields_aspectRatio
     },
-    getters: const ['width', 'height', 'link', 'ext', 'aspectRatio'],
-    setters: const ['width', 'height', 'link', 'ext'],
+    getters: const ['width', 'height', 'link', 'fileId', 'ext', 'aspectRatio'],
+    setters: const ['width', 'height', 'link', 'fileId', 'ext'],
     methods: const {
       'asMap': const FunctionMirror(
         name: 'asMap',

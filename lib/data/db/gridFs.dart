@@ -30,9 +30,10 @@ class AkaliGridFS implements AkaliFileManager {
   FutureOr<FileManagementResponse> streamImageFileFrom(
       Stream<List<int>> file, String fileName) {
     var resultFile = _gridfs.createFile(file, fileName);
+    var id = resultFile.id as ObjectId;
     return FileManagementResponse()
       ..success = true
       ..data = resultFile.data
-      ..path = resultFile.id;
+      ..path = id.toHexString();
   }
 }
