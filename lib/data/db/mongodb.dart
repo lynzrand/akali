@@ -66,7 +66,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
         await db.open();
         break;
       } catch (e, stacktrace) {
-        logger.severe("Unable to connect with $uri", e, stacktrace);
+        logger.warning("Unable to connect with $uri", e, stacktrace);
         await Future.delayed(Duration(seconds: 1));
         tryTimes++;
       }

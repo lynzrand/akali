@@ -137,13 +137,13 @@ class ImgRequestHandler extends ResourceController {
     var id = ObjectId();
     FileManagementResponse result;
     try {
-      result = await fileManager.streamImageFileFrom(upload.body.bytes,
+      result = await fileManager.streamImageFileFromUpload(upload.body.bytes,
           id.toHexString() + '.' + upload.raw.headers.contentType.subType);
       // return Response.created(path.path);
       db.createImgId(id);
       return Response.created(
           webRootPath +
-              "/api/v1/file/" +
+              "/api/v1/file" +
               id.toHexString() +
               "." +
               upload.raw.headers.contentType.subType,

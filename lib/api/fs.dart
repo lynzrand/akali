@@ -11,10 +11,10 @@ abstract class AkaliFileManager {
 
   /// Takes a binary input stream and pipe into the designated file
   /// in the image folder
-  FutureOr<FileManagementResponse> streamImageFileFrom(
+  FutureOr<FileManagementResponse> streamImageFileFromUpload(
       Stream<List<int>> file, String fileName);
 
-  FutureOr<bool> streamFileTo(String id, String ext, IOSink target);
+  FutureOr<bool> streamImageFileToClient(String id, String ext, IOSink target);
 }
 
 class FileManagementResponse extends Aqueduct.Serializable {
@@ -41,6 +41,8 @@ class AkaliFileController extends Aqueduct.FileController {
 
 /// Defaule file manager. Stores files in a local directory.
 class AkaliLocalFileManager implements AkaliFileManager {
+  static final String identifier = "LocalFS";
+
   final String rootPath;
   final String webRootPath;
   static const String imgPath = 'img/';
@@ -48,7 +50,7 @@ class AkaliLocalFileManager implements AkaliFileManager {
   AkaliLocalFileManager(this.rootPath, this.webRootPath) {}
 
   @override
-  Future<FileManagementResponse> streamImageFileFrom(
+  Future<FileManagementResponse> streamImageFileFromUpload(
     Stream<List<int>> file,
     String fileName,
   ) async {
@@ -62,7 +64,7 @@ class AkaliLocalFileManager implements AkaliFileManager {
   }
 
   @override
-  FutureOr<bool> streamFileTo(String id, String ext, IOSink target) {
+  FutureOr<bool> streamImageFileToClient(String id, String ext, IOSink target) {
     File f;
     // If error directly return
     f = File(rootPath + imgPath + id + ext);
@@ -81,8 +83,10 @@ class AkaliLocalFileManager implements AkaliFileManager {
 
 /// Simple file manager for testing purposes
 class AkaliMockupFileManager implements AkaliFileManager {
+  static final String identifier = "MockupFS";
+
   @override
-  Future<FileManagementResponse> streamImageFileFrom(
+  Future<FileManagementResponse> streamImageFileFromUpload(
     Stream<List<int>> file,
     String fileName,
   ) async {
@@ -103,7 +107,7 @@ class AkaliMockupFileManager implements AkaliFileManager {
   }
 
   @override
-  FutureOr<bool> streamFileTo(String id, String ext, IOSink target) {
+  FutureOr<bool> streamImageFileToClient(String id, String ext, IOSink target) {
     // TODO: implement streamFileTo
     return null;
   }

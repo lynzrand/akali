@@ -12,14 +12,18 @@ class AkaliGridFS implements AkaliFileManager {
 
   AkaliGridFS(String link) {
     this._db = new Db(link);
+    _db.open();
     this._gridfs = GridFS(_db);
   }
 
   @override
-  Future<void> init() {}
+  Future<void> init() async {
+    return;
+  }
 
   @override
-  FutureOr<bool> streamFileTo(String id, String ext, IOSink target) async {
+  FutureOr<bool> streamImageFileToClient(
+      String id, String ext, IOSink target) async {
     var file = await _gridfs.findOne(id);
     if (file == null) throw FileSystemException("File not found");
     (file).writeTo(target);
@@ -27,13 +31,15 @@ class AkaliGridFS implements AkaliFileManager {
   }
 
   @override
-  FutureOr<FileManagementResponse> streamImageFileFrom(
-      Stream<List<int>> file, String fileName) {
+  FutureOr<FileManagementResponse> streamImageFileFromUpload(
+      Stream<List<int>> file, String fileName) async {
     var resultFile = _gridfs.createFile(file, fileName);
+    await resultFile.save();
     var id = resultFile.id as ObjectId;
     return FileManagementResponse()
       ..success = true
-      ..data = resultFile.data
-      ..path = id.toHexString();
+      ..data = resultFile.data.map((k, v) =>
+          (v is DateTime) ? MapEntry(k, v.toIso8601String()) : MapEntry(k, v))
+      ..path = fileName;
   }
 }
