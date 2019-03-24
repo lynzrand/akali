@@ -1,31 +1,48 @@
 import 'dart:io';
 import 'dart:async';
 
-import 'package:aqueduct/aqueduct.dart';
+import 'package:aqueduct/aqueduct.dart' as Aqueduct;
 
 /// Base class for File Managers in Akali
 abstract class AkaliFileManager {
+  static final String identifier = "AkaliFileManager";
+
+  Future<void> init();
+
   /// Takes a binary input stream and pipe into the designated file
   /// in the image folder
-  FutureOr<FileManagementResponse> streamImageFileFrom(
+  FutureOr<FileManagementResponse> streamImageFileFromUpload(
       Stream<List<int>> file, String fileName);
 
-  FutureOr<Stream<List<int>>> streamFileTo(String id, String ext);
+  FutureOr<bool> streamImageFileToClient(String id, String ext, IOSink target);
 }
 
-class FileManagementResponse {
+class FileManagementResponse extends Aqueduct.Serializable {
   bool success;
   String path;
-  Map<String, dynamic> data;
+  dynamic data;
+
+  @override
+  Map<String, dynamic> asMap() {
+    return {"success": success, "path": path, "data": data};
+  }
+
+  @override
+  void readFromMap(Map<String, dynamic> object) {
+    return;
+    // We don't need this method
+  }
 }
 
-class AkaliFileController extends FileController {
+class AkaliFileController extends Aqueduct.FileController {
   AkaliFileController(String pathOfDirectoryToServe)
       : super(pathOfDirectoryToServe);
 }
 
 /// Defaule file manager. Stores files in a local directory.
 class AkaliLocalFileManager implements AkaliFileManager {
+  static final String identifier = "LocalFS";
+
   final String rootPath;
   final String webRootPath;
   static const String imgPath = 'img/';
@@ -33,7 +50,7 @@ class AkaliLocalFileManager implements AkaliFileManager {
   AkaliLocalFileManager(this.rootPath, this.webRootPath) {}
 
   @override
-  Future<FileManagementResponse> streamImageFileFrom(
+  Future<FileManagementResponse> streamImageFileFromUpload(
     Stream<List<int>> file,
     String fileName,
   ) async {
@@ -47,16 +64,29 @@ class AkaliLocalFileManager implements AkaliFileManager {
   }
 
   @override
-  FutureOr<Stream<List<int>>> streamFileTo(String id, String ext) {
-    var f = File(rootPath + imgPath + id + ext);
-    return f.openRead();
+  FutureOr<bool> streamImageFileToClient(String id, String ext, IOSink target) {
+    File f;
+    // If error directly return
+    f = File(rootPath + imgPath + id + ext);
+
+    // return f.openRead();
+    f.openRead().pipe(target);
+    return true;
+  }
+
+  @override
+  Future<void> init() {
+    // Local file system doesnt need initialization
+    return null;
   }
 }
 
 /// Simple file manager for testing purposes
 class AkaliMockupFileManager implements AkaliFileManager {
+  static final String identifier = "MockupFS";
+
   @override
-  Future<FileManagementResponse> streamImageFileFrom(
+  Future<FileManagementResponse> streamImageFileFromUpload(
     Stream<List<int>> file,
     String fileName,
   ) async {
@@ -71,7 +101,13 @@ class AkaliMockupFileManager implements AkaliFileManager {
   }
 
   @override
-  FutureOr<Stream<List<int>>> streamFileTo(String id, String ext) {
+  Future<void> init() {
+    // TODO: implement init
+    return null;
+  }
+
+  @override
+  FutureOr<bool> streamImageFileToClient(String id, String ext, IOSink target) {
     // TODO: implement streamFileTo
     return null;
   }

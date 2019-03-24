@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:akali/data/db/gridfs.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 import 'package:akali/models.dart';
@@ -74,7 +75,8 @@ class AkaliApi extends ApplicationChannel {
 
     fileStoragePath = options.context['fileStoragePath'];
     webRootPath = options.context['webRootPath'];
-    fileManager = AkaliLocalFileManager(fileStoragePath, webRootPath);
+    // fileManager = AkaliLocalFileManager(fileStoragePath, webRootPath);
+    fileManager = AkaliGridFS(databaseUri);
 
     final authDelegate = AkaliAuthDelegate(db: _db);
     authServer = AuthServer(authDelegate);

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dson/dson.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 import 'package:akali/models.dart';
@@ -84,12 +85,10 @@ class ImgRequestHandler extends ResourceController {
       if (pretty == false)
         return Response.ok(searchResults)..contentType = ContentType.json;
       else
-        return Response.ok(
-          Utf8Encoder().convert(JsonEncoder.withIndent('  ').convert(
-              searchResults
-                  .map<Map<String, dynamic>>((p) => p.asMap())
-                  .toList())),
-        )
+        return Response.ok(Utf8Encoder().convert(
+          JsonEncoder.withIndent('  ').convert(
+              searchResults.result.map<Map<String, dynamic>>((p) => p.asMap())),
+        ))
           ..contentType = ContentType.json
           ..encodeBody = false;
     } catch (e, stack) {
@@ -131,19 +130,24 @@ class ImgRequestHandler extends ResourceController {
     // if (upload.raw.headers.value('file-name') == null) {
     //   throw Response.badRequest(body: {"error": "File name not defined"});
     // } else
-    if (upload.raw.headers.contentType.primaryType != 'image') {
+    if (upload.raw.headers.contentType?.primaryType != 'image') {
       throw Response.badRequest(
           body: {"error": "You are not uploading an image"});
     }
-    //TODO:: using UUID
     var id = ObjectId();
-    var path;
+    FileManagementResponse result;
     try {
-      path = await fileManager.streamImageFileFrom(upload.body.bytes,
+      result = await fileManager.streamImageFileFromUpload(upload.body.bytes,
           id.toHexString() + '.' + upload.raw.headers.contentType.subType);
       // return Response.created(path.path);
       db.createImgId(id);
-      return Response.ok({"success": true, "id": id});
+      return Response.created(
+          webRootPath +
+              "/api/v1/file" +
+              id.toHexString() +
+              "." +
+              upload.raw.headers.contentType.subType,
+          body: result);
     } catch (e, stackTrace) {
       print(e);
       print(stackTrace);

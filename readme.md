@@ -1,6 +1,6 @@
 # ![Akali](res/akali_logo_long.png)
 
-**AKALI IS NOT USABLE YET. KEY FEATURES NOT IMPLEMENTED.**
+**Akali 0.1.0 contains breaking updates on object model and database.**
 
 **IMPORTANT!** 
 Akali is currently under heavy development. Things could break between commits, or the whole program may not be able to work at all. 
@@ -9,7 +9,7 @@ Please use at your own risk.
 
 ---
 
-Akali is an experimental _scalable and expandable_ pic site (booru) server written in Dart.
+Akali is an experimental image board server written in Dart. Akali seeks to build an easy-to-use API with refined object models.
 
 Main repository: [GitLab](https://gitlab.com/01010101lzy/akali)  
 Mirror: [GitHub](https://github.com/01010101lzy/akali)
@@ -67,16 +67,16 @@ We will introduce other run methods in the future, like using a configuration fi
 
 ### Arguments
 
-| Abbr | Name                     | Default value            | Description                            |
-|------|--------------------------|--------------------------|----------------------------------------|
-| `-d` | `--debug`                |                          | Run Akali in debug mode (does nothing) |
-| `-D` | `--database=<uri>`       | `127.0.0.1:27017`        | Run Akali with database on `uri`       |
-| `-p` | `--port=<port>`          | `8086`                   | Run Akali on port `port`               |
-| `-i` | `--isolates=<num>`       | `1`                      | Run Akali with `num` isolates.         |
-| `-S` | `--storage-path=<path>`  | `./akali/`               | Store files in `path`                  |
-|      | `--web-root-path=<path>` | `http://localhost:8086/` | Root path for all relative links       |
-| `-v` | `--version`              |                          | Show version and exit                  |
-| `-h` | `--help`                 |                          | Show help message                      |
+| Abbr                     | Name                     | Default value                    | Description                            |
+|--------------------------|--------------------------|----------------------------------|----------------------------------------|
+| `-d`                     | `--debug`                |                                  | Run Akali in debug mode (does nothing) |
+| `-D`                     | `--database=<uri>`       | `127.0.0.1:27017`                | Run Akali with database on `uri`       |
+| `-p`                     | `--port=<port>`          | `8086`                           | Run Akali on port `port`               |
+| `-i`                     | `--isolates=<num>`       | `1`                              | Run Akali with `num` isolates.         |
+| `-S`                     | `--storage-path=<path>`  | `./akali/`                       | Store files in `path`                  |
+| `--web-root-path=<path>` | `http://localhost:8086/` | Root path for all relative links |                                        |
+| `-v`                     | `--version`              |                                  | Show version and exit                  |
+| `-h`                     | `--help`                 |                                  | Show help message                      |
 
 ## APIs
 
@@ -92,15 +92,15 @@ And we need a project in our school's competetion.
 
 ### Is it Danbooru compatible?
 
-Considering. We are just starting to build up this whole thing, and a lot of things aren't determined yet. We may choose to be compatible with Danbooru/Moebooru frameworks only on the database side, but not on the API side.
+Nope. This is a rather personal choice, but the PostgreSQL driver is rather hard to use (especially in the other repository of this project, AkaliSharp). Plus, we also get file storage covered with GridFS of MongoDB!
 
 ### Plugins?
 
-Yes, but not now. Plugin supports are in our to-do list for stable versions after 1.0.
+Yes, but not now. We will eventually add hooks and other things in our whole processing and responding procedure, but for now we are focusing on other more important things, like dealing with buggy APIs (really!).
 
 ### When will this be usable?
 
-We are aiming at early 2019, with 1.0 releasing in summer 2019. Times may vary due to our pressure in study. Contributions are welcomed if you want to speed up our development!
+Well... Will **Soon™** be a good answer? (Obviously no)
 
 ## Techinical FAQs
 
