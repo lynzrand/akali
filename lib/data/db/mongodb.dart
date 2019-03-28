@@ -142,7 +142,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
 
   Future<ActionResult<Pic>> updateImgInfo(Pic newInfo, String id) async {
     var _id = ObjectId.fromHexString(id);
-    var result = await picCollection.update(where.id(_id), toMap(newInfo));
+    var result = await picCollection.update(where.id(_id), newInfo.asMap());
     newInfo.id = _id;
     bool success = result['nModified'] > 0;
     if (success)
@@ -166,15 +166,41 @@ class AkaliMongoDatabase implements AkaliDatabase {
   }
 
   @override
-  FutureOr<ActionResult<Pic>> createImg(Pic img) {
-    // TODO: implement createImg
-    return null;
+  FutureOr<ActionResult<Pic>> createImg(Pic img) async {
+    var id = img.id ?? new ObjectId();
+    var result =
+        await picCollection.update(where.id(id), toMap(img), upsert: true);
+    int nAffected = result['nModified'] + result['nUpserted'];
+    img.id = id;
+    if (nAffected != 0)
+      return ActionResult()
+        ..affected = nAffected
+        ..data = img
+        ..success = true;
+    else
+      return ActionResult()
+        ..success = false
+        ..message = (result['writeError'] ??
+                result['writeConcernError'] ??
+                "Task Failed Successfully")
+            .toString();
   }
 
   @override
-  FutureOr<ActionResult<Pic>> createImgId(ObjectId id) {
-    // TODO: implement createImgId
-    return null;
+  FutureOr<ActionResult<ObjectId>> createImgId(ObjectId id) async {
+    var result = await picCollection.insert({"_id": id});
+    if (result['nInserted'] ?? 0 > 0)
+      return ActionResult()
+        ..data = id
+        ..affected = 1
+        ..success = true;
+    else
+      return ActionResult()
+        ..success = false
+        ..message = (result['writeError'] ??
+                result['writeConcernError'] ??
+                "Task Failed Successfully")
+            .toString();
   }
 
   Future addInfoToPendingImage(Pic info) async {
@@ -183,7 +209,16 @@ class AkaliMongoDatabase implements AkaliDatabase {
   }
 
   Future<ActionResult> deleteImg(String id) async {
-    await picCollection.remove(where.id(ObjectId.fromHexString(id)));
+    var result =
+        await picCollection.remove(where.id(ObjectId.fromHexString(id)));
+    if (result['nDeleted'] != null && result['nDeleted'] > 0)
+      return ActionResult()
+        ..success = true
+        ..affected = result['nDeleted'];
+    else
+      return ActionResult()
+        ..success = false
+        ..affected = 0;
   }
 
   // =============

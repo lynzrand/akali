@@ -13,12 +13,12 @@ abstract class _$AkaliConfigSerializable extends SerializableMap {
   String get databaseUri;
   int get port;
   int get isolateNum;
-  void set verbosity(Level v);
-  void set webRoot(String v);
-  void set fileSystemRoot(String v);
-  void set databaseUri(String v);
-  void set port(int v);
-  void set isolateNum(int v);
+  set verbosity(Level v);
+  set webRoot(String v);
+  set fileSystemRoot(String v);
+  set databaseUri(String v);
+  set port(int v);
+  set isolateNum(int v);
 
   operator [](Object __key) {
     switch (__key) {

@@ -1,3 +1,5 @@
+library akali;
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -211,7 +213,7 @@ class ImgRequestHandler extends ResourceController {
       result = await db.updateImgInfo(newInfo, id);
     } catch (e, stack) {
       logger.severe("Error in putImage()", e, stack);
-      throw Response.badRequest(
+      throw Response.serverError(
           body: {'error': e, 'message': result, 'stackTrace': stack});
     }
     return Response.ok(result);

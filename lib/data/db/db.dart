@@ -38,7 +38,7 @@ abstract class AkaliDatabase {
 
   /// Create a new image
   FutureOr<ActionResult<Pic>> createImg(Pic img);
-  FutureOr<ActionResult<Pic>> createImgId(ObjectId id);
+  FutureOr<ActionResult<ObjectId>> createImgId(ObjectId id);
 
   Future<ActionResult> deleteImg(String id);
 

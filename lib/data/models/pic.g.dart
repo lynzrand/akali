@@ -12,23 +12,19 @@ abstract class _$PicSerializable extends SerializableMap {
   String get desc;
   String get author;
   String get uploaderId;
-  int get fileSize;
   ImageInformation get original;
   ImageInformation get compressed;
   ImageInformation get preview;
   List<Tag> get tags;
-  DateTime get dueDate;
-  void set id(ObjectId v);
-  void set title(String v);
-  void set desc(String v);
-  void set author(String v);
-  void set uploaderId(String v);
-  void set fileSize(int v);
-  void set original(ImageInformation v);
-  void set compressed(ImageInformation v);
-  void set preview(ImageInformation v);
-  void set tags(List<Tag> v);
-  void set dueDate(DateTime v);
+  set id(ObjectId v);
+  set title(String v);
+  set desc(String v);
+  set author(String v);
+  set uploaderId(String v);
+  set original(ImageInformation v);
+  set compressed(ImageInformation v);
+  set preview(ImageInformation v);
+  set tags(List<Tag> v);
   Map<String, dynamic> asMap();
   String toJson();
   String toString();
@@ -41,7 +37,7 @@ abstract class _$PicSerializable extends SerializableMap {
 
   operator [](Object __key) {
     switch (__key) {
-      case 'id':
+      case '_id':
         return id;
       case 'title':
         return title;
@@ -51,8 +47,6 @@ abstract class _$PicSerializable extends SerializableMap {
         return author;
       case 'uploaderId':
         return uploaderId;
-      case 'fileSize':
-        return fileSize;
       case 'original':
         return original;
       case 'compressed':
@@ -61,8 +55,6 @@ abstract class _$PicSerializable extends SerializableMap {
         return preview;
       case 'tags':
         return tags;
-      case 'dueDate':
-        return dueDate;
       case 'asMap':
         return asMap;
       case 'toJson':
@@ -81,7 +73,7 @@ abstract class _$PicSerializable extends SerializableMap {
 
   operator []=(Object __key, __value) {
     switch (__key) {
-      case 'id':
+      case '_id':
         id = fromSerialized(__value, () => new ObjectId());
         return;
       case 'title':
@@ -96,9 +88,6 @@ abstract class _$PicSerializable extends SerializableMap {
       case 'uploaderId':
         uploaderId = __value;
         return;
-      case 'fileSize':
-        fileSize = __value;
-        return;
       case 'original':
         original = fromSerialized(__value, () => new ImageInformation());
         return;
@@ -112,9 +101,6 @@ abstract class _$PicSerializable extends SerializableMap {
         tags =
             fromSerialized(__value, [() => new List<Tag>(), () => new Tag()]);
         return;
-      case 'dueDate':
-        dueDate = fromSerializedDateTime(__value);
-        return;
     }
     throwFieldNotFoundException(__key, 'Pic');
   }
@@ -125,15 +111,18 @@ abstract class _$PicSerializable extends SerializableMap {
 abstract class _$ImageInformationSerializable extends SerializableMap {
   int get width;
   int get height;
+  int get fileSize;
   String get link;
   ObjectId get fileId;
   String get ext;
   double get aspectRatio;
-  void set width(int v);
-  void set height(int v);
-  void set link(String v);
-  void set fileId(ObjectId v);
-  void set ext(String v);
+  set width(int v);
+  set height(int v);
+  set fileSize(int v);
+  set link(String v);
+  set fileId(ObjectId v);
+  set ext(String v);
+  String toJson();
   Map<String, dynamic> asMap();
   void readFromMap(Map<String, dynamic> object);
   APISchemaObject documentSchema(APIDocumentContext context);
@@ -148,6 +137,8 @@ abstract class _$ImageInformationSerializable extends SerializableMap {
         return width;
       case 'height':
         return height;
+      case 'fileSize':
+        return fileSize;
       case 'link':
         return link;
       case 'fileId':
@@ -156,6 +147,8 @@ abstract class _$ImageInformationSerializable extends SerializableMap {
         return ext;
       case 'aspectRatio':
         return aspectRatio;
+      case 'toJson':
+        return toJson;
       case 'asMap':
         return asMap;
       case 'readFromMap':
@@ -175,6 +168,9 @@ abstract class _$ImageInformationSerializable extends SerializableMap {
         return;
       case 'height':
         height = __value;
+        return;
+      case 'fileSize':
+        fileSize = __value;
         return;
       case 'link':
         link = __value;
@@ -198,15 +194,16 @@ abstract class _$ImageInformationSerializable extends SerializableMap {
 
 _Pic__Constructor([positionalParams, namedParams]) => new Pic();
 
-const $$Pic_fields_id = const DeclarationMirror(name: 'id', type: ObjectId);
+const $$Pic_fields_id = const DeclarationMirror(
+  name: '_id',
+  type: ObjectId,
+);
 const $$Pic_fields_title = const DeclarationMirror(name: 'title', type: String);
 const $$Pic_fields_desc = const DeclarationMirror(name: 'desc', type: String);
 const $$Pic_fields_author =
     const DeclarationMirror(name: 'author', type: String);
 const $$Pic_fields_uploaderId =
     const DeclarationMirror(name: 'uploaderId', type: String);
-const $$Pic_fields_fileSize =
-    const DeclarationMirror(name: 'fileSize', type: int);
 const $$Pic_fields_original =
     const DeclarationMirror(name: 'original', type: ImageInformation);
 const $$Pic_fields_compressed =
@@ -215,8 +212,6 @@ const $$Pic_fields_preview =
     const DeclarationMirror(name: 'preview', type: ImageInformation);
 const $$Pic_fields_tags =
     const DeclarationMirror(name: 'tags', type: const [List, Tag]);
-const $$Pic_fields_dueDate =
-    const DeclarationMirror(name: 'dueDate', type: DateTime);
 
 const PicClassMirror = const ClassMirror(
     name: 'Pic',
@@ -224,43 +219,37 @@ const PicClassMirror = const ClassMirror(
       '': const FunctionMirror(name: '', $call: _Pic__Constructor)
     },
     fields: const {
-      'id': $$Pic_fields_id,
+      '_id': $$Pic_fields_id,
       'title': $$Pic_fields_title,
       'desc': $$Pic_fields_desc,
       'author': $$Pic_fields_author,
       'uploaderId': $$Pic_fields_uploaderId,
-      'fileSize': $$Pic_fields_fileSize,
       'original': $$Pic_fields_original,
       'compressed': $$Pic_fields_compressed,
       'preview': $$Pic_fields_preview,
-      'tags': $$Pic_fields_tags,
-      'dueDate': $$Pic_fields_dueDate
+      'tags': $$Pic_fields_tags
     },
     getters: const [
-      'id',
+      '_id',
       'title',
       'desc',
       'author',
       'uploaderId',
-      'fileSize',
       'original',
       'compressed',
       'preview',
-      'tags',
-      'dueDate'
+      'tags'
     ],
     setters: const [
-      'id',
+      '_id',
       'title',
       'desc',
       'author',
       'uploaderId',
-      'fileSize',
       'original',
       'compressed',
       'preview',
-      'tags',
-      'dueDate'
+      'tags'
     ],
     methods: const {
       'asMap': const FunctionMirror(
@@ -330,6 +319,8 @@ const $$ImageInformation_fields_width =
     const DeclarationMirror(name: 'width', type: int);
 const $$ImageInformation_fields_height =
     const DeclarationMirror(name: 'height', type: int);
+const $$ImageInformation_fields_fileSize =
+    const DeclarationMirror(name: 'fileSize', type: int);
 const $$ImageInformation_fields_link =
     const DeclarationMirror(name: 'link', type: String);
 const $$ImageInformation_fields_fileId =
@@ -347,14 +338,27 @@ const ImageInformationClassMirror = const ClassMirror(
     fields: const {
       'width': $$ImageInformation_fields_width,
       'height': $$ImageInformation_fields_height,
+      'fileSize': $$ImageInformation_fields_fileSize,
       'link': $$ImageInformation_fields_link,
       'fileId': $$ImageInformation_fields_fileId,
       'ext': $$ImageInformation_fields_ext,
       'aspectRatio': $$ImageInformation_fields_aspectRatio
     },
-    getters: const ['width', 'height', 'link', 'fileId', 'ext', 'aspectRatio'],
-    setters: const ['width', 'height', 'link', 'fileId', 'ext'],
+    getters: const [
+      'width',
+      'height',
+      'fileSize',
+      'link',
+      'fileId',
+      'ext',
+      'aspectRatio'
+    ],
+    setters: const ['width', 'height', 'fileSize', 'link', 'fileId', 'ext'],
     methods: const {
+      'toJson': const FunctionMirror(
+        name: 'toJson',
+        returnType: String,
+      ),
       'asMap': const FunctionMirror(
         name: 'asMap',
         returnType: const [

@@ -11,10 +11,10 @@ abstract class _$ActionResultSerializable<T> extends SerializableMap {
   int get affected;
   String get message;
   T get data;
-  void set success(bool v);
-  void set affected(int v);
-  void set message(String v);
-  void set data(T v);
+  set success(bool v);
+  set affected(int v);
+  set message(String v);
+  set data(T v);
 
   operator [](Object __key) {
     switch (__key) {
@@ -56,10 +56,10 @@ abstract class _$SearchResultSerializable<T> extends SerializableMap {
   int get skip;
   int get total;
   List<T> get result;
-  void set count(int v);
-  void set skip(int v);
-  void set total(int v);
-  void set result(List<T> v);
+  set count(int v);
+  set skip(int v);
+  set total(int v);
+  set result(List<T> v);
 
   operator [](Object __key) {
     switch (__key) {

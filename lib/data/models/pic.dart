@@ -1,18 +1,16 @@
 import 'dart:convert';
-
+import 'package:aqueduct/aqueduct.dart' as _aqueduct;
 import 'package:akali/data/models/tag.dart';
-import 'package:aqueduct/aqueduct.dart' as aqueduct;
+import 'package:akali/data/helpers/aqueductImporter.dart';
+
 import 'package:dson/dson.dart';
 import 'package:mongo_dart/mongo_dart.dart';
-
 part "pic.g.dart";
 
-typedef aqueduct.APISchemaObject APISchemaObject();
-typedef aqueduct.APIDocumentContext APIDocumentContext();
-
 @serializable
-class Pic extends aqueduct.Serializable {
+class Pic extends _aqueduct.Serializable {
   // UUID of the pictures
+  @SerializedName("_id")
   ObjectId id;
 
   /// title of the picture
@@ -27,9 +25,6 @@ class Pic extends aqueduct.Serializable {
   /// The ID of the uploader
   String uploaderId;
 
-  /// File size in bytes.
-  int fileSize;
-
   /// Information of the original image
   ImageInformation original;
 
@@ -42,12 +37,14 @@ class Pic extends aqueduct.Serializable {
   /// tags
   List<Tag> tags;
 
-  /// timestamp
-  DateTime dueDate;
+  // /// timestamp
+  // DateTime dueDate;
 
   /// return mapped information
   Map<String, dynamic> asMap() {
-    return toMap(this);
+    var result = toMap(this);
+    if (result['_id'] != null) result['_id'] = result['_id'].toString();
+    return result;
   }
 
   String toJson() {
@@ -61,19 +58,34 @@ class Pic extends aqueduct.Serializable {
   Pic();
 
   void readFromMap(Map<String, dynamic> map) {
-    if (map['_id'] is! ObjectId)
+    if (map['_id'] != null && map['_id'] is String)
       map['_id'] = ObjectId.fromHexString(map['_id']);
-    fromMap(map, this);
+
+    this.id = map['_id'] ?? map['id'];
+    this.title = map['title'];
+    this.desc = map['desc'];
+    this.author = map['author'];
+    this.uploaderId = map['uploaderId'];
+    this.compressed = fromMap(map['compressed'], ImageInformation);
+    this.original = fromMap(map['compressed'], ImageInformation);
+    this.preview = fromMap(map['compressed'], ImageInformation);
+    this.tags =
+        fromSerialized(map['tags'], [() => new List<Tag>(), () => new Tag()]);
   }
 }
 
 @serializable
-class ImageInformation extends aqueduct.Serializable {
+class ImageInformation extends _aqueduct.Serializable {
   /// Width of the image
   int width;
 
   /// Height of the image
   int height;
+
+  /// Size of the image, in bytes.
+  ///
+  /// Hope no one will make images larger than 2^53 bytes(...)
+  int fileSize;
 
   /// Link of the image
   String link;
@@ -86,6 +98,10 @@ class ImageInformation extends aqueduct.Serializable {
 
   double get aspectRatio {
     return width.toDouble() / height;
+  }
+
+  String toJson() {
+    return jsonEncode(this.asMap());
   }
 
   @override
