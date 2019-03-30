@@ -8,7 +8,7 @@ part of 'pic.dart';
 
 Pic _$PicFromJson(Map<String, dynamic> json) {
   return Pic()
-    ..id = json['_id'] == null ? null : objectIdFromMap(json['_id'] as String)
+    ..id = json['_id'] == null ? null : unchangedDataWrapper(json['_id'])
     ..title = json['title'] as String
     ..desc = json['desc'] as String
     ..author = json['author'] as String
@@ -27,17 +27,31 @@ Pic _$PicFromJson(Map<String, dynamic> json) {
         ?.toList();
 }
 
-Map<String, dynamic> _$PicToJson(Pic instance) => <String, dynamic>{
-      '_id': instance.id == null ? null : objectIdToMap(instance.id),
-      'title': instance.title,
-      'desc': instance.desc,
-      'author': instance.author,
-      'uploaderId': instance.uploaderId,
-      'original': instance.original,
-      'compressed': instance.compressed,
-      'preview': instance.preview,
-      'tags': instance.tags
-    };
+Map<String, dynamic> _$PicToJson(Pic instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull(
+      '_id', instance.id == null ? null : unchangedDataWrapper(instance.id));
+  writeNotNull('title', instance.title);
+  writeNotNull('desc', instance.desc);
+  writeNotNull('author', instance.author);
+  writeNotNull('uploaderId', instance.uploaderId);
+  writeNotNull('original', instance.original);
+  writeNotNull('compressed', instance.compressed);
+  writeNotNull('preview', instance.preview);
+  writeNotNull(
+      'tags',
+      instance.tags == null
+          ? null
+          : listMapTransformationWrapper(instance.tags));
+  return val;
+}
 
 ImageInformation _$ImageInformationFromJson(Map<String, dynamic> json) {
   return ImageInformation(

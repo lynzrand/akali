@@ -7,14 +7,14 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 part "pic.g.dart";
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class Pic extends _aqueduct.Serializable {
   // UUID of the pictures
 
   @JsonKey(
     name: "_id",
-    fromJson: objectIdFromMap,
-    toJson: objectIdToMap,
+    fromJson: unchangedDataWrapper,
+    toJson: unchangedDataWrapper,
   )
   ObjectId id;
 
@@ -40,18 +40,15 @@ class Pic extends _aqueduct.Serializable {
   ImageInformation preview;
 
   /// tags
+  @JsonKey(toJson: listMapTransformationWrapper)
   List<Tag> tags;
 
   // /// timestamp
   // DateTime dueDate;
 
   /// return mapped information
-  Map<String, dynamic> asMap() {
-    // var result = (this);
-    var result = new Map();
-    if (result['_id'] != null) result['_id'] = result['_id'].toString();
-    return result;
-  }
+  Map<String, dynamic> asMap() => objectIdStringifier(_$PicToJson(this));
+  Map<String, dynamic> asDatabaseMap() => _$PicToJson(this);
 
   String toJson() {
     return jsonEncode(this.asMap());
@@ -152,9 +149,8 @@ class ImageInformation extends _aqueduct.Serializable {
   factory ImageInformation.fromJson(json) => _$ImageInformationFromJson(json);
 
   @override
-  Map<String, dynamic> asMap() {
-    return _$ImageInformationToJson(this);
-  }
+  Map<String, dynamic> asMap() => _$ImageInformationToJson(this);
+  Map<String, dynamic> asJson() => _$ImageInformationToJson(this);
 
   @override
   void readFromMap(Map<String, dynamic> object) {

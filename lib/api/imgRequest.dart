@@ -207,7 +207,7 @@ class ImgRequestHandler extends ResourceController {
     @Bind.query('access_token') String tokenQuery,
     @Bind.header('Access-Token') String tokenHeader,
   ]) async {
-    var result;
+    ActionResult<Pic> result;
     try {
       result = await db.updateImgInfo(newInfo, id);
     } catch (e, stack) {
@@ -215,7 +215,7 @@ class ImgRequestHandler extends ResourceController {
       throw Response.serverError(
           body: {'error': e, 'message': result, 'stackTrace': stack});
     }
-    return Response.ok(result);
+    return Response.ok(result.asMap());
   }
 
   /// DELETE `/img/:id`

@@ -142,16 +142,18 @@ class AkaliMongoDatabase implements AkaliDatabase {
 
   Future<ActionResult<Pic>> updateImgInfo(Pic newInfo, String id) async {
     var _id = ObjectId.fromHexString(id);
-    var result = await picCollection.update(where.id(_id), newInfo.asMap());
     newInfo.id = _id;
-    bool success = result['nModified'] > 0;
+    var result =
+        await picCollection.update(where.id(_id), newInfo.asDatabaseMap());
+    newInfo.id = _id;
+    bool success = (result['n'] ?? 0) > 0;
     if (success)
       return ActionResult()
         ..success = true
         ..data = newInfo
-        ..affected = result['nModified'];
+        ..affected = result['n'];
     else
-      return ActionResult()..success = false;
+      throw ArgumentError.value(newInfo, "newInfo", result);
   }
 
   /// Adds an image with link [blobLink] and no info related

@@ -19,3 +19,22 @@ Map<String, dynamic> levelToMap(Level level) {
     "level": level.value,
   };
 }
+
+Map<String, dynamic> objectIdStringifier(Map<String, dynamic> origin) {
+  if (origin['_id'] != null && origin['_id'] is ObjectId)
+    origin['_id'] = (origin['_id'] as ObjectId).toHexString();
+  return origin;
+}
+
+Map<String, dynamic> objectIdDestringifier(Map<String, dynamic> origin) {
+  if (origin['_id'] != null && origin['_id'] is String)
+    origin['_id'] = ObjectId.fromHexString(origin['_id'] as String);
+  return origin;
+}
+
+dynamic unchangedDataWrapper(data) => data;
+
+List unchangedListWrapper<List>(List data) => data;
+
+List<dynamic> listMapTransformationWrapper(List<dynamic> objects) =>
+    objects.map((o) => o.toJson()).toList();

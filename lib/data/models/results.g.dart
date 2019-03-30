@@ -11,8 +11,7 @@ ActionResult<T> _$ActionResultFromJson<T>(Map<String, dynamic> json) {
     ..success = json['success'] as bool
     ..affected = json['affected'] as int
     ..message = json['message'] as String
-    ..data =
-        json['data'] == null ? null : _unchangedDataWrapper(json['data'] as T);
+    ..data = json['data'] == null ? null : unchangedDataWrapper(json['data']);
 }
 
 Map<String, dynamic> _$ActionResultToJson<T>(ActionResult<T> instance) =>
@@ -20,8 +19,7 @@ Map<String, dynamic> _$ActionResultToJson<T>(ActionResult<T> instance) =>
       'success': instance.success,
       'affected': instance.affected,
       'message': instance.message,
-      'data':
-          instance.data == null ? null : _unchangedDataWrapper(instance.data)
+      'data': instance.data == null ? null : unchangedDataWrapper(instance.data)
     };
 
 SearchResult<T> _$SearchResultFromJson<T>(Map<String, dynamic> json) {
@@ -31,7 +29,7 @@ SearchResult<T> _$SearchResultFromJson<T>(Map<String, dynamic> json) {
     ..total = json['total'] as int
     ..result = json['result'] == null
         ? null
-        : _unchangedListWrapper(json['result'] as List);
+        : unchangedListWrapper(json['result'] as List);
 }
 
 Map<String, dynamic> _$SearchResultToJson<T>(SearchResult<T> instance) =>
@@ -39,7 +37,6 @@ Map<String, dynamic> _$SearchResultToJson<T>(SearchResult<T> instance) =>
       'count': instance.count,
       'skip': instance.skip,
       'total': instance.total,
-      'result': instance.result == null
-          ? null
-          : _unchangedListWrapper(instance.result)
+      'result':
+          instance.result == null ? null : unchangedListWrapper(instance.result)
     };

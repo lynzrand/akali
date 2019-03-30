@@ -21,10 +21,11 @@ class Tag extends _aqueduct.Serializable {
   }
 
   @override
-  Map<String, dynamic> asMap() {
-    return _$TagToJson(this);
-  }
+  Map<String, dynamic> asMap() => _$TagToJson(this);
+  Map<String, dynamic> toJson() => _$TagToJson(this);
 
   factory Tag.fromMap(Map<String, dynamic> map) => _$TagFromJson(map);
   factory Tag.fromJson(Map<String, dynamic> map) => _$TagFromJson(map);
+
+  // static toJson(Tag tag) => _$TagToJson(tag);
 }
