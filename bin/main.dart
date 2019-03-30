@@ -9,16 +9,12 @@ import 'package:args/args.dart';
 import 'package:akali/akali.dart';
 import 'package:akali/logger/logger.dart';
 
-import 'package:dson/dson.dart';
-
 import 'package:aqueduct/aqueduct.dart';
-part "main.g.dart";
 
 const String _akaliVersion = '0.0.2';
 
 Future main(List<String> args) async {
   // hierarchicalLoggingEnabled = true;
-  _initMirrors();
 
   final parser = ArgParser(
     allowTrailingOptions: true,

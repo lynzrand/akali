@@ -15,13 +15,13 @@ Pic _$PicFromJson(Map<String, dynamic> json) {
     ..uploaderId = json['uploaderId'] as String
     ..original = json['original'] == null
         ? null
-        : ImageInformation.fromJson(json['original'] as Map<String, dynamic>)
+        : ImageInformation.fromJson(json['original'])
     ..compressed = json['compressed'] == null
         ? null
-        : ImageInformation.fromJson(json['compressed'] as Map<String, dynamic>)
+        : ImageInformation.fromJson(json['compressed'])
     ..preview = json['preview'] == null
         ? null
-        : ImageInformation.fromJson(json['preview'] as Map<String, dynamic>)
+        : ImageInformation.fromJson(json['preview'])
     ..tags = (json['tags'] as List)
         ?.map((e) => e == null ? null : Tag.fromJson(e as Map<String, dynamic>))
         ?.toList();

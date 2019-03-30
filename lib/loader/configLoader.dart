@@ -29,6 +29,6 @@ class AkaliConfig {
 }
 
 AkaliConfig configLoader(String file) {
-  return fromMap(
-      loadYaml(File.fromUri(Uri.file(file)).readAsStringSync()), AkaliConfig);
+  return _$AkaliConfigFromJson(
+      loadYaml(File.fromUri(Uri.file(file)).readAsStringSync()));
 }

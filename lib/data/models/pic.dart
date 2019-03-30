@@ -80,9 +80,30 @@ class Pic extends _aqueduct.Serializable {
   //   if (map["tags"] is List) this.tags = map["tags"].map((t) => Tag.fromMap(t));
   // }
 
+  factory Pic.fromMap(Map<String, dynamic> json) => _$PicFromJson(json);
+
   @override
-  void readFromMap(Map<String, dynamic> object) {
-    return _$PicFromJson(object);
+  void readFromMap(Map<String, dynamic> json) {
+    this
+      ..id = json['_id'] == null ? null : objectIdFromMap(json['_id'] as String)
+      ..title = json['title'] as String
+      ..desc = json['desc'] as String
+      ..author = json['author'] as String
+      ..uploaderId = json['uploaderId'] as String
+      ..original = json['original'] == null
+          ? null
+          : ImageInformation.fromJson(json['original'] as Map<String, dynamic>)
+      ..compressed = json['compressed'] == null
+          ? null
+          : ImageInformation.fromJson(
+              json['compressed'] as Map<String, dynamic>)
+      ..preview = json['preview'] == null
+          ? null
+          : ImageInformation.fromJson(json['preview'] as Map<String, dynamic>)
+      ..tags = (json['tags'] as List)
+          ?.map(
+              (e) => e == null ? null : Tag.fromJson(e as Map<String, dynamic>))
+          ?.toList();
   }
 }
 

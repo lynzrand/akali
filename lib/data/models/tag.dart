@@ -1,4 +1,3 @@
-import 'package:dson/dson.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
@@ -23,9 +22,9 @@ class Tag extends _aqueduct.Serializable {
 
   @override
   Map<String, dynamic> asMap() {
-    // TODO: implement asMap
-    return null;
+    return _$TagToJson(this);
   }
 
-  static fromMap(t) {}
+  factory Tag.fromMap(Map<String, dynamic> map) => _$TagFromJson(map);
+  factory Tag.fromJson(Map<String, dynamic> map) => _$TagFromJson(map);
 }

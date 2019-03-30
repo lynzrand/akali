@@ -121,7 +121,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
     query = query.limit(limit).skip(skip);
 
     List<Pic> result = await (await picCollection.find(query))
-        .map<Pic>((item) => fromMap(item, Pic))
+        .map<Pic>((item) => Pic.fromMap(item))
         .toList();
 
     return SearchResult()..result = result;
@@ -137,7 +137,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
     if (result == null)
       throw ArgumentError.value(id);
     else
-      return fromMap(result, Pic);
+      return Pic.fromMap(result);
   }
 
   Future<ActionResult<Pic>> updateImgInfo(Pic newInfo, String id) async {
@@ -169,7 +169,7 @@ class AkaliMongoDatabase implements AkaliDatabase {
   FutureOr<ActionResult<Pic>> createImg(Pic img) async {
     var id = img.id ?? new ObjectId();
     var result =
-        await picCollection.update(where.id(id), toMap(img), upsert: true);
+        await picCollection.update(where.id(id), img.asMap(), upsert: true);
     int nAffected = result['nModified'] + result['nUpserted'];
     img.id = id;
     if (nAffected != 0)

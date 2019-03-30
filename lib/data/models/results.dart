@@ -15,8 +15,10 @@ class SearchResult<T> {
   int count;
   int skip;
   int total;
-  @JsonKey(fromJson: _unchangedDataWrapper, toJson: _unchangedDataWrapper)
+  @JsonKey(fromJson: _unchangedListWrapper, toJson: _unchangedListWrapper)
   List<T> result;
 }
 
 T _unchangedDataWrapper<T>(T data) => data;
+
+List _unchangedListWrapper<List>(List data) => data;

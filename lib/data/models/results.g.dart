@@ -31,7 +31,7 @@ SearchResult<T> _$SearchResultFromJson<T>(Map<String, dynamic> json) {
     ..total = json['total'] as int
     ..result = json['result'] == null
         ? null
-        : _unchangedDataWrapper(json['result'] as T);
+        : _unchangedListWrapper(json['result'] as List);
 }
 
 Map<String, dynamic> _$SearchResultToJson<T>(SearchResult<T> instance) =>
@@ -41,5 +41,5 @@ Map<String, dynamic> _$SearchResultToJson<T>(SearchResult<T> instance) =>
       'total': instance.total,
       'result': instance.result == null
           ? null
-          : _unchangedDataWrapper(instance.result)
+          : _unchangedListWrapper(instance.result)
     };
