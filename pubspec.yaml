@@ -3,7 +3,7 @@ description: An illustration site (booru) server
 version: 0.0.2
 
 environment:
-  sdk: ">=2.2.0 <3.0.0"
+  sdk: '>=2.2.0 <3.0.0'
 
 authors:
   - Rynco Li <lynzrand@outlook.com>
@@ -19,8 +19,7 @@ dependencies:
   mongo_dart: ^0.3.4
   isolate: ^2.0.2
   crypto: ^2.0.6
-  dson: any
-  # dson_core: ^0.15.5
+  json_annotation: ^2.0.0
 
 dev_dependencies:
   test: any
@@ -28,6 +27,31 @@ dev_dependencies:
   vm_service_lib: ^0.3.10
   vm_service_client: ^0.2.6
   build_runner: any
+  json_serializable: ^2.0.3
 
 executables:
   akali: main
+
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          # Options configure how source code is generated for every
+          # `@JsonSerializable`-annotated class in the package.
+          #
+          # The default value for each is listed.
+          #
+          # For usage information, reference the corresponding field in
+          # `JsonSerializableGenerator`.
+          any_map: false
+          checked: false
+          create_factory: true
+          create_to_json: true
+          disallow_unrecognized_keys: false
+          explicit_to_json: false
+          field_rename: none
+          generate_to_json_function: true
+          include_if_null: false
+          nullable: true
+          use_wrappers: false

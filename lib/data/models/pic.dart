@@ -1,16 +1,21 @@
 import 'dart:convert';
 import 'package:aqueduct/aqueduct.dart' as _aqueduct;
 import 'package:akali/data/models/tag.dart';
-import 'package:akali/data/helpers/aqueductImporter.dart';
+import 'package:akali/data/helpers/jsonConversionHelpers.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-import 'package:dson/dson.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 part "pic.g.dart";
 
-@serializable
+@JsonSerializable()
 class Pic extends _aqueduct.Serializable {
   // UUID of the pictures
-  @SerializedName("_id")
+
+  @JsonKey(
+    name: "_id",
+    fromJson: objectIdFromMap,
+    toJson: objectIdToMap,
+  )
   ObjectId id;
 
   /// title of the picture
@@ -42,7 +47,8 @@ class Pic extends _aqueduct.Serializable {
 
   /// return mapped information
   Map<String, dynamic> asMap() {
-    var result = toMap(this);
+    // var result = (this);
+    var result = new Map();
     if (result['_id'] != null) result['_id'] = result['_id'].toString();
     return result;
   }
@@ -57,25 +63,39 @@ class Pic extends _aqueduct.Serializable {
 
   Pic();
 
-  void readFromMap(Map<String, dynamic> map) {
-    if (map['_id'] != null && map['_id'] is String)
-      map['_id'] = ObjectId.fromHexString(map['_id']);
+  // factory Pic.ImageInformation.fromMap()=>
 
-    this.id = map['_id'] ?? map['id'];
-    this.title = map['title'];
-    this.desc = map['desc'];
-    this.author = map['author'];
-    this.uploaderId = map['uploaderId'];
-    this.compressed = fromMap(map['compressed'], ImageInformation);
-    this.original = fromMap(map['compressed'], ImageInformation);
-    this.preview = fromMap(map['compressed'], ImageInformation);
-    this.tags =
-        fromSerialized(map['tags'], [() => new List<Tag>(), () => new Tag()]);
+  // void readFromMap(Map<String, dynamic> map) {
+  //   if (map['_id'] != null && map['_id'] is String)
+  //     map['_id'] = ObjectId.fromHexString(map['_id']);
+
+  //   this.id = map['_id'] ?? map['id'];
+  //   this.title = map['title'];
+  //   this.desc = map['desc'];
+  //   this.author = map['author'];
+  //   this.uploaderId = map['uploaderId'];
+  //   this.compressed = ImageInformation.fromMap(map['compressed']);
+  //   this.original = ImageInformation.fromMap(map['compressed']);
+  //   this.preview = ImageInformation.fromMap(map['compressed']);
+  //   if (map["tags"] is List) this.tags = map["tags"].map((t) => Tag.fromMap(t));
+  // }
+
+  @override
+  void readFromMap(Map<String, dynamic> object) {
+    return _$PicFromJson(object);
   }
 }
 
-@serializable
+@JsonSerializable()
 class ImageInformation extends _aqueduct.Serializable {
+  ImageInformation(
+      {this.width,
+      this.height,
+      this.ext,
+      this.fileId,
+      this.fileSize,
+      this.link});
+
   /// Width of the image
   int width;
 
@@ -91,6 +111,10 @@ class ImageInformation extends _aqueduct.Serializable {
   String link;
 
   /// ID of the file; Used by GridFS
+  @JsonKey(
+    fromJson: objectIdFromMap,
+    toJson: objectIdToMap,
+  )
   ObjectId fileId;
 
   /// Extension of the image
@@ -104,14 +128,20 @@ class ImageInformation extends _aqueduct.Serializable {
     return jsonEncode(this.asMap());
   }
 
+  factory ImageInformation.fromJson(json) => _$ImageInformationFromJson(json);
+
   @override
   Map<String, dynamic> asMap() {
-    return toMap(this);
+    return _$ImageInformationToJson(this);
   }
 
   @override
   void readFromMap(Map<String, dynamic> object) {
     // TODO: implement readFromMap
+  }
+
+  factory ImageInformation.fromMap(Map<String, dynamic> map) {
+    return null;
   }
 }
 

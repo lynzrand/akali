@@ -1,13 +1,16 @@
 import 'dart:io';
 
+import 'package:akali/data/helpers/jsonConversionHelpers.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:logging/logging.dart';
-import 'package:dson/dson.dart';
+
 import 'package:yaml/yaml.dart';
 
 part "configLoader.g.dart";
 
-@serializable
+@JsonSerializable()
 class AkaliConfig {
+  @JsonKey(fromJson: levelFromMap, toJson: levelToMap)
   Level verbosity;
   String webRoot;
   String fileSystemRoot;

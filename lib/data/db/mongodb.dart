@@ -10,7 +10,7 @@ import 'package:ulid/ulid.dart';
 import 'package:akali/models.dart';
 import 'package:akali/data/auth/auth.dart';
 
-import 'package:dson/dson.dart';
+// import 'package:dson/dson.dart';
 
 /// Akali's default database implementation, using MongoDB
 class AkaliMongoDatabase implements AkaliDatabase {

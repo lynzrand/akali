@@ -1,4 +1,5 @@
 import 'package:dson/dson.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
 import 'package:aqueduct/aqueduct.dart' as _aqueduct;
@@ -6,7 +7,7 @@ import 'package:akali/data/helpers/aqueductImporter.dart';
 
 part 'tag.g.dart';
 
-@serializable
+@JsonSerializable()
 class Tag extends _aqueduct.Serializable {
   String name;
   String type;
@@ -14,15 +15,17 @@ class Tag extends _aqueduct.Serializable {
   Tag({this.name, this.type, this.desc});
 
   @override
-  Map<String, dynamic> asMap() {
-    // return {"name": this.name, "type": this.type, "desc": this.desc};
-    return toMap(this);
-  }
-
-  @override
   void readFromMap(Map<String, dynamic> object) {
     this.name = object['name'];
     this.type = object['type'];
     this.desc = object['desc'];
   }
+
+  @override
+  Map<String, dynamic> asMap() {
+    // TODO: implement asMap
+    return null;
+  }
+
+  static fromMap(t) {}
 }

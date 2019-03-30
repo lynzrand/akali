@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:akali/data/db/gridfs.dart';
+import 'package:akali/logger/logger.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 import 'package:akali/models.dart';
@@ -17,7 +18,7 @@ import 'package:aqueduct/managed_auth.dart';
 import 'fs.dart';
 import 'imgRequest.dart';
 import 'oauth.dart';
-import 'package:akali/logger/logger.dart';
+// import 'initClassMirrors.dart';
 
 /// Akali's default API.
 class AkaliApi extends ApplicationChannel {
