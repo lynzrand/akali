@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:akali/data/helpers/jsonConversionHelpers.dart';
 import 'package:aqueduct/aqueduct.dart';
 import 'package:aqueduct/managed_auth.dart';
 import 'package:aqueduct/src/auth/auth.dart';
@@ -10,6 +11,8 @@ import 'package:ulid/ulid.dart';
 import 'package:uuid/uuid.dart';
 import 'package:crypto/crypto.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:json_annotation/json_annotation.dart';
+part 'auth.g.dart';
 
 enum UserLevel {
   Guest,
@@ -100,7 +103,8 @@ const List<String> userPrivileges = [
   'admin.fullControl',
 ];
 
-class AkaliUser extends ManagedObject implements ResourceOwner {
+@JsonSerializable(disallowUnrecognizedKeys: false)
+class AkaliUser extends Serializable implements ResourceOwner {
   /// How many time would you like the user to wait before validating?
   static const _passwordCheckWaitTime = Duration(milliseconds: 200);
 
@@ -114,9 +118,7 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
   // ultimate implementation of Akali needs to use a 128-bit integer as ID.
   //
   // Alright screw that I'll use my own implementation
-  int get id {
-    return _id.id.byteArray.getInt64(1);
-  }
+  int id;
 
   /// The identifier used by MongoDB
   ObjectId get objectId => _id;
@@ -142,6 +144,7 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
   ///     node:  [ Machine ] [ Random ] (48 bits)
   ///
   /// And yes, you can still retrieve the time data from the UUID.
+  @JsonKey(ignore: true)
   String get uuid {
     final bytes = _id.id.byteArray;
     final msecs = _id.dateTime.millisecondsSinceEpoch;
@@ -171,23 +174,29 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
   ///
   /// At ANY time this value should not be exposed
   // String is okay. But I thought a buffer *could* be better.  -- Rynco
+  @JsonKey(ignore: true)
   String hashedPassword;
 
   /// Salt used to calculate hash
+  @JsonKey(ignore: true)
   String salt;
 
-  List<AuthScope> privileges;
+  @JsonKey(fromJson: authScopeFromMap, toJson: authScopeToMap)
+  List<AuthScope> scopes;
 
   AkaliUser() : super();
 
-  AkaliUser.fromMap(final Map<String, dynamic> map) {}
+  factory AkaliUser.fromMap(final Map<String, dynamic> map) {
+    return _$AkaliUserFromJson(map);
+  }
 
   Map<String, dynamic> asMongoDBEntry() {
     return asMap(true);
   }
 
   Map<String, dynamic> asMap([final bool toDatabase = false]) {
-    var map = super.asMap();
+    var map = _$AkaliUserToJson(this);
+    map['scopes'] = scopes;
     if (toDatabase) {
       map['_salt'] = salt;
       map['_hashedPassword'] = hashedPassword;
@@ -220,6 +229,16 @@ class AkaliUser extends ManagedObject implements ResourceOwner {
       Future(() => validation = hash == hashedPassword),
     ]);
     return validation;
+  }
+
+  @override
+  void readFromMap(Map<String, dynamic> object) {
+    this._id = object['_id'];
+    this.id = object['_id'];
+    this.username = object['username'];
+    this.scopes = authScopeFromMap(object['scopes']);
+    this.hashedPassword = object['_hashedPassword'];
+    this.salt = object['_salt'];
   }
 }
 

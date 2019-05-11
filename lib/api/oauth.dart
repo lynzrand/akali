@@ -100,7 +100,7 @@ class AkaliAuthDelegate extends AuthServerDelegate {
     if (ResourceOwner is! AkaliUser) {
       throw ArgumentError.value(owner);
     }
-    return (owner as AkaliUser).privileges;
+    return (owner as AkaliUser).scopes;
   }
 }
 

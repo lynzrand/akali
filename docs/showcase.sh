@@ -11,7 +11,7 @@ echo "---------------------------"
 echo "Showcase 1: pinging the server"
 echo "API: /ping"
 (set -x
-curl "http://localhost:8086/api/v1/ping" | head -n50
+curl "http://localhost:8086/api/v1/ping" | head -n80
 )
 echo
 echo
@@ -24,7 +24,7 @@ echo "The following API retrieves the whole image list from the newest ones, wit
 echo "API: /img"
 read -rsn1
 (set -x
-curl "http://localhost:8086/api/v1/img?pretty=true" | head -n27
+curl "http://localhost:8086/api/v1/img?pretty=true" | head -n80
 )
 echo
 echo
@@ -33,7 +33,7 @@ read -rsn1
 echo "Then we can add some criteria, like limitting the tags"
 read -rsn1
 (set -x
-curl "http://localhost:8086/api/v1/img?tags=test_tag_3&pretty=true" | head -n27
+curl "http://localhost:8086/api/v1/img?tags=test_tag_3&pretty=true" | head -n80
 )
 echo
 echo
@@ -54,7 +54,7 @@ echo "---------------------------"
 echo "Showcase 3: Query single images"
 read -rsn1
 (set -x
-curl "http://localhost:8086/api/v1/img/5c25cec2fd72af4c5c02b538" | head -n27
+curl "http://localhost:8086/api/v1/img/5c977111be938ff537e16576" | head -n80
 )
 echo
 echo
@@ -66,11 +66,11 @@ echo "---------------------------"
 echo "Showcase 4: Putting images"
 read -rsn1
 (set -x
-curl "http://localhost:8086/api/v1/img/5c8867c3e25fcaf8e694fe40"
+curl "http://localhost:8086/api/v1/img/5c977111be938ff537e16576"
 read -rsn1
-curl "http://localhost:8086/api/v1/img/5c8867c3e25fcaf8e694fe40" -X PUT -d '{"_id":"5c8867c3e25fcaf8e694fe40","title":"New Title","desc":"This is a test","author":"Btapple Lun","uploaderId":"2345678910abcdef","link":"https://upload.wikimedia.org/wikipedia/commons/8/8d/Shadowsocks_logo.png","fileSize":120000,"width":1500,"height":500,"previewLink":"https://upload.wikimedia.org/wikipedia/commons/8/8d/Shadowsocks_logo.png","previewWidth":200,"previewHeight":200,"tags":["test_tag_0","test_tag_1","test_tag_2"]}' -H "Content-Type: application/json"
+curl "http://localhost:8086/api/v1/img/5c977111be938ff537e16576" -X PUT -d '{"_id":"5c977111be938ff537e16576","title":"new","desc":"Lorem Ipsum dos sit amet","author":"Btapple Lun","uploaderId":"5c9770b9ee78d475e5cae71a","original":{"width":4096,"height":2160,"fileSize":1000000,"link":"5c977111be938ff537e16576","fileId":null,"ext":null},"preview":{"width":409,"height":216,"fileSize":null,"link":"5c977111be938ff537e16576","fileId":null,"ext":null},"tags":[{"name":"test_1","type":"author","desc":null}]}' -H "Content-Type: application/json"
 echo
-curl "http://localhost:8086/api/v1/img/5c8867c3e25fcaf8e694fe40"
+curl "http://localhost:8086/api/v1/img/5c977111be938ff537e16576"
 )
 echo
 echo
@@ -84,7 +84,7 @@ read -rsn1
 curl "http://localhost:8086/api/v1/img/" -X POST -T @post_showcase.png -H "Content-Type: image/png"
 echo
 read -rsn1
-curl "http://localhost:8086/api/v1/file/img/5c25cec2fd72af4c5c02b538.png"
+curl "http://localhost:8086/api/v1/file/img/5c977111be938ff537e16576.png"
 )
 echo
 echo
@@ -95,7 +95,7 @@ echo "---------------------------"
 echo "Showcase 6: Deleting"
 read -rsn1
 (set -x
-curl "http://localhost:8086/api/v1/img/5c25cec2fd72af4c5c02b538" -X DELETE
+curl "http://localhost:8086/api/v1/img/5c977111be938ff537e16576" -X DELETE
 )
 echo
 echo

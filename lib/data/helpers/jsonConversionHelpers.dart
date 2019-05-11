@@ -1,3 +1,4 @@
+import 'package:aqueduct/aqueduct.dart';
 import 'package:bson/bson.dart';
 import 'package:logging/logging.dart';
 
@@ -18,6 +19,14 @@ Map<String, dynamic> levelToMap(Level level) {
     "name": level.name,
     "level": level.value,
   };
+}
+
+List<String> authScopeToMap(List<AuthScope> scopes) {
+  return scopes.map((scope) => scope.toString());
+}
+
+List<AuthScope> authScopeFromMap(List<String> scopes) {
+  return scopes.map((s) => AuthScope(s));
 }
 
 Map<String, dynamic> objectIdStringifier(Map<String, dynamic> origin) {

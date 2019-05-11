@@ -48,11 +48,19 @@ class Pic extends _aqueduct.Serializable {
 
   /// return mapped information
   Map<String, dynamic> asMap() => objectIdStringifier(_$PicToJson(this));
-  Map<String, dynamic> asDatabaseMap() => _$PicToJson(this);
-
-  String toJson() {
-    return jsonEncode(this.asMap());
+  Map<String, dynamic> toJson() => objectIdStringifier(_$PicToJson(this));
+  Map<String, dynamic> asDatabaseMap() {
+    var dbMap = _$PicToJson(this);
+    dbMap['original'] = dbMap['original']?.asMap();
+    dbMap['preview'] = dbMap['preview']?.asMap();
+    dbMap['compressed'] = dbMap['compressed']?.asMap();
+    // dbMap['tags'] = dbMap['tags']?.map((tag) => tag.asMap());
+    return dbMap;
   }
+
+  // String toJson() {
+  //   return jsonEncode(this.asMap());
+  // }
 
   String toString() {
     return this.toString();
@@ -142,23 +150,20 @@ class ImageInformation extends _aqueduct.Serializable {
     return width.toDouble() / height;
   }
 
-  String toJson() {
-    return jsonEncode(this.asMap());
-  }
+  // String toJson() {
+  //   return jsonEncode(this.asMap());
+  // }
 
   factory ImageInformation.fromJson(json) => _$ImageInformationFromJson(json);
 
   @override
   Map<String, dynamic> asMap() => _$ImageInformationToJson(this);
   Map<String, dynamic> asJson() => _$ImageInformationToJson(this);
+  Map<String, dynamic> toJson() => _$ImageInformationToJson(this);
 
   @override
   void readFromMap(Map<String, dynamic> object) {
     // TODO: implement readFromMap
-  }
-
-  factory ImageInformation.fromMap(Map<String, dynamic> map) {
-    return null;
   }
 }
 

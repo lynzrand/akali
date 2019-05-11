@@ -108,7 +108,7 @@ class ImgRequestHandler extends ResourceController {
   /// GETs the information of image [id]
   @Operation.get('id')
   Future<Response> getImage(@Bind.path('id') String id) async {
-    var result;
+    Pic result;
     try {
       // _id = ObjectId.fromHexString(id);
       result = await db.queryImgID(id);
@@ -121,7 +121,7 @@ class ImgRequestHandler extends ResourceController {
         throw Response.serverError();
       }
     }
-    return Response.ok(result)..contentType = ContentType.json;
+    return Response.ok(result.asMap())..contentType = ContentType.json;
   }
 
   /// POST `img/`
@@ -226,6 +226,8 @@ class ImgRequestHandler extends ResourceController {
   Future<Response> deleteImageId(@Bind.path('id') String id) async {
     var result;
     try {
+      var img = await db.queryImgID(id);
+      // await fileManager.
       await db.deleteImg(id);
     } catch (e, stack) {
       if (e is ArgumentError) {

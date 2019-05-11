@@ -102,7 +102,7 @@ class AkaliApi extends ApplicationChannel {
     router.route('/auth/token').link(() => AuthController(authServer));
     router.route('/auth/code').link(() => AuthRedirectController(authServer));
     router.route('/auth/register').link(() => AkaliRegisterController(_db));
-
+    router.route('/user/[:id]').link(() => null);
     return router;
   }
 

@@ -102,7 +102,7 @@ Future main(List<String> args) async {
 
   if (runConf['help']) {
     print(_akaliTextLogo);
-    print('Akali Server $_akaliVersion\n\n');
+    print('Akali Server $_akaliVersion\n');
     print('Usage:');
     print(parser.usage);
     return;
